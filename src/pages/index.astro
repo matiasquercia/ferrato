@@ -80,17 +80,17 @@ const benefits = [
       {categories.map((c) => (
         <a
           href={`/categoria/${c.slug}`}
-          class="group rounded-2xl border border-stone-300/80 bg-photo p-4 text-center transition hover:border-brand-500 hover:shadow-md"
+          class="group overflow-hidden rounded-2xl border border-stone-300/80 bg-white text-center transition hover:border-brand-500 hover:shadow-md"
         >
           <img
             src={categoryImage(c.slug)}
             alt={c.name}
-            width="160"
-            height="160"
-            class="mx-auto aspect-square w-32 rounded-xl object-cover transition group-hover:scale-105"
+            width="320"
+            height="320"
+            class="aspect-square w-full object-cover"
           />
-          <span class="mt-3 block font-semibold">{c.name}</span>
-          <span class="text-xs text-steel">
+          <span class="mt-3 block px-3 font-semibold">{c.name}</span>
+          <span class="mb-3 block text-xs text-steel">
             {getProductsByCategory(c.slug).length === 1
               ? '1 producto'
               : `${getProductsByCategory(c.slug).length} productos`}
