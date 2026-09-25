@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
-import vercel from '@astrojs/vercel';
+import netlify from '@astrojs/netlify';
 import tailwindcss from '@tailwindcss/vite';
 
 // URL pública del sitio: se usa para canonical, Open Graph y sitemap.
@@ -13,7 +13,7 @@ export default defineConfig({
   // Todas las páginas se pre-renderizan (HTML estático = SEO y velocidad).
   // Sólo las rutas con `export const prerender = false` (API de checkout y webhook) corren en el servidor.
   output: 'static',
-  adapter: vercel(),
+  adapter: netlify(),
   integrations: [
     react(),
     sitemap({
