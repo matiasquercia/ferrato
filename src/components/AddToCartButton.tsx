@@ -1,56 +1,128 @@
 import { useState } from 'react';
-import { addToCart, type CartItem } from '@/lib/cart';
+import { addToCart } from '@/lib/cart';
+import { whatsappContactUrl } from '@/lib/whatsapp';
+
+export interface AddToCartProduct {
+  id: string;
+  slug: string;
+  name: string;
+  /** null = sin precio publicado → se consulta por WhatsApp */
+  price: number | null;
+  image: string;
+  maxStock: number;
+  colors: string[];
+}
 
 interface Props {
-  item: Omit<CartItem, 'quantity'>;
+  product: AddToCartProduct;
   compact?: boolean;
   withQuantity?: boolean;
 }
 
-export default function AddToCartButton({ item, compact = false, withQuantity = false }: Props) {
+export default function AddToCartButton({ product, compact = false, withQuantity = false }: Props) {
   const [qty, setQty] = useState(1);
+  const [color, setColor] = useState(product.colors[0]);
   const [added, setAdded] = useState(false);
-  const outOfStock = item.maxStock <= 0;
+  const outOfStock = product.maxStock <= 0;
+  const needsColorChoice = product.colors.length > 1;
+
+  if (product.price === null) {
+    return (
+      <a
+        href={whatsappContactUrl(`¡Hola! Quiero consultar el precio de: ${product.name}`)}
+        target="_blank"
+        rel="noopener"
+        className={`btn-whatsapp w-full ${compact ? 'mt-2 py-2 text-sm' : 'mt-6'}`}
+      >
+        Consultar precio
+      </a>
+    );
+  }
+  const price = product.price;
+
+  // En la tarjeta del listado, si hay que elegir color mandamos a la ficha del producto.
+  if (compact && needsColorChoice) {
+    return (
+      <a href={`/productos/${product.slug}`} className="btn-primary mt-2 w-full py-2 text-sm">
+        Elegir color
+      </a>
+    );
+  }
 
   const onAdd = () => {
-    addToCart(item, qty);
+    addToCart(
+      {
+        id: product.id,
+        slug: product.slug,
+        name: product.name,
+        price,
+        image: product.image,
+        maxStock: product.maxStock,
+        variant: color,
+      },
+      qty,
+    );
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1500);
   };
 
   return (
-    <div className={`flex gap-3 ${compact ? 'mt-2' : 'mt-6'}`}>
-      {withQuantity && !outOfStock && (
-        <div className="flex items-center rounded-lg border border-stone-300 bg-white">
-          <button
-            type="button"
-            className="px-3 py-2 text-lg"
-            onClick={() => setQty((q) => Math.max(1, q - 1))}
-            aria-label="Restar"
-          >
-            −
-          </button>
-          <span className="w-8 text-center font-semibold" aria-live="polite">
-            {qty}
-          </span>
-          <button
-            type="button"
-            className="px-3 py-2 text-lg"
-            onClick={() => setQty((q) => Math.min(item.maxStock, q + 1))}
-            aria-label="Sumar"
-          >
-            +
-          </button>
-        </div>
+    <div className={compact ? 'mt-2' : 'mt-6'}>
+      {!compact && needsColorChoice && (
+        <fieldset className="mb-4">
+          <legend className="mb-2 text-sm font-semibold">Color: {color}</legend>
+          <div className="flex flex-wrap gap-2">
+            {product.colors.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setColor(c)}
+                aria-pressed={c === color}
+                className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                  c === color
+                    ? 'border-ink bg-ink text-white'
+                    : 'border-stone-300 bg-white hover:border-stone-500'
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        </fieldset>
       )}
-      <button
-        type="button"
-        onClick={onAdd}
-        disabled={outOfStock}
-        className={`btn-primary flex-1 ${compact ? 'py-2 text-sm' : ''}`}
-      >
-        {outOfStock ? 'Sin stock' : added ? '¡Agregado! ✓' : 'Agregar al carrito'}
-      </button>
+      <div className="flex gap-3">
+        {withQuantity && !outOfStock && (
+          <div className="flex items-center rounded-lg border border-stone-300 bg-white">
+            <button
+              type="button"
+              className="px-3 py-2 text-lg"
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              aria-label="Restar"
+            >
+              −
+            </button>
+            <span className="w-8 text-center font-semibold" aria-live="polite">
+              {qty}
+            </span>
+            <button
+              type="button"
+              className="px-3 py-2 text-lg"
+              onClick={() => setQty((q) => Math.min(product.maxStock, q + 1))}
+              aria-label="Sumar"
+            >
+              +
+            </button>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={onAdd}
+          disabled={outOfStock}
+          className={`btn-primary flex-1 ${compact ? 'py-2 text-sm' : ''}`}
+        >
+          {outOfStock ? 'Sin stock' : added ? '¡Agregado! ✓' : 'Agregar al carrito'}
+        </button>
+      </div>
     </div>
   );
 }

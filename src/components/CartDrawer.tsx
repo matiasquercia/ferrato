@@ -1,7 +1,8 @@
 import { useStore } from '@nanostores/react';
 import { useEffect, useState } from 'react';
-import { $cart, $cartOpen, $cartTotal, removeFromCart, setQuantity } from '@/lib/cart';
+import { lineKey, $cart, $cartOpen, $cartTotal, removeFromCart, setQuantity } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
+import { productImage } from '@/lib/images';
 
 export default function CartDrawer() {
   const open = useStore($cartOpen);
@@ -59,13 +60,13 @@ export default function CartDrawer() {
           <>
             <ul className="flex-1 divide-y divide-stone-100 overflow-y-auto p-5">
               {items.map((item) => (
-                <li key={item.id} className="flex gap-4 py-4">
+                <li key={lineKey(item)} className="flex gap-4 py-4">
                   <img
-                    src={item.image}
+                    src={productImage(item.image, 160)}
                     alt=""
                     width={72}
                     height={72}
-                    className="h-18 w-18 rounded-lg bg-brand-50 object-contain p-1"
+                    className="h-18 w-18 rounded-lg bg-brand-50 object-cover"
                   />
                   <div className="flex flex-1 flex-col gap-1">
                     <a
@@ -73,6 +74,9 @@ export default function CartDrawer() {
                       className="text-sm font-semibold leading-snug hover:text-brand-700"
                     >
                       {item.name}
+                      {item.variant && (
+                        <span className="block text-xs font-normal text-steel">{item.variant}</span>
+                      )}
                     </a>
                     <span className="text-sm text-steel">{formatPrice(item.price)}</span>
                     <div className="mt-1 flex items-center gap-3">
@@ -80,7 +84,7 @@ export default function CartDrawer() {
                         <button
                           type="button"
                           className="px-2"
-                          onClick={() => setQuantity(item.id, item.quantity - 1)}
+                          onClick={() => setQuantity(lineKey(item), item.quantity - 1)}
                           aria-label="Restar"
                         >
                           −
@@ -89,7 +93,7 @@ export default function CartDrawer() {
                         <button
                           type="button"
                           className="px-2"
-                          onClick={() => setQuantity(item.id, item.quantity + 1)}
+                          onClick={() => setQuantity(lineKey(item), item.quantity + 1)}
                           aria-label="Sumar"
                         >
                           +
@@ -98,7 +102,7 @@ export default function CartDrawer() {
                       <button
                         type="button"
                         className="text-xs text-red-600 hover:underline"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(lineKey(item))}
                       >
                         Quitar
                       </button>

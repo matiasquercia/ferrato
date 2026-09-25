@@ -10,7 +10,10 @@ export interface BuyerInfo {
 }
 
 export function buildWhatsAppOrderUrl(items: CartItem[], buyer?: BuyerInfo) {
-  const lines = items.map((i) => `• ${i.quantity} x ${i.name} — ${formatPrice(i.price * i.quantity)}`);
+  const lines = items.map(
+    (i) =>
+      `• ${i.quantity} x ${i.name}${i.variant ? ` (${i.variant})` : ''} — ${formatPrice(i.price * i.quantity)}`,
+  );
   const total = items.reduce((s, i) => s + i.price * i.quantity, 0);
   const text = [
     `¡Hola ${SITE.name}! Quiero hacer este pedido:`,

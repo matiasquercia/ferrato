@@ -3,13 +3,17 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import { categories, getFeaturedProducts, getProductsByCategory } from '@/lib/catalog';
 import { SITE } from '@/lib/site';
+import { productImage } from '@/lib/images';
+import { getProductBySlug } from '@/lib/catalog';
 
 const featured = getFeaturedProducts();
+const heroProduct = getProductBySlug('escalera-safari-5-peldanos') ?? featured[0];
+const categoryImage = (slug: string) => productImage(getProductsByCategory(slug)[0]?.images[0] ?? '', 320);
 const benefits = [
   { title: 'Envíos a todo el país', text: `Gratis desde $${SITE.freeShippingFrom.toLocaleString('es-AR')}` },
   { title: 'Pagá en cuotas', text: 'Con Mercado Pago, tarjeta o transferencia' },
   { title: 'Atención por WhatsApp', text: 'Te asesoramos antes y después de comprar' },
-  { title: 'Calidad garantizada', text: 'Productos probados para hogar y obra' },
+  { title: 'Fabricación nacional', text: 'Acero con anticorrosivo y pintura epoxi' },
 ];
 ---
 
@@ -18,7 +22,7 @@ const benefits = [
     <div class="container-page grid items-center gap-10 py-16 md:grid-cols-2 md:py-24">
       <div>
         <p class="mb-3 inline-block rounded-full bg-brand-500/15 px-3 py-1 text-sm font-semibold text-brand-300">
-          Tienda online de escaleras y ferretería
+          Distribuidor de productos Safari
         </p>
         <h1 class="font-display text-5xl leading-none font-bold uppercase sm:text-6xl lg:text-7xl">
           Llegá más alto
@@ -26,8 +30,8 @@ const benefits = [
           <span class="text-brand-500">con Ferrato</span>
         </h1>
         <p class="mt-5 max-w-lg text-lg text-stone-300">
-          Escaleras Safari, tenders, banquitos y todo lo que necesitás para la obra y el hogar. Comprá online
-          y recibilo en tu casa.
+          Escaleras Safari de caño de acero de 2 a 7 peldaños, banquetas plegables, tenders, tablas de
+          planchar y agarraderas. Fabricación nacional: comprá online y recibilo en tu casa.
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
           <a href="/categoria/escaleras" class="btn-primary">
@@ -38,13 +42,19 @@ const benefits = [
           </a>
         </div>
       </div>
-      <img
-        src="/images/productos/escaleras.svg"
-        alt="Escalera tipo safari"
-        width="480"
-        height="480"
-        class="mx-auto w-full max-w-md rounded-3xl"
-      />
+      <a
+        href={`/productos/${heroProduct.slug}`}
+        class="mx-auto block w-full max-w-md overflow-hidden rounded-3xl bg-white"
+      >
+        <img
+          src={productImage(heroProduct.images[0], 900)}
+          alt={heroProduct.name}
+          width="900"
+          height="900"
+          fetchpriority="high"
+          class="aspect-square w-full object-contain p-4"
+        />
+      </a>
     </div>
   </section>
 
@@ -70,11 +80,11 @@ const benefits = [
           class="group rounded-2xl border border-stone-200 bg-white p-4 text-center transition hover:border-brand-500 hover:shadow-md"
         >
           <img
-            src={`/images/productos/${c.slug}.svg`}
+            src={categoryImage(c.slug)}
             alt=""
             width="160"
             height="160"
-            class="mx-auto w-28 transition group-hover:scale-105"
+            class="mx-auto aspect-square w-32 rounded-xl object-cover transition group-hover:scale-105"
           />
           <span class="mt-3 block font-semibold">{c.name}</span>
           <span class="text-xs text-steel">{getProductsByCategory(c.slug).length} productos</span>

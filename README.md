@@ -27,13 +27,14 @@ cp .env.example .env     # completá las variables
 npm run dev              # http://localhost:4321
 ```
 
-| Script            | Qué hace                              |
-| ----------------- | ------------------------------------- |
-| `npm run dev`     | Servidor de desarrollo                |
-| `npm run build`   | Build de producción                   |
-| `npm run preview` | Sirve el build localmente             |
-| `npm run check`   | Chequeo de tipos (TypeScript + Astro) |
-| `npm run format`  | Formatea el código con Prettier       |
+| Script                    | Qué hace                                |
+| ------------------------- | --------------------------------------- |
+| `npm run dev`             | Servidor de desarrollo                  |
+| `npm run build`           | Build de producción                     |
+| `npm run preview`         | Sirve el build localmente               |
+| `npm run check`           | Chequeo de tipos (TypeScript + Astro)   |
+| `npm run format`          | Formatea el código con Prettier         |
+| `npm run images:download` | Descarga las fotos de productos al repo |
 
 ## Variables de entorno
 
@@ -70,34 +71,59 @@ src/
     └── robots.txt.ts
 ```
 
-## Cargar productos
+## Catálogo
 
-Editá `src/data/catalog.json`. Cada producto:
+El catálogo está en `src/data/catalog.json`: **19 productos Safari** en 5 categorías, extraídos de
+[safarimetalurgica.com](https://www.safarimetalurgica.com) (septiembre 2026). Los datos crudos del relevamiento están
+en `scripts/safari-raw.json`.
+
+| Categoría          | Productos                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| Escaleras Safari   | Fija 2 peldaños (2012) y tijera de 2 a 7 peldaños (2002–2007)                        |
+| Banquetas          | Plegable (2001) y plegable reforzada (2011)                                          |
+| Tenders            | De pie: Básico, Con alas, Con alas reforzado · Extensibles 45x7 (1051) y 60x7 (1052) |
+| Tablas de planchar | Básica (2501), Esencial (2502), Premier (2540), Silver (2550)                        |
+| Agarraderas        | Agarradera de seguridad                                                              |
+
+### Precios y stock
+
+Safari no publica precios (vende sólo por mayor), así que todos los productos tienen `"price": null`. Mientras un
+producto no tenga precio, la tienda muestra **"Precio a consultar"** y un botón de WhatsApp en lugar de "Agregar al
+carrito". Para habilitar la venta online, cargá el precio (ARS, entero):
 
 ```jsonc
 {
-  "id": "FER-0001", // único, no cambiar una vez publicado
-  "slug": "escalera-safari-aluminio-5-escalones", // URL: /productos/<slug>
-  "sku": "FER-ESC-001",
-  "name": "Escalera Safari de aluminio 5 escalones",
+  "id": "SAF-2005", // único, no cambiar una vez publicado (usa el código de artículo Safari)
+  "slug": "escalera-safari-5-peldanos", // URL: /productos/<slug>
+  "sku": "SAF-2005",
+  "name": "Escalera Safari 5 peldaños",
   "brand": "Safari",
-  "category": "escaleras", // slug de una categoría existente
-  "price": 89900, // ARS, entero
-  "compareAtPrice": 99900, // precio tachado (o null)
-  "stock": 12,
+  "category": "escaleras",
+  "price": 89900, // null = "Precio a consultar"
+  "compareAtPrice": null, // precio tachado (opcional)
+  "stock": null, // null = sin control de stock; un número limita la cantidad
   "featured": true, // aparece en la home
-  "images": ["/images/productos/escalera-5.webp"],
+  "colors": ["Blanco brillante", "Negro brillante"], // con 2+ colores el cliente elige al comprar
+  "images": ["https://static.wixstatic.com/media/…"],
   "shortDescription": "…",
   "description": "…",
-  "specs": { "Material": "Aluminio", "Escalones": "5" },
+  "specs": { "Peso": "8,8 kg", "Altura abierta": "1,60 m" },
 }
 ```
 
-Las imágenes van en `public/images/productos/` (recomendado: WebP cuadrado 800×800). Las que vienen son
-placeholders SVG.
+El servidor **siempre recalcula el total desde el catálogo** y valida el color elegido; nunca confía en lo que manda
+el navegador.
 
-> ⚠️ Los precios de ejemplo son ficticios. El servidor **siempre recalcula el total desde el catálogo**, nunca
-> confía en el precio enviado por el navegador.
+### Imágenes
+
+Las fotos apuntan al CDN de Wix de Safari y se sirven redimensionadas (`src/lib/images.ts`). Para no depender de su
+sitio, bajalas al repo una vez:
+
+```bash
+npm run images:download   # guarda en public/images/productos/ y actualiza catalog.json
+```
+
+> Las fotos y descripciones son de Safari Metalúrgica. Confirmá con ellos que las puedas usar como revendedor.
 
 ## Pagos
 
@@ -151,6 +177,7 @@ GitHub Actions corre `check` + `build` en cada push y PR (`.github/workflows/ci.
 
 ## Próximos pasos sugeridos
 
+- [ ] Cargar precios y stock reales en `catalog.json`
 - [ ] Guardar pedidos (DB o Google Sheets) y descontar stock desde el webhook
 - [ ] Email de confirmación al comprador
 - [ ] Cálculo de envío por código postal

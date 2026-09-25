@@ -1,0 +1,168 @@
+{
+  "source": "https://www.safarimetalurgica.com",
+  "scrapedAt": "2026-09-25",
+  "escaleras": [
+    {
+      "code": "2012",
+      "url": "https://www.safarimetalurgica.com/esc-fija",
+      "title": "Escalera fija 2 peldaños",
+      "text": "Construida con tubos de acero de 1'.\nCuenta con placas plásticas antideslizantes en los escalones\nColor: Blanco brillante, negro brillante.",
+      "imgs": [
+        "94a63e_f08c1527ee88475d93a29c65e6bdb51d~mv2.jpg",
+        "94a63e_c9cfb36cc30b40f6a492120ee288d68f~mv2.jpg",
+        "94a63e_10867156a99344a6b2d5ffbb1df39813~mv2.jpg",
+        "94a63e_30b03fd169744d99bf88cbd24a325534~mv2.jpg"
+      ]
+    },
+    {
+      "code": "2002",
+      "url": "https://www.safarimetalurgica.com/inventario",
+      "title": "Escalera de 2 peldaños",
+      "specs": {
+        "Peso": "4,4 kg",
+        "Altura abierta": "0,90 m",
+        "Altura cerrada": "0,99 m",
+        "Soporta": "110 kg",
+        "Elevación": "0,47 m",
+        "Ancho": "0,51 m",
+        "Profundidad abierta": "0,50 m",
+        "Profundidad cerrada": "7 cm"
+      },
+      "imgs": [
+        "94a63e_963e250b921d456685ed0be771665e22~mv2.jpg",
+        "94a63e_1b0a2118859a466cb4f8ac65d8ba9626~mv2.jpg",
+        "94a63e_c14c4b1ab8184881bd2f0e105aed2148~mv2.jpg",
+        "94a63e_2c215daae2bf4a0196d977ed8621eb6b~mv2.jpg"
+      ]
+    },
+    {
+      "code": "2003",
+      "url": "https://www.safarimetalurgica.com/copia-de-esc-2",
+      "title": "Escalera de 3 peldaños",
+      "specs": {
+        "Peso": "5,9 kg",
+        "Altura abierta": "1,13 m",
+        "Altura cerrada": "1,23 m",
+        "Soporta": "110 kg",
+        "Elevación": "0,71 m",
+        "Ancho": "0,51 m",
+        "Profundidad abierta": "0,66 m",
+        "Profundidad cerrada": "7 cm"
+      },
+      "imgs": [
+        "94a63e_1c5b767df59244f39dfc3d6d9278bd0c~mv2.jpg",
+        "94a63e_f2cbf4e077e347e0a8c47cf65b452d8d~mv2.jpg",
+        "94a63e_4031da627d7d424ebb9e47f6c822abd5~mv2.jpg"
+      ]
+    },
+    {
+      "code": "2004",
+      "url": "https://www.safarimetalurgica.com/copia-de-esc-2-1",
+      "title": "Escalera de 4 peldaños",
+      "specs": {
+        "Peso": "7,5 kg",
+        "Altura abierta": "1,39 m",
+        "Altura cerrada": "1,47 m",
+        "Soporta": "110 kg",
+        "Elevación": "0,94 m",
+        "Ancho": "0,51 m",
+        "Profundidad abierta": "0,81 m",
+        "Profundidad cerrada": "7 cm"
+      },
+      "imgs": [
+        "94a63e_11cd1e442eb74a539c05f3c4017c0863~mv2.jpg",
+        "94a63e_0ca4519a77674c719ce6341a9bb367fd~mv2.jpg",
+        "94a63e_271b1a0898e24d27a3a42df4fb05d8dd~mv2.jpg"
+      ]
+    },
+    {
+      "code": "2005",
+      "url": "https://www.safarimetalurgica.com/copia-de-esc-2-2",
+      "title": "Escalera de 5 peldaños",
+      "specs": {
+        "Peso": "8,8 kg",
+        "Altura abierta": "1,60 m",
+        "Altura cerrada": "1,70 m",
+        "Soporta": "110 kg",
+        "Elevación": "1,16 m",
+        "Ancho": "0,51 m",
+        "Profundidad abierta": "0,97 m",
+        "Profundidad cerrada": "7 cm"
+      },
+      "imgs": [
+        "94a63e_9d2a2afc471d41d5b297529d947e60b7~mv2.jpg",
+        "94a63e_50a12d32424843e4a541d0a4d7c6e61b~mv2.jpg",
+        "94a63e_7b183c7d5ffa4d42b826ff51cbb5b0fc~mv2.jpg"
+      ]
+    },
+    {
+      "code": "2006",
+      "url": "https://www.safarimetalurgica.com/copia-de-esc-2-3",
+      "title": "Escalera de 6 peldaños",
+      "specs": {
+        "Peso": "10 kg",
+        "Altura abierta": "1,84 m",
+        "Altura cerrada": "1,94 m",
+        "Soporta": "110 kg",
+        "Elevación": "1,38 m",
+        "Ancho": "0,51 m",
+        "Profundidad abierta": "1,05 m",
+        "Profundidad cerrada": "7 cm"
+      },
+      "imgs": [
+        "94a63e_1835dc4b335842378a2ac3a17759816e~mv2.jpg",
+        "94a63e_6ca9d0a820b5416fa818a15535d8b759~mv2.jpg",
+        "94a63e_2101f3f3da634eb5ab26c46e2c6941f7~mv2.jpg"
+      ]
+    },
+    {
+      "code": "2007",
+      "url": "https://www.safarimetalurgica.com/copia-de-esc-2-4",
+      "title": "Escalera de 7 peldaños",
+      "specs": {
+        "Peso": "11,3 kg",
+        "Altura abierta": "2,04 m",
+        "Altura cerrada": "2,18 m",
+        "Soporta": "110 kg",
+        "Elevación": "1,60 m",
+        "Ancho": "0,51 m",
+        "Profundidad abierta": "1,22 m",
+        "Profundidad cerrada": "7 cm"
+      },
+      "imgs": [
+        "94a63e_460d00f0a45d4ef1860f30acfb3153c0~mv2.jpg",
+        "94a63e_82a0fae68224425b9bea61150b8cdd11~mv2.jpg",
+        "94a63e_41964c97dd0e4d17a888cc6ee7ee0b07~mv2.jpg",
+        "94a63e_f837891c63634ab9be52af3760c53e62~mv2.jpg"
+      ]
+    }
+  ],
+  "escaleraConstruccion": "Construida con tubos de acero con grosor de pared de 0,9 mm, diámetro de 1 1/4\" (pata principal) y 1\" (pata trasera). Cuenta con un travesaño de refuerzo soldado hecho de tubo de 1 1/4\" y un revestimiento de chapa en la articulación. Los peldaños están constituidos de chapa de acero calibre 0,9 mm y cuentan con una placa de plástico antideslizante. Tratamiento anticorrosivo y pintura epoxi en colores blanco brillante y negro brillante.",
+  "banquetas": [
+    {
+      "code": "2001",
+      "url": "https://www.safarimetalurgica.com/banqueta-blanca",
+      "title": "Banqueta escalera plegable",
+      "text": "Construida con caño de acero de 1' para la estructura base y 1'1/4 para la pata plegable. Tratamiento anticorrosivo y pintura epoxi blanca brillante. Posee placas plásticas antideslizantes en los escalones",
+      "specs": {
+        "Peso": "4,7 kg",
+        "Medidas cerrada": "0,64 x 0,38 x 0,34 m",
+        "Medidas abierta": "0,64 x 0,38 x 0,60 m"
+      }
+    },
+    {
+      "code": "2011",
+      "url": "https://www.safarimetalurgica.com/copia-de-banqueta-blanca",
+      "title": "Banqueta escalera plegable reforzada",
+      "text": "Construida con caño de acero de 1' 1/4' para la estructura base y 1'1/4 para la pata plegable. Tratamiento anticorrosivo y pintura epoxi aluminio brillante. Posee placas plásticas antideslizantes en los escalones",
+      "specs": {
+        "Peso": "5,2 kg",
+        "Medidas cerrada": "0,64 x 0,38 x 0,34 m",
+        "Medidas abierta": "0,64 x 0,38 x 0,63 m"
+      }
+    }
+  ],
+  "tenders": "https://www.safarimetalurgica.com/tenders",
+  "tablas": "https://www.safarimetalurgica.com/single-project",
+  "agarraderas": "https://www.safarimetalurgica.com/agarraderas"
+}

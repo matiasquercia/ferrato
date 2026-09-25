@@ -1,7 +1,8 @@
 import { useStore } from '@nanostores/react';
 import { useEffect, useState, type SubmitEvent } from 'react';
-import { $cart, $cartTotal, removeFromCart, setQuantity } from '@/lib/cart';
+import { lineKey, $cart, $cartTotal, removeFromCart, setQuantity } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
+import { productImage } from '@/lib/images';
 import { buildWhatsAppOrderUrl } from '@/lib/whatsapp';
 
 interface Props {
@@ -41,7 +42,10 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: items.map((i) => ({ id: i.id, quantity: i.quantity })), buyer }),
+        body: JSON.stringify({
+          items: items.map((i) => ({ id: i.id, variant: i.variant, quantity: i.quantity })),
+          buyer,
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data.initPoint) throw new Error(data.error ?? 'No se pudo iniciar el pago.');
@@ -62,17 +66,20 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
       <section aria-label="Productos" className="h-fit rounded-2xl border border-stone-200 bg-white">
         <ul className="divide-y divide-stone-100">
           {items.map((item) => (
-            <li key={item.id} className="flex items-center gap-4 p-5">
+            <li key={lineKey(item)} className="flex items-center gap-4 p-5">
               <img
-                src={item.image}
+                src={productImage(item.image, 160)}
                 alt=""
                 width={80}
                 height={80}
-                className="h-20 w-20 rounded-xl bg-brand-50 object-contain p-1"
+                className="h-20 w-20 rounded-xl bg-brand-50 object-cover"
               />
               <div className="flex-1">
                 <a href={`/productos/${item.slug}`} className="font-semibold hover:text-brand-700">
                   {item.name}
+                  {item.variant && (
+                    <span className="block text-xs font-normal text-steel">{item.variant}</span>
+                  )}
                 </a>
                 <p className="text-sm text-steel">{formatPrice(item.price)} c/u</p>
                 <div className="mt-2 flex items-center gap-3">
@@ -80,7 +87,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
                     <button
                       type="button"
                       className="px-3"
-                      onClick={() => setQuantity(item.id, item.quantity - 1)}
+                      onClick={() => setQuantity(lineKey(item), item.quantity - 1)}
                       aria-label="Restar"
                     >
                       −
@@ -89,7 +96,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
                     <button
                       type="button"
                       className="px-3"
-                      onClick={() => setQuantity(item.id, item.quantity + 1)}
+                      onClick={() => setQuantity(lineKey(item), item.quantity + 1)}
                       aria-label="Sumar"
                     >
                       +
@@ -98,7 +105,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
                   <button
                     type="button"
                     className="text-sm text-red-600 hover:underline"
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(lineKey(item))}
                   >
                     Quitar
                   </button>

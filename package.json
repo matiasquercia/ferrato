@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "format": "prettier --write .",
-    "astro": "astro"
+    "astro": "astro",
+    "images:download": "node scripts/download-images.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^7.0.0",

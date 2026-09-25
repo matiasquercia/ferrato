@@ -1,24 +1,26 @@
 ---
-import type { Product } from '@/lib/catalog';
+import { maxQuantity, type Product } from '@/lib/catalog';
 import { formatPrice, discountPercent } from '@/lib/format';
+import { productImage } from '@/lib/images';
 import AddToCartButton from './AddToCartButton';
 
 interface Props {
   product: Product;
 }
 const { product } = Astro.props;
-const off = discountPercent(product.price, product.compareAtPrice);
+const off = product.price !== null ? discountPercent(product.price, product.compareAtPrice) : 0;
 ---
 
 <article class="group flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white transition hover:-translate-y-0.5 hover:shadow-lg">
-  <a href={`/productos/${product.slug}`} class="relative block aspect-square bg-brand-50">
+  <a href={`/productos/${product.slug}`} class="relative block aspect-square bg-white">
     <img
-      src={product.images[0]}
+      src={productImage(product.images[0], 500)}
       alt={product.name}
-      width="400"
-      height="400"
+      width="500"
+      height="500"
       loading="lazy"
-      class="h-full w-full object-contain p-4 transition group-hover:scale-105"
+      decoding="async"
+      class="h-full w-full object-contain p-3 transition group-hover:scale-105"
     />
     {off > 0 && (
       <span class="absolute top-3 left-3 rounded-full bg-red-600 px-2.5 py-1 text-xs font-bold text-white">
@@ -26,29 +28,37 @@ const off = discountPercent(product.price, product.compareAtPrice);
       </span>
     )}
   </a>
-  <div class="flex flex-1 flex-col gap-2 p-4">
+  <div class="flex flex-1 flex-col gap-2 border-t border-stone-100 p-4">
     <p class="text-xs font-semibold tracking-wide text-steel uppercase">{product.brand}</p>
-    <h3 class="font-semibold leading-snug">
+    <h3 class="leading-snug font-semibold">
       <a href={`/productos/${product.slug}`} class="hover:text-brand-700">
         {product.name}
       </a>
     </h3>
+    {product.colors.length > 1 && <p class="text-xs text-steel">{product.colors.length} colores</p>}
     <div class="mt-auto flex items-baseline gap-2 pt-2">
-      <span class="text-xl font-bold">{formatPrice(product.price)}</span>
-      {off > 0 && (
-        <span class="text-sm text-stone-400 line-through">{formatPrice(product.compareAtPrice!)}</span>
+      {product.price !== null ? (
+        <>
+          <span class="text-xl font-bold">{formatPrice(product.price)}</span>
+          {off > 0 && (
+            <span class="text-sm text-stone-400 line-through">{formatPrice(product.compareAtPrice!)}</span>
+          )}
+        </>
+      ) : (
+        <span class="text-base font-semibold text-steel">Precio a consultar</span>
       )}
     </div>
     <AddToCartButton
       client:visible
       compact
-      item={{
+      product={{
         id: product.id,
         slug: product.slug,
         name: product.name,
         price: product.price,
         image: product.images[0],
-        maxStock: product.stock,
+        maxStock: maxQuantity(product),
+        colors: product.colors,
       }}
     />
   </div>

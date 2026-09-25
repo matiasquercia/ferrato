@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { getProductById } from '@/lib/catalog';
+import { getProductById, maxQuantity } from '@/lib/catalog';
+import { productImage } from '@/lib/images';
 import { getMercadoPagoClient, preferenceApi } from '@/lib/mercadopago.server';
 import { SITE } from '@/lib/site';
 
@@ -7,7 +8,7 @@ import { SITE } from '@/lib/site';
 export const prerender = false;
 
 interface CheckoutBody {
-  items: { id: string; quantity: number }[];
+  items: { id: string; variant?: string; quantity: number }[];
   buyer: { name: string; email: string; phone?: string; address?: string; notes?: string };
 }
 
@@ -38,15 +39,22 @@ export const POST: APIRoute = async ({ request, url }) => {
     const product = getProductById(line.id);
     const quantity = Math.floor(Number(line.quantity));
     if (!product) return json({ error: `Producto inexistente: ${line.id}` }, 400);
+    if (product.price === null) {
+      return json({ error: `"${product.name}" no tiene precio publicado. Consultalo por WhatsApp.` }, 400);
+    }
     if (!Number.isFinite(quantity) || quantity < 1) return json({ error: 'Cantidad inválida.' }, 400);
-    if (quantity > product.stock) {
+    if (quantity > maxQuantity(product)) {
       return json({ error: `No hay stock suficiente de "${product.name}".` }, 409);
     }
+    if (product.colors.length > 1 && !product.colors.includes(line.variant ?? '')) {
+      return json({ error: `Elegí un color válido para "${product.name}".` }, 400);
+    }
+    const variant = product.colors.length > 1 ? line.variant : undefined;
     items.push({
-      id: product.id,
-      title: product.name,
+      id: variant ? `${product.id}::${variant}` : product.id,
+      title: variant ? `${product.name} - ${variant}` : product.name,
       description: product.shortDescription,
-      picture_url: new URL(product.images[0], SITE.url).href,
+      picture_url: new URL(productImage(product.images[0], 600), SITE.url).href,
       category_id: product.category,
       quantity,
       currency_id: 'ARS',
