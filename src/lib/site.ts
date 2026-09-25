@@ -1,8 +1,8 @@
 export const SITE = {
   name: 'Ferrato',
-  tagline: 'Escaleras Safari, banquetas, tenders y más',
+  tagline: 'Escaleras, hogar y ferretería',
   description:
-    'Comprá online escaleras tipo Safari de 2 a 7 peldaños, banquetas plegables, tenders, tablas de planchar y agarraderas. Envíos a todo el país y pago con Mercado Pago.',
+    'Comprá online escaleras, banquetas, tenders, tablas de planchar, agarraderas y ferretería. Envíos a todo el país y pago con Mercado Pago.',
   url: import.meta.env.PUBLIC_SITE_URL ?? 'https://www.ferrato.com.ar',
   locale: 'es_AR',
   whatsapp: import.meta.env.PUBLIC_WHATSAPP_NUMBER ?? '',
