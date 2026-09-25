@@ -64,8 +64,11 @@ const benefits = [
     <ul class="container-page grid gap-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
       {benefits.map((b) => (
         <li class="flex flex-col">
-          <span class="font-display text-xl font-bold tracking-wide uppercase">{b.title}</span>
-          <span class="text-sm text-steel">{b.text}</span>
+          <h3 class="font-display text-2xl leading-none font-bold uppercase">
+            {b.title}
+            <span class="mt-2 block h-1 w-10 rounded-full bg-brand-500"></span>
+          </h3>
+          <p class="mt-2 text-sm text-steel">{b.text}</p>
         </li>
       ))}
     </ul>
