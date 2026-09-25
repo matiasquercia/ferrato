@@ -1,0 +1,36 @@
+---
+import { SITE } from '@/lib/site';
+interface Props {
+  items: { name: string; href: string }[];
+}
+const { items } = Astro.props;
+const all = [{ name: 'Inicio', href: '/' }, ...items];
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: all.map((it, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: it.name,
+    item: new URL(it.href, SITE.url).href,
+  })),
+};
+---
+
+<nav aria-label="Migas de pan" class="text-sm text-steel">
+  <ol class="flex flex-wrap items-center gap-1">
+    {all.map((it, i) => (
+      <li class="flex items-center gap-1">
+        {i > 0 && <span aria-hidden="true">/</span>}
+        {i === all.length - 1 ? (
+          <span class="text-ink">{it.name}</span>
+        ) : (
+          <a href={it.href} class="hover:text-brand-700">
+            {it.name}
+          </a>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(ld)} />

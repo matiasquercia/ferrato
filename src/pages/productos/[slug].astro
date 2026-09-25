@@ -1,0 +1,141 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import ProductGrid from '@/components/ProductGrid.astro';
+import AddToCartButton from '@/components/AddToCartButton';
+import { getCategory, getRelatedProducts, products, type Product } from '@/lib/catalog';
+import { discountPercent, formatPrice } from '@/lib/format';
+import { SITE } from '@/lib/site';
+import { whatsappContactUrl } from '@/lib/whatsapp';
+
+export const getStaticPaths = (() =>
+  products.map((product) => ({
+    params: { slug: product.slug },
+    props: { product },
+  }))) satisfies GetStaticPaths;
+
+const { product } = Astro.props as { product: Product };
+const category = getCategory(product.category)!;
+const related = getRelatedProducts(product);
+const off = discountPercent(product.price, product.compareAtPrice);
+const url = new URL(`/productos/${product.slug}`, SITE.url).href;
+
+// Datos estructurados: habilitan rich results (precio, stock) en Google.
+const productLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  description: product.description,
+  sku: product.sku,
+  image: product.images.map((i) => new URL(i, SITE.url).href),
+  brand: { '@type': 'Brand', name: product.brand },
+  category: category.name,
+  offers: {
+    '@type': 'Offer',
+    url,
+    priceCurrency: 'ARS',
+    price: product.price,
+    availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    itemCondition: 'https://schema.org/NewCondition',
+    seller: { '@type': 'Organization', name: SITE.name },
+  },
+};
+---
+
+<BaseLayout
+  title={product.name}
+  description={`${product.shortDescription} ${formatPrice(product.price)}. Envíos a todo el país.`}
+  image={product.images[0]}
+  jsonLd={productLd}
+  ogType="product"
+>
+  <div class="container-page py-10">
+    <Breadcrumbs
+      items={[
+        { name: category.name, href: `/categoria/${category.slug}` },
+        { name: product.name, href: `/productos/${product.slug}` },
+      ]}
+    />
+
+    <div class="mt-6 grid gap-10 md:grid-cols-2">
+      <div class="relative aspect-square overflow-hidden rounded-3xl border border-stone-200 bg-brand-50">
+        <img
+          src={product.images[0]}
+          alt={product.name}
+          width="600"
+          height="600"
+          class="h-full w-full object-contain p-8"
+        />
+        {off > 0 && (
+          <span class="absolute top-4 left-4 rounded-full bg-red-600 px-3 py-1 text-sm font-bold text-white">
+            -{off}%
+          </span>
+        )}
+      </div>
+
+      <div>
+        <p class="text-sm font-semibold tracking-wide text-steel uppercase">
+          {product.brand} · SKU {product.sku}
+        </p>
+        <h1 class="mt-2 font-display text-4xl leading-tight font-bold uppercase sm:text-5xl">
+          {product.name}
+        </h1>
+        <div class="mt-4 flex items-baseline gap-3">
+          <span class="text-4xl font-bold">{formatPrice(product.price)}</span>
+          {off > 0 && (
+            <span class="text-lg text-stone-400 line-through">{formatPrice(product.compareAtPrice!)}</span>
+          )}
+        </div>
+        <p class="mt-1 text-sm text-steel">Hasta 6 cuotas con Mercado Pago</p>
+        <p class="mt-5 text-lg">{product.shortDescription}</p>
+        <p class:list={['mt-4 text-sm font-semibold', product.stock > 0 ? 'text-green-700' : 'text-red-600']}>
+          {product.stock > 0 ? `✓ En stock (${product.stock} disponibles)` : 'Sin stock'}
+        </p>
+
+        <AddToCartButton
+          client:load
+          withQuantity
+          item={{
+            id: product.id,
+            slug: product.slug,
+            name: product.name,
+            price: product.price,
+            image: product.images[0],
+            maxStock: product.stock,
+          }}
+        />
+        <a
+          href={whatsappContactUrl(`¡Hola! Quiero consultar por: ${product.name} (${url})`)}
+          target="_blank"
+          rel="noopener"
+          class="btn mt-3 w-full border border-stone-300 bg-white hover:bg-stone-50"
+        >
+          Consultar por WhatsApp
+        </a>
+
+        <h2 class="mt-10 text-lg font-bold">Descripción</h2>
+        <p class="mt-2 text-steel">{product.description}</p>
+
+        <h2 class="mt-8 text-lg font-bold">Especificaciones</h2>
+        <dl class="mt-3 divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white">
+          {Object.entries(product.specs).map(([k, v]) => (
+            <div class="flex justify-between gap-4 px-4 py-2.5 text-sm">
+              <dt class="text-steel">{k}</dt>
+              <dd class="font-semibold">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+
+    {related.length > 0 && (
+      <section class="mt-16">
+        <h2 class="font-display text-3xl font-bold uppercase">También te puede interesar</h2>
+        <div class="mt-6">
+          <ProductGrid products={related} />
+        </div>
+      </section>
+    )}
+  </div>
+</BaseLayout>

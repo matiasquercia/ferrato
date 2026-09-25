@@ -1,0 +1,101 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import { categories, getFeaturedProducts, getProductsByCategory } from '@/lib/catalog';
+import { SITE } from '@/lib/site';
+
+const featured = getFeaturedProducts();
+const benefits = [
+  { title: 'Envíos a todo el país', text: `Gratis desde $${SITE.freeShippingFrom.toLocaleString('es-AR')}` },
+  { title: 'Pagá en cuotas', text: 'Con Mercado Pago, tarjeta o transferencia' },
+  { title: 'Atención por WhatsApp', text: 'Te asesoramos antes y después de comprar' },
+  { title: 'Calidad garantizada', text: 'Productos probados para hogar y obra' },
+];
+---
+
+<BaseLayout>
+  <section class="relative overflow-hidden bg-ink text-white">
+    <div class="container-page grid items-center gap-10 py-16 md:grid-cols-2 md:py-24">
+      <div>
+        <p class="mb-3 inline-block rounded-full bg-brand-500/15 px-3 py-1 text-sm font-semibold text-brand-300">
+          Tienda online de escaleras y ferretería
+        </p>
+        <h1 class="font-display text-5xl leading-none font-bold uppercase sm:text-6xl lg:text-7xl">
+          Llegá más alto
+          <br />
+          <span class="text-brand-500">con Ferrato</span>
+        </h1>
+        <p class="mt-5 max-w-lg text-lg text-stone-300">
+          Escaleras Safari, tenders, banquitos y todo lo que necesitás para la obra y el hogar. Comprá online
+          y recibilo en tu casa.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="/categoria/escaleras" class="btn-primary">
+            Ver escaleras Safari
+          </a>
+          <a href="/productos" class="btn border border-stone-600 text-white hover:bg-stone-800">
+            Todo el catálogo
+          </a>
+        </div>
+      </div>
+      <img
+        src="/images/productos/escaleras.svg"
+        alt="Escalera tipo safari"
+        width="480"
+        height="480"
+        class="mx-auto w-full max-w-md rounded-3xl"
+      />
+    </div>
+  </section>
+
+  <section class="border-b border-stone-200 bg-white">
+    <ul class="container-page grid gap-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
+      {benefits.map((b) => (
+        <li class="flex flex-col">
+          <span class="font-semibold">{b.title}</span>
+          <span class="text-sm text-steel">{b.text}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="container-page py-14" aria-labelledby="cat-title">
+    <h2 id="cat-title" class="font-display text-4xl font-bold uppercase">
+      Categorías
+    </h2>
+    <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-5">
+      {categories.map((c) => (
+        <a
+          href={`/categoria/${c.slug}`}
+          class="group rounded-2xl border border-stone-200 bg-white p-4 text-center transition hover:border-brand-500 hover:shadow-md"
+        >
+          <img
+            src={`/images/productos/${c.slug}.svg`}
+            alt=""
+            width="160"
+            height="160"
+            class="mx-auto w-28 transition group-hover:scale-105"
+          />
+          <span class="mt-3 block font-semibold">{c.name}</span>
+          <span class="text-xs text-steel">{getProductsByCategory(c.slug).length} productos</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="container-page pb-6" aria-labelledby="feat-title">
+    <div class="flex items-end justify-between">
+      <h2 id="feat-title" class="font-display text-4xl font-bold uppercase">
+        Destacados
+      </h2>
+      <a href="/productos" class="text-sm font-semibold text-brand-700 hover:underline">
+        Ver todos →
+      </a>
+    </div>
+    <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      {featured.map((p) => (
+        <ProductCard product={p} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

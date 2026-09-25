@@ -1,0 +1,362 @@
+{
+  "categories": [
+    {
+      "slug": "escaleras",
+      "name": "Escaleras Safari",
+      "description": "Escaleras tipo safari de aluminio y hierro, tijera y extensibles, para hogar, obra y uso profesional.",
+      "icon": "ladder"
+    },
+    {
+      "slug": "tenders",
+      "name": "Tenders",
+      "description": "Tenders plegables para secar ropa: de pie, de pared y de balcón, resistentes y compactos.",
+      "icon": "tender"
+    },
+    {
+      "slug": "banquitos",
+      "name": "Banquitos",
+      "description": "Banquitos y taburetes escalera de 1, 2 y 3 peldaños, livianos y con base antideslizante.",
+      "icon": "stool"
+    },
+    {
+      "slug": "herramientas",
+      "name": "Herramientas",
+      "description": "Herramientas manuales para construcción y mantenimiento: martillos, niveles, cintas métricas y más.",
+      "icon": "tool"
+    },
+    {
+      "slug": "ferreteria",
+      "name": "Ferretería",
+      "description": "Tornillería, fijaciones, cintas, adhesivos y accesorios de ferretería para cada trabajo.",
+      "icon": "bolt"
+    }
+  ],
+  "products": [
+    {
+      "id": "FER-0001",
+      "slug": "escalera-safari-aluminio-5-escalones",
+      "sku": "FER-ESC-001",
+      "name": "Escalera Safari de aluminio 5 escalones",
+      "brand": "Safari",
+      "category": "escaleras",
+      "price": 89900,
+      "compareAtPrice": 99900,
+      "stock": 12,
+      "featured": true,
+      "images": ["/images/productos/escaleras.svg"],
+      "shortDescription": "Tijera liviana de aluminio con bandeja porta-herramientas.",
+      "description": "Escalera tipo safari de aluminio reforzado, ideal para hogar y trabajos de mantenimiento. Peldaños antideslizantes, bandeja superior y trabas de seguridad.",
+      "specs": {
+        "Material": "Aluminio",
+        "Escalones": "5",
+        "Altura abierta": "1,20 m",
+        "Carga máxima": "120 kg",
+        "Peso": "4,2 kg"
+      }
+    },
+    {
+      "id": "FER-0002",
+      "slug": "escalera-safari-aluminio-7-escalones",
+      "sku": "FER-ESC-002",
+      "name": "Escalera Safari de aluminio 7 escalones",
+      "brand": "Safari",
+      "category": "escaleras",
+      "price": 124900,
+      "compareAtPrice": null,
+      "stock": 8,
+      "featured": true,
+      "images": ["/images/productos/escaleras.svg"],
+      "shortDescription": "Mayor altura para techos y estanterías altas.",
+      "description": "Escalera safari de aluminio de 7 escalones con zapatas de goma, refuerzos laterales y traba de apertura.",
+      "specs": {
+        "Material": "Aluminio",
+        "Escalones": "7",
+        "Altura abierta": "1,65 m",
+        "Carga máxima": "120 kg",
+        "Peso": "5,8 kg"
+      }
+    },
+    {
+      "id": "FER-0003",
+      "slug": "escalera-safari-hierro-6-escalones",
+      "sku": "FER-ESC-003",
+      "name": "Escalera Safari de hierro 6 escalones",
+      "brand": "Safari",
+      "category": "escaleras",
+      "price": 97500,
+      "compareAtPrice": null,
+      "stock": 6,
+      "featured": false,
+      "images": ["/images/productos/escaleras.svg"],
+      "shortDescription": "Robusta, pintada al horno, para uso intensivo en obra.",
+      "description": "Escalera tipo safari de caño de hierro con pintura epoxi, peldaños anchos y base estable. Pensada para obra y uso profesional.",
+      "specs": {
+        "Material": "Hierro pintado",
+        "Escalones": "6",
+        "Altura abierta": "1,45 m",
+        "Carga máxima": "150 kg",
+        "Peso": "9,5 kg"
+      }
+    },
+    {
+      "id": "FER-0004",
+      "slug": "escalera-extensible-aluminio-2x8",
+      "sku": "FER-ESC-004",
+      "name": "Escalera extensible de aluminio 2x8",
+      "brand": "Safari",
+      "category": "escaleras",
+      "price": 189900,
+      "compareAtPrice": null,
+      "stock": 4,
+      "featured": false,
+      "images": ["/images/productos/escaleras.svg"],
+      "shortDescription": "Dos tramos de 8 escalones, llega a más de 4 metros.",
+      "description": "Escalera extensible de aluminio de dos tramos con guías y trabas automáticas. Ideal para fachadas, canaletas y techos.",
+      "specs": {
+        "Material": "Aluminio",
+        "Tramos": "2 x 8 escalones",
+        "Altura máxima": "4,10 m",
+        "Carga máxima": "120 kg"
+      }
+    },
+    {
+      "id": "FER-0005",
+      "slug": "tender-de-pie-plegable-18-varillas",
+      "sku": "FER-TEN-005",
+      "name": "Tender de pie plegable 18 varillas",
+      "brand": "Safari",
+      "category": "tenders",
+      "price": 32900,
+      "compareAtPrice": null,
+      "stock": 25,
+      "featured": true,
+      "images": ["/images/productos/tenders.svg"],
+      "shortDescription": "Alas rebatibles, se pliega en segundos.",
+      "description": "Tender de pie plegable con 18 varillas y alas laterales rebatibles. Estructura de acero con recubrimiento anticorrosivo.",
+      "specs": {
+        "Material": "Acero con recubrimiento",
+        "Varillas": "18",
+        "Metros de tendido": "18 m",
+        "Medidas abierto": "1,80 x 0,55 m"
+      }
+    },
+    {
+      "id": "FER-0006",
+      "slug": "tender-de-pared-extensible",
+      "sku": "FER-TEN-006",
+      "name": "Tender de pared extensible",
+      "brand": "Safari",
+      "category": "tenders",
+      "price": 24500,
+      "compareAtPrice": null,
+      "stock": 18,
+      "featured": false,
+      "images": ["/images/productos/tenders.svg"],
+      "shortDescription": "Se amura a la pared y se retrae cuando no se usa.",
+      "description": "Tender de pared tipo acordeón, extensible y rebatible. Ideal para lavaderos y balcones con poco espacio.",
+      "specs": {
+        "Material": "Aluminio",
+        "Varillas": "6",
+        "Extensión": "60 cm",
+        "Ancho": "80 cm"
+      }
+    },
+    {
+      "id": "FER-0007",
+      "slug": "tender-de-balcon-regulable",
+      "sku": "FER-TEN-007",
+      "name": "Tender de balcón regulable",
+      "brand": "Safari",
+      "category": "tenders",
+      "price": 28900,
+      "compareAtPrice": null,
+      "stock": 10,
+      "featured": false,
+      "images": ["/images/productos/tenders.svg"],
+      "shortDescription": "Se cuelga de la baranda, altura regulable.",
+      "description": "Tender para baranda de balcón con ganchos regulables y varillas de aluminio. No requiere perforar.",
+      "specs": {
+        "Material": "Aluminio",
+        "Varillas": "5",
+        "Ancho": "1,00 m"
+      }
+    },
+    {
+      "id": "FER-0008",
+      "slug": "banquito-escalera-2-escalones",
+      "sku": "FER-BAN-008",
+      "name": "Banquito escalera 2 escalones",
+      "brand": "Safari",
+      "category": "banquitos",
+      "price": 29900,
+      "compareAtPrice": 34900,
+      "stock": 30,
+      "featured": true,
+      "images": ["/images/productos/banquitos.svg"],
+      "shortDescription": "Plegable, liviano y con base antideslizante.",
+      "description": "Banquito tipo escalera de 2 peldaños, perfecto para cocina y alacenas. Se pliega y guarda en cualquier lado.",
+      "specs": {
+        "Material": "Acero y plástico",
+        "Escalones": "2",
+        "Altura": "47 cm",
+        "Carga máxima": "100 kg"
+      }
+    },
+    {
+      "id": "FER-0009",
+      "slug": "banquito-escalera-3-escalones",
+      "sku": "FER-BAN-009",
+      "name": "Banquito escalera 3 escalones",
+      "brand": "Safari",
+      "category": "banquitos",
+      "price": 39900,
+      "compareAtPrice": null,
+      "stock": 20,
+      "featured": false,
+      "images": ["/images/productos/banquitos.svg"],
+      "shortDescription": "Tres peldaños anchos y agarradera superior.",
+      "description": "Banquito escalera de 3 peldaños con agarradera de seguridad y peldaños con superficie antideslizante.",
+      "specs": {
+        "Material": "Acero",
+        "Escalones": "3",
+        "Altura": "70 cm",
+        "Carga máxima": "120 kg"
+      }
+    },
+    {
+      "id": "FER-0010",
+      "slug": "taburete-plastico-reforzado",
+      "sku": "FER-BAN-010",
+      "name": "Taburete plástico reforzado",
+      "brand": "Ferrato",
+      "category": "banquitos",
+      "price": 12900,
+      "compareAtPrice": null,
+      "stock": 40,
+      "featured": false,
+      "images": ["/images/productos/banquitos.svg"],
+      "shortDescription": "Compacto, apilable, soporta hasta 100 kg.",
+      "description": "Taburete de plástico reforzado de un peldaño, ideal para chicos en el baño o para alcanzar estantes.",
+      "specs": {
+        "Material": "Polipropileno",
+        "Altura": "25 cm",
+        "Carga máxima": "100 kg"
+      }
+    },
+    {
+      "id": "FER-0011",
+      "slug": "martillo-carpintero-27mm",
+      "sku": "FER-HER-011",
+      "name": "Martillo carpintero 27 mm",
+      "brand": "Ferrato",
+      "category": "herramientas",
+      "price": 15900,
+      "compareAtPrice": null,
+      "stock": 35,
+      "featured": false,
+      "images": ["/images/productos/herramientas.svg"],
+      "shortDescription": "Mango de fibra de vidrio antivibración.",
+      "description": "Martillo de carpintero con cabeza forjada y mango de fibra de vidrio con grip de goma.",
+      "specs": {
+        "Peso cabeza": "450 g",
+        "Mango": "Fibra de vidrio"
+      }
+    },
+    {
+      "id": "FER-0012",
+      "slug": "nivel-de-aluminio-60cm",
+      "sku": "FER-HER-012",
+      "name": "Nivel de aluminio 60 cm",
+      "brand": "Ferrato",
+      "category": "herramientas",
+      "price": 18900,
+      "compareAtPrice": null,
+      "stock": 22,
+      "featured": true,
+      "images": ["/images/productos/herramientas.svg"],
+      "shortDescription": "Tres burbujas, perfil reforzado.",
+      "description": "Nivel de aluminio con 3 burbujas (horizontal, vertical y 45°) y perfil reforzado para obra.",
+      "specs": {
+        "Largo": "60 cm",
+        "Burbujas": "3",
+        "Material": "Aluminio"
+      }
+    },
+    {
+      "id": "FER-0013",
+      "slug": "cinta-metrica-5m",
+      "sku": "FER-HER-013",
+      "name": "Cinta métrica 5 m",
+      "brand": "Ferrato",
+      "category": "herramientas",
+      "price": 8900,
+      "compareAtPrice": null,
+      "stock": 50,
+      "featured": false,
+      "images": ["/images/productos/herramientas.svg"],
+      "shortDescription": "Traba automática y carcasa engomada.",
+      "description": "Cinta métrica de 5 metros con traba, gancho magnético y carcasa antigolpes.",
+      "specs": {
+        "Largo": "5 m",
+        "Ancho de cinta": "19 mm"
+      }
+    },
+    {
+      "id": "FER-0014",
+      "slug": "kit-tarugos-tornillos-200",
+      "sku": "FER-FER-014",
+      "name": "Kit tarugos y tornillos x200",
+      "brand": "Ferrato",
+      "category": "ferreteria",
+      "price": 9900,
+      "compareAtPrice": null,
+      "stock": 60,
+      "featured": false,
+      "images": ["/images/productos/ferreteria.svg"],
+      "shortDescription": "Tarugos 6, 8 y 10 mm con sus tornillos.",
+      "description": "Kit surtido de 200 piezas con tarugos de nylon y tornillos para mampostería, en caja organizadora.",
+      "specs": {
+        "Piezas": "200",
+        "Medidas": "6, 8 y 10 mm"
+      }
+    },
+    {
+      "id": "FER-0015",
+      "slug": "cinta-de-embalar-reforzada",
+      "sku": "FER-FER-015",
+      "name": "Cinta de embalar reforzada 48mm x 100m",
+      "brand": "Ferrato",
+      "category": "ferreteria",
+      "price": 4900,
+      "compareAtPrice": null,
+      "stock": 80,
+      "featured": false,
+      "images": ["/images/productos/ferreteria.svg"],
+      "shortDescription": "Alta adherencia, ideal para mudanzas.",
+      "description": "Cinta de embalar transparente de alta adherencia para cajas y mudanzas.",
+      "specs": {
+        "Ancho": "48 mm",
+        "Largo": "100 m"
+      }
+    },
+    {
+      "id": "FER-0016",
+      "slug": "adhesivo-de-montaje-370g",
+      "sku": "FER-FER-016",
+      "name": "Adhesivo de montaje 370 g",
+      "brand": "Ferrato",
+      "category": "ferreteria",
+      "price": 11900,
+      "compareAtPrice": null,
+      "stock": 28,
+      "featured": false,
+      "images": ["/images/productos/ferreteria.svg"],
+      "shortDescription": "Pega sin clavos: madera, metal, cerámica.",
+      "description": "Adhesivo de montaje de alta resistencia para fijar sin perforar. Uso interior y exterior.",
+      "specs": {
+        "Contenido": "370 g",
+        "Uso": "Interior / exterior"
+      }
+    }
+  ]
+}

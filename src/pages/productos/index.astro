@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProductGrid from '@/components/ProductGrid.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { categories, products } from '@/lib/catalog';
+---
+
+<BaseLayout
+  title="Todos los productos"
+  description="Catálogo completo de Ferrato: escaleras Safari, tenders, banquitos, herramientas y ferretería. Comprá online con envío a todo el país."
+>
+  <div class="container-page py-10">
+    <Breadcrumbs items={[{ name: 'Productos', href: '/productos' }]} />
+    <h1 class="mt-4 font-display text-5xl font-bold uppercase">Todos los productos</h1>
+    <div class="mt-6 flex flex-wrap gap-2">
+      {categories.map((c) => (
+        <a
+          href={`/categoria/${c.slug}`}
+          class="rounded-full border border-stone-300 bg-white px-4 py-1.5 text-sm hover:border-brand-500"
+        >
+          {c.name}
+        </a>
+      ))}
+    </div>
+    <div class="mt-8">
+      <ProductGrid products={products} />
+    </div>
+  </div>
+</BaseLayout>

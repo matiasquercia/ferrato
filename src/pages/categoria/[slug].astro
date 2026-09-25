@@ -1,0 +1,40 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProductGrid from '@/components/ProductGrid.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { categories, getProductsByCategory, type Category } from '@/lib/catalog';
+import { SITE } from '@/lib/site';
+
+export const getStaticPaths = (() =>
+  categories.map((category) => ({
+    params: { slug: category.slug },
+    props: { category },
+  }))) satisfies GetStaticPaths;
+
+const { category } = Astro.props as { category: Category };
+const items = getProductsByCategory(category.slug);
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: category.name,
+  description: category.description,
+  url: new URL(`/categoria/${category.slug}`, SITE.url).href,
+};
+---
+
+<BaseLayout title={`${category.name} — comprá online`} description={category.description} jsonLd={ld}>
+  <div class="container-page py-10">
+    <Breadcrumbs
+      items={[
+        { name: 'Productos', href: '/productos' },
+        { name: category.name, href: `/categoria/${category.slug}` },
+      ]}
+    />
+    <h1 class="mt-4 font-display text-5xl font-bold uppercase">{category.name}</h1>
+    <p class="mt-2 max-w-2xl text-steel">{category.description}</p>
+    <div class="mt-8">
+      <ProductGrid products={items} />
+    </div>
+  </div>
+</BaseLayout>

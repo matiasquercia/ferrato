@@ -1,0 +1,50 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { whatsappContactUrl } from '@/lib/whatsapp';
+interface Props {
+  title: string;
+  message: string;
+  tone: 'success' | 'pending' | 'error';
+  clearCart?: boolean;
+}
+const { title, message, tone, clearCart = false } = Astro.props;
+const icon = { success: '✓', pending: '⏳', error: '!' }[tone];
+const color = {
+  success: 'bg-green-100 text-green-700',
+  pending: 'bg-amber-100 text-amber-700',
+  error: 'bg-red-100 text-red-700',
+}[tone];
+---
+
+<BaseLayout title={title} noindex>
+  <div class="container-page max-w-xl py-20 text-center">
+    <div class:list={['mx-auto grid h-16 w-16 place-items-center rounded-full text-3xl font-bold', color]}>
+      {icon}
+    </div>
+    <h1 class="mt-6 font-display text-4xl font-bold uppercase">{title}</h1>
+    <p class="mt-3 text-steel">{message}</p>
+    <p id="order-ref" class="mt-2 text-sm text-steel"></p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a href="/productos" class="btn-dark">
+        Seguir comprando
+      </a>
+      <a
+        href={whatsappContactUrl('¡Hola! Tengo una consulta sobre mi pedido.')}
+        target="_blank"
+        rel="noopener"
+        class="btn-whatsapp"
+      >
+        Escribinos
+      </a>
+    </div>
+  </div>
+  <script define:vars={{ clearCart }}>
+    const ref = new URLSearchParams(location.search).get('external_reference');
+    if (ref) document.getElementById('order-ref').textContent = `Número de pedido: ${ref}`;
+    if (clearCart) {
+      try {
+        localStorage.removeItem('ferrato:cart');
+      } catch {}
+    }
+  </script>
+</BaseLayout>

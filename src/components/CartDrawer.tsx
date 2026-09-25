@@ -1,0 +1,125 @@
+import { useStore } from '@nanostores/react';
+import { useEffect, useState } from 'react';
+import { $cart, $cartOpen, $cartTotal, removeFromCart, setQuantity } from '@/lib/cart';
+import { formatPrice } from '@/lib/format';
+
+export default function CartDrawer() {
+  const open = useStore($cartOpen);
+  const items = useStore($cart);
+  const total = useStore($cartTotal);
+  // El carrito vive en localStorage: renderizamos recién en el cliente para evitar errores de hidratación.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && $cartOpen.set(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+  }, [open]);
+
+  if (!mounted) return null;
+
+  return (
+    <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
+      <div
+        className={`absolute inset-0 bg-black/40 transition-opacity ${open ? 'opacity-100' : 'opacity-0'}`}
+        onClick={() => $cartOpen.set(false)}
+      />
+      <aside
+        role="dialog"
+        aria-label="Carrito de compras"
+        className={`absolute top-0 right-0 flex h-full w-full max-w-md flex-col bg-white shadow-2xl transition-transform ${
+          open ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-stone-200 p-5">
+          <h2 className="font-display text-2xl font-bold uppercase">Tu carrito</h2>
+          <button
+            type="button"
+            onClick={() => $cartOpen.set(false)}
+            className="rounded-lg p-2 hover:bg-stone-100"
+            aria-label="Cerrar carrito"
+          >
+            ✕
+          </button>
+        </div>
+
+        {items.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center text-steel">
+            <p>Tu carrito está vacío.</p>
+            <a href="/productos" className="btn-dark" onClick={() => $cartOpen.set(false)}>
+              Ver productos
+            </a>
+          </div>
+        ) : (
+          <>
+            <ul className="flex-1 divide-y divide-stone-100 overflow-y-auto p-5">
+              {items.map((item) => (
+                <li key={item.id} className="flex gap-4 py-4">
+                  <img
+                    src={item.image}
+                    alt=""
+                    width={72}
+                    height={72}
+                    className="h-18 w-18 rounded-lg bg-brand-50 object-contain p-1"
+                  />
+                  <div className="flex flex-1 flex-col gap-1">
+                    <a
+                      href={`/productos/${item.slug}`}
+                      className="text-sm font-semibold leading-snug hover:text-brand-700"
+                    >
+                      {item.name}
+                    </a>
+                    <span className="text-sm text-steel">{formatPrice(item.price)}</span>
+                    <div className="mt-1 flex items-center gap-3">
+                      <div className="flex items-center rounded-md border border-stone-300">
+                        <button
+                          type="button"
+                          className="px-2"
+                          onClick={() => setQuantity(item.id, item.quantity - 1)}
+                          aria-label="Restar"
+                        >
+                          −
+                        </button>
+                        <span className="w-7 text-center text-sm">{item.quantity}</span>
+                        <button
+                          type="button"
+                          className="px-2"
+                          onClick={() => setQuantity(item.id, item.quantity + 1)}
+                          aria-label="Sumar"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        className="text-xs text-red-600 hover:underline"
+                        onClick={() => removeFromCart(item.id)}
+                      >
+                        Quitar
+                      </button>
+                    </div>
+                  </div>
+                  <span className="font-semibold">{formatPrice(item.price * item.quantity)}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="space-y-3 border-t border-stone-200 p-5">
+              <div className="flex justify-between text-lg font-bold">
+                <span>Total</span>
+                <span>{formatPrice(total)}</span>
+              </div>
+              <a href="/carrito" className="btn-primary w-full">
+                Finalizar compra
+              </a>
+            </div>
+          </>
+        )}
+      </aside>
+    </div>
+  );
+}

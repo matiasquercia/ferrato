@@ -1,0 +1,77 @@
+---
+import { categories } from '@/lib/catalog';
+import { SITE } from '@/lib/site';
+import { whatsappContactUrl } from '@/lib/whatsapp';
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-16 bg-ink text-stone-300">
+  <div class="container-page grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <p class="font-display text-3xl font-bold text-white uppercase">Ferrato</p>
+      <p class="mt-3 text-sm">{SITE.tagline}. Venta online con envíos a todo el país.</p>
+    </div>
+    <div>
+      <p class="font-semibold text-white">Categorías</p>
+      <ul class="mt-3 space-y-2 text-sm">
+        {categories.map((c) => (
+          <li>
+            <a class="hover:text-brand-300" href={`/categoria/${c.slug}`}>
+              {c.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <p class="font-semibold text-white">Ayuda</p>
+      <ul class="mt-3 space-y-2 text-sm">
+        <li>
+          <a class="hover:text-brand-300" href="/como-comprar">
+            Cómo comprar
+          </a>
+        </li>
+        <li>
+          <a class="hover:text-brand-300" href="/como-comprar#envios">
+            Envíos
+          </a>
+        </li>
+        <li>
+          <a class="hover:text-brand-300" href="/como-comprar#pagos">
+            Medios de pago
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <p class="font-semibold text-white">Contacto</p>
+      <ul class="mt-3 space-y-2 text-sm">
+        <li>
+          <a class="hover:text-brand-300" href={whatsappContactUrl()} target="_blank" rel="noopener">
+            WhatsApp
+          </a>
+        </li>
+        <li>
+          <a class="hover:text-brand-300" href={`mailto:${SITE.email}`}>
+            {SITE.email}
+          </a>
+        </li>
+        <li>
+          <a class="hover:text-brand-300" href={SITE.social.instagram} target="_blank" rel="noopener">
+            Instagram
+          </a>
+        </li>
+        <li>
+          <a class="hover:text-brand-300" href={SITE.social.facebook} target="_blank" rel="noopener">
+            Facebook
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-stone-800">
+    <p class="container-page py-5 text-xs text-stone-500">
+      © {year} {SITE.name}. Todos los derechos reservados.
+    </p>
+  </div>
+</footer>
