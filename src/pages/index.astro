@@ -9,11 +9,29 @@ import { getProductBySlug } from '@/lib/catalog';
 const featured = getFeaturedProducts();
 const heroProduct = getProductBySlug('escalera-safari-5-peldanos') ?? featured[0];
 const categoryImage = (slug: string) => productImage(getProductsByCategory(slug)[0]?.images[0] ?? '', 320);
+const icon =
+  'width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
 const benefits = [
-  { title: 'Envíos a todo el país', text: `Gratis desde $${SITE.freeShippingFrom.toLocaleString('es-AR')}` },
-  { title: 'Pagá en cuotas', text: 'Con Mercado Pago, tarjeta o transferencia' },
-  { title: 'Atención por WhatsApp', text: 'Te asesoramos antes y después de comprar' },
-  { title: 'Fabricación nacional', text: 'Acero con anticorrosivo y pintura epoxi' },
+  {
+    title: 'Envíos a todo el país',
+    text: `Gratis desde $${SITE.freeShippingFrom.toLocaleString('es-AR')}`,
+    svg: `<svg ${icon}><path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/></svg>`,
+  },
+  {
+    title: 'Pagá en cuotas',
+    text: 'Con Mercado Pago, tarjeta o transferencia',
+    svg: `<svg ${icon}><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h4"/></svg>`,
+  },
+  {
+    title: 'Atención por WhatsApp',
+    text: 'Te asesoramos antes y después de comprar',
+    svg: `<svg ${icon}><path d="M6 18.5 4 21l.8-3.2A8 8 0 1 1 8.2 19z"/><path d="M9 10.2c.2 1.6 1.6 3 3.2 3.4.4.1.8 0 1-.3l.6-.8c.2-.2.1-.5 0-.7l-.8-.7"/></svg>`,
+  },
+  {
+    title: 'Fabricación nacional',
+    text: 'Acero con anticorrosivo y pintura epoxi',
+    svg: `<svg ${icon}><path d="M4 20V10l5 3V10l5 3V8l6 3v9z"/><path d="M3 20h18"/></svg>`,
+  },
 ];
 ---
 
@@ -59,16 +77,19 @@ const benefits = [
     </div>
   </section>
 
-  <section class="border-b border-stone-300/70 bg-white" aria-labelledby="benefits-title">
+  <section class="container-page py-10" aria-labelledby="benefits-title">
     <h2 id="benefits-title" class="sr-only">Por qué comprar en Ferrato</h2>
-    <ul class="container-page grid gap-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {benefits.map((b) => (
-        <li class="flex flex-col">
-          <h3 class="font-display text-2xl leading-none font-bold uppercase">
-            {b.title}
-            <span class="mt-2 block h-1 w-10 rounded-full bg-brand-500"></span>
-          </h3>
-          <p class="mt-2 text-sm text-steel">{b.text}</p>
+        <li class="flex items-start gap-4 rounded-2xl border border-stone-300/80 bg-white p-5 shadow-sm">
+          <span
+            class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-ink text-brand-500"
+            set:html={b.svg}
+          />
+          <div>
+            <h3 class="font-display text-xl leading-none font-bold uppercase">{b.title}</h3>
+            <p class="mt-2 text-sm text-steel">{b.text}</p>
+          </div>
         </li>
       ))}
     </ul>
