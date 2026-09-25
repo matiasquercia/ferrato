@@ -33,18 +33,19 @@ const benefits = [
           Escaleras Safari de caño de acero de 2 a 7 peldaños, banquetas plegables, tenders, tablas de
           planchar y agarraderas. Fabricación nacional: comprá online y recibilo en tu casa.
         </p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <a href="/categoria/escaleras" class="btn-primary">
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a href="/categoria/escaleras" class="btn-primary w-full sm:w-auto">
             Ver escaleras Safari
           </a>
-          <a href="/productos" class="btn border border-stone-600 text-white hover:bg-stone-800">
+          <a href="/productos" class="btn w-full border border-stone-600 text-white hover:bg-stone-800 sm:w-auto">
             Todo el catálogo
           </a>
         </div>
       </div>
       <a
         href={`/productos/${heroProduct.slug}`}
-        class="mx-auto block w-full max-w-md overflow-hidden rounded-3xl bg-white"
+        aria-label={heroProduct.name}
+        class="mx-auto block w-full max-w-md overflow-hidden rounded-3xl bg-photo"
       >
         <img
           src={productImage(heroProduct.images[0], 900)}
@@ -58,11 +59,12 @@ const benefits = [
     </div>
   </section>
 
-  <section class="border-b border-stone-200 bg-white">
+  <section class="border-b border-stone-300/70 bg-white" aria-labelledby="benefits-title">
+    <h2 id="benefits-title" class="sr-only">Por qué comprar en Ferrato</h2>
     <ul class="container-page grid gap-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
       {benefits.map((b) => (
         <li class="flex flex-col">
-          <span class="font-semibold">{b.title}</span>
+          <span class="font-display text-xl font-bold tracking-wide uppercase">{b.title}</span>
           <span class="text-sm text-steel">{b.text}</span>
         </li>
       ))}
@@ -70,24 +72,26 @@ const benefits = [
   </section>
 
   <section class="container-page py-14" aria-labelledby="cat-title">
-    <h2 id="cat-title" class="font-display text-4xl font-bold uppercase">
-      Categorías
-    </h2>
+    <h2 id="cat-title" class="section-title">Categorías</h2>
     <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-5">
       {categories.map((c) => (
         <a
           href={`/categoria/${c.slug}`}
-          class="group rounded-2xl border border-stone-200 bg-white p-4 text-center transition hover:border-brand-500 hover:shadow-md"
+          class="group rounded-2xl border border-stone-300/80 bg-photo p-4 text-center transition hover:border-brand-500 hover:shadow-md"
         >
           <img
             src={categoryImage(c.slug)}
-            alt=""
+            alt={c.name}
             width="160"
             height="160"
             class="mx-auto aspect-square w-32 rounded-xl object-cover transition group-hover:scale-105"
           />
           <span class="mt-3 block font-semibold">{c.name}</span>
-          <span class="text-xs text-steel">{getProductsByCategory(c.slug).length} productos</span>
+          <span class="text-xs text-steel">
+            {getProductsByCategory(c.slug).length === 1
+              ? '1 producto'
+              : `${getProductsByCategory(c.slug).length} productos`}
+          </span>
         </a>
       ))}
     </div>
@@ -95,9 +99,7 @@ const benefits = [
 
   <section class="container-page pb-6" aria-labelledby="feat-title">
     <div class="flex items-end justify-between">
-      <h2 id="feat-title" class="font-display text-4xl font-bold uppercase">
-        Destacados
-      </h2>
+      <h2 id="feat-title" class="section-title">Destacados</h2>
       <a href="/productos" class="text-sm font-semibold text-brand-700 hover:underline">
         Ver todos →
       </a>
