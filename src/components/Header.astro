@@ -34,7 +34,7 @@ const path = Astro.url.pathname;
     </nav>
 
     <div class="flex items-center gap-2">
-      <a href="/productos" class="hidden text-sm font-semibold text-steel hover:text-ink sm:inline">
+      <a href="/productos/todos" class="hidden text-sm font-semibold text-steel hover:text-ink sm:inline">
         Ver todo
       </a>
       <CartButton client:load />
@@ -49,7 +49,10 @@ const path = Astro.url.pathname;
           class="absolute right-0 mt-2 w-56 rounded-xl border border-stone-200 bg-white p-2 shadow-lg"
         >
           <a href="/productos" class="block rounded-lg px-3 py-2 font-semibold hover:bg-stone-100">
-            Todos los productos
+            Productos
+          </a>
+          <a href="/productos/todos" class="block rounded-lg px-3 py-2 hover:bg-stone-100">
+            Todos
           </a>
           {categories.map((c) => (
             <a href={`/categoria/${c.slug}`} class="block rounded-lg px-3 py-2 hover:bg-stone-100">

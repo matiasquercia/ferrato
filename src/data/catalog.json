@@ -39,7 +39,6 @@
       "stock": null,
       "featured": true,
       "colors": [
-        "Blanco brillante",
         "Negro brillante"
       ],
       "images": [
@@ -48,12 +47,12 @@
         "/images/productos/escalera-safari-fija-2-peldanos-3.jpg"
       ],
       "shortDescription": "Escalera fija de 2 peldaños en caño de acero de 1\", con placas antideslizantes.",
-      "description": "Escalera fija de 2 peldaños construida con tubos de acero de 1\". Cuenta con placas plásticas antideslizantes en los escalones. Disponible en blanco brillante y negro brillante.",
+      "description": "Escalera fija de 2 peldaños construida con tubos de acero de 1\". Cuenta con placas plásticas antideslizantes en los escalones. Disponible en negro brillante.",
       "specs": {
         "Peldaños": "2",
         "Estructura": "Tubo de acero de 1\"",
         "Escalones": "Placa plástica antideslizante",
-        "Colores": "Blanco / negro brillante",
+        "Colores": "Negro brillante",
         "Código Safari": "2012"
       }
     },

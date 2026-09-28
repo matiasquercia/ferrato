@@ -70,32 +70,34 @@ export default function AddToCartButton({ product, compact = false, withQuantity
 
   return (
     <div className={compact ? 'mt-2' : 'mt-6'}>
-      {!compact && needsColorChoice && (
+      {!compact && product.colors.length > 0 && (
         <fieldset className="mb-4">
           <legend className="mb-2 text-sm font-semibold">Color: {color}</legend>
-          <div className="flex flex-wrap gap-2">
-            {product.colors.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => {
-                  setColor(c);
-                  const images = product.imagesByColor?.[c];
-                  if (images?.length) {
-                    window.dispatchEvent(new CustomEvent('ferrato:color', { detail: { images } }));
-                  }
-                }}
-                aria-pressed={c === color}
-                className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
-                  c === color
-                    ? 'border-ink bg-ink text-white'
-                    : 'border-stone-300 bg-white hover:border-stone-500'
-                }`}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
+          {needsColorChoice && (
+            <div className="flex flex-wrap gap-2">
+              {product.colors.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => {
+                    setColor(c);
+                    const images = product.imagesByColor?.[c];
+                    if (images?.length) {
+                      window.dispatchEvent(new CustomEvent('ferrato:color', { detail: { images } }));
+                    }
+                  }}
+                  aria-pressed={c === color}
+                  className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                    c === color
+                      ? 'border-ink bg-ink text-white'
+                      : 'border-stone-300 bg-white hover:border-stone-500'
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          )}
         </fieldset>
       )}
       <div className="flex gap-3">

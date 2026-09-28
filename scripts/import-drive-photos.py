@@ -43,6 +43,12 @@ def sort_key(path: Path):
     return (detail, "(" in name, nums, name)
 
 
+# Foto que debe quedar primera (tarjeta y miniatura principal).
+PREFERRED_FIRST = {
+    "banqueta-escalera-plegable-reforzada": "banq r (3).jpg",
+}
+
+
 def collect(sources: list[Path]) -> list[Path]:
     files: list[Path] = []
     for src in sources:
@@ -68,6 +74,9 @@ def main() -> None:
     by_slug = {p["slug"]: p for p in catalog["products"]}
     for slug, sources in SOURCES.items():
         files = collect(sources)
+        first = PREFERRED_FIRST.get(slug)
+        if first:
+            files.sort(key=lambda p: p.name.lower() != first.lower())
         if slug not in by_slug:
             raise SystemExit(f"Slug desconocido: {slug}")
         urls = []
