@@ -1,4 +1,5 @@
 ---
+import HeroSlides from '@/components/HeroSlides.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import { categories, getFeaturedProducts, getProductsByCategory } from '@/lib/catalog';
@@ -43,7 +44,7 @@ const benefits = [
 
 <BaseLayout>
   <section class="home-hero hero-photo" data-hero aria-labelledby="hero-title">
-    <img class="hero-background" src="/images/hero/workshop-v2-1672.webp" srcset="/images/hero/workshop-v2-960.webp 960w, /images/hero/workshop-v2-1672.webp 1672w" sizes="100vw" alt="" width="1672" height="941" fetchpriority="high" />
+    <HeroSlides />
     <div class="container-page hero-layout">
       <div class="hero-copy">
         <p class="eyebrow">
@@ -79,7 +80,7 @@ const benefits = [
     </div>
     <div class="hero-index container-page">
       <span>HERRAMIENTAS PARA VIVIR MEJOR</span>
-      <a href="#cat-title">Explorá el catálogo ↓</a>
+      <div id="hero-controls-slot"></div>
     </div>
   </section>
 
