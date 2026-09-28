@@ -4,11 +4,9 @@ import ProductCard from '@/components/ProductCard.astro';
 import { categories, getFeaturedProducts, getProductsByCategory } from '@/lib/catalog';
 import { SITE } from '@/lib/site';
 import { productImage } from '@/lib/images';
-import { getProductBySlug } from '@/lib/catalog';
 import { whatsappContactUrl } from '@/lib/whatsapp';
 
 const featured = getFeaturedProducts();
-const heroProduct = getProductBySlug('escalera-safari-5-peldanos') ?? featured[0];
 const categoryImage = (slug: string) => productImage(getProductsByCategory(slug)[0]?.images[0] ?? '', 320);
 const icon =
   'width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
@@ -44,11 +42,12 @@ const benefits = [
 ---
 
 <BaseLayout>
-  <section class="home-hero" data-hero aria-labelledby="hero-title">
+  <section class="home-hero hero-photo" data-hero aria-labelledby="hero-title">
+    <img class="hero-background" src="/images/hero/workshop-v2-1672.webp" srcset="/images/hero/workshop-v2-960.webp 960w, /images/hero/workshop-v2-1672.webp 1672w" sizes="100vw" alt="" width="1672" height="941" fetchpriority="high" />
     <div class="container-page hero-layout">
       <div class="hero-copy">
         <p class="eyebrow">
-          <span></span> FERRETERÍA · HOGAR · SAFARI
+          <span></span> FERRETERÍA · HOGAR · PROYECTOS
         </p>
         <h1 id="hero-title">
           Equipá tu casa.
@@ -60,8 +59,8 @@ const benefits = [
           recibilo en tu casa.
         </p>
         <div class="hero-actions">
-          <a href="/categoria/escaleras" class="btn-primary">
-            Encontrá tu escalera <span aria-hidden="true">↗</span>
+          <a href="/productos" class="btn-primary">
+            Explorá el catálogo <span aria-hidden="true">↗</span>
           </a>
           <a
             href={whatsappContactUrl('¡Hola! Necesito asesoramiento para elegir un producto.')}
@@ -77,38 +76,6 @@ const benefits = [
           <span>Pagá con Mercado Pago</span>
         </div>
       </div>
-      <a
-        href={`/productos/${heroProduct.slug}`}
-        class="hero-product"
-        data-item={JSON.stringify({
-          item_id: heroProduct.id,
-          item_name: heroProduct.name,
-          price: heroProduct.price,
-        })}
-      >
-        <div class="hero-product-top">
-          <span>LÍNEA SAFARI</span>
-          <span>ACERO + PINTURA EPOXI</span>
-        </div>
-        <img
-          src={productImage(heroProduct.images[0], 960)}
-          srcset={`${productImage(heroProduct.images[0], 640)} 640w, ${productImage(heroProduct.images[0], 960)} 960w`}
-          sizes="(min-width: 768px) 48vw, 100vw"
-          alt={heroProduct.name}
-          width="960"
-          height="640"
-          fetchpriority="high"
-        />
-        <div class="hero-product-bottom">
-          <div>
-            <span>PARA LAS TAREAS DE TODOS LOS DÍAS</span>
-            <h2>{heroProduct.name}</h2>
-          </div>
-          <span class="hero-arrow" aria-hidden="true">
-            ↗
-          </span>
-        </div>
-      </a>
     </div>
     <div class="hero-index container-page">
       <span>HERRAMIENTAS PARA VIVIR MEJOR</span>
