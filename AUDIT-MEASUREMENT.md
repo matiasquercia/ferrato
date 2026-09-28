@@ -75,6 +75,10 @@ Fuentes oficiales:
 
 La URL chatgpt.site es una vista de revisión para socios: pagos deshabilitados y noindex/robots bloqueado intencionalmente. No usarla como destino de anuncios ni pedir su indexación. Los cambios están en improve-home-measurement; la web comercial debe desplegarse con su dominio definitivo, backend y variables reales.
 
+## Precios del catálogo (28/09/2026)
+
+Se actualizaron 15 precios del catálogo web a partir de la columna **Precio de venta** de Productos en el espacio Malolque de Notion. La correspondencia se hizo por código de proveedor Safari y modelo; las variantes blanca y negra tenían el mismo importe. Cambiaron 7 escaleras, 2 banquetas, 2 tenders extensibles y 4 tablas de planchar. `compareAtPrice`, stock, umbral de envío y lógica de pago no cambiaron. Tres tenders de pie (`SAF-TP-BASICO`, `SAF-TP-ALAS`, `SAF-TP-ALASR`) y la agarradera genérica (`SAF-AGARRADERA`) no tienen una correspondencia unívoca con la tabla consultada y conservaron su estado anterior. Antes de vender con el dominio comercial, confirmar sus precios y vigencia de la lista con el equipo.
+
 Antes de invertir: confirmar identidad legal, contactos/redes del código, dominio, stock real, costo y plazo de envío, condiciones de financiación, garantía y devoluciones. Configurar IDs y validar Tag Assistant/DebugView. El purchase confirmado continúa pendiente de persistencia de pedidos y deduplicación del webhook; nunca usar la visita a éxito como compra.
 
 Enviar anuncios específicos a /categoria/escaleras, /categoria/tenders, etc., o a la ficha exacta. Verificar Search Console, sitemap y Merchant Center con datos idénticos a catálogo, sitio y políticas reales. Comprobar que CDN/firewall no bloquee bots legítimos. Medir clic -> ficha -> carrito -> checkout -> pago confirmado antes de optimizar campañas. Comparar tasas y costo por venta real con datos suficientes; ningún cambio de diseño garantiza conversión máxima ni recomendaciones de IA.

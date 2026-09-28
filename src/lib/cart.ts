@@ -1,4 +1,5 @@
 import { track, ecommerceItem } from './analytics';
+import { getProductById } from './catalog';
 import { persistentJSON } from '@nanostores/persistent';
 import { atom, computed } from 'nanostores';
 
@@ -24,6 +25,18 @@ export const $cartOpen = atom(false);
 
 export const $cartCount = computed($cart, (items) => items.reduce((n, i) => n + i.quantity, 0));
 export const $cartTotal = computed($cart, (items) => items.reduce((sum, i) => sum + i.price * i.quantity, 0));
+
+/** A stored cart can outlive a catalogue price update. The server always charges catalogue prices. */
+export function syncCartPrices() {
+  const items = $cart.get();
+  const updated = items.map((item) => {
+    const price = getProductById(item.id)?.price;
+    return price != null && price !== item.price ? { ...item, price } : item;
+  });
+  if (updated.some((item, index) => item !== items[index])) $cart.set(updated);
+}
+
+if (typeof window !== 'undefined') syncCartPrices();
 
 export function addToCart(item: Omit<CartItem, 'quantity'>, quantity = 1) {
   const items = $cart.get();
