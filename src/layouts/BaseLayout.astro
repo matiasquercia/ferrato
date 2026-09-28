@@ -31,7 +31,8 @@ const ogImage = new URL(image, Astro.site ?? SITE.url).href;
 
 const organizationLd = {
   '@context': 'https://schema.org',
-  '@type': 'Store',
+  '@type': 'Organization',
+  '@id': `${SITE.url}/#organization`,
   name: SITE.name,
   url: SITE.url,
   logo: new URL('/logo.png', SITE.url).href,
@@ -69,7 +70,7 @@ const ldBlocks = [organizationLd, ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd :
     <meta name="twitter:image" content={ogImage} />
 
     {ldBlocks.map((ld) => (
-      <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+      <script type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, '\\u003c')} />
     ))}
   </head>
   <body class="flex min-h-screen flex-col">

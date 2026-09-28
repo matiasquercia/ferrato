@@ -7,7 +7,7 @@ import ts from 'typescript';
 const source = ts.transpileModule(readFileSync(new URL('../src/lib/analytics.ts', import.meta.url), 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
-function setup({ stored, blockedStorage = false, config: override = {} } = {}) {
+function setup({ stored, blockedStorage = false, config: override = {}, list } = {}) {
   const scripts = [],
     handlers = {},
     storage = new Map();
@@ -35,7 +35,7 @@ function setup({ stored, blockedStorage = false, config: override = {} } = {}) {
     referrer: 'https://example.com/private?email=secret',
     getElementById: (id) =>
       id === 'measurement-config' ? { dataset: { config: JSON.stringify(config) } } : notice,
-    querySelector: () => ({
+    querySelector: (selector) => selector === '[data-view-list]' ? { dataset: { viewList: list ? JSON.stringify(list) : undefined } } : ({
       dataset: { viewItem: JSON.stringify({ item_id: 'SAF-2005', item_name: 'Escalera', price: 100 }) },
     }),
     createElement: () => ({}),
@@ -162,4 +162,15 @@ test('invalid or missing account IDs never load vendor scripts', () => {
   const h = setup({ config: { ga: '', ads: 'invalid', pixel: '' } });
   h.choose('all');
   assert.equal(h.scripts.length, 0);
+});
+
+
+test('category list is measured once after analytics consent', () => {
+  const h = setup({ list: { item_list_id: 'tenders', item_list_name: 'Tenders', items: [{ item_id: 'SAF-1', price: 100 }] } });
+  assert.equal(h.events('view_item_list').length, 0);
+  h.choose('analytics');
+  h.choose('analytics');
+  assert.equal(h.events('view_item_list').length, 1);
+  assert.equal(h.events('view_item_list')[0][2].item_list_id, 'tenders');
+  assert.equal(h.events('conversion').length, 0);
 });

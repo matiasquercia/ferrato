@@ -27,6 +27,9 @@ const absImages = product.images.map((i) => new URL(productImage(i, 1200), SITE.
 const productLd: Record<string, unknown> = {
   '@context': 'https://schema.org',
   '@type': 'Product',
+  '@id': `${url}#product`,
+  url,
+  additionalProperty: Object.entries(product.specs).map(([name, value]) => ({ '@type': 'PropertyValue', name, value })),
   name: product.name,
   description: product.description,
   sku: product.sku,
@@ -46,7 +49,7 @@ if (product.price !== null) {
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
     itemCondition: 'https://schema.org/NewCondition',
-    seller: { '@type': 'Organization', name: SITE.name },
+    seller: { '@id': `${SITE.url}/#organization` },
   };
 }
 const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '';
@@ -85,7 +88,9 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
         >
           <img
             data-gallery-main
-            src={productImage(product.images[0], 1000)}
+            src={productImage(product.images[0], 960)}
+            srcset={`${productImage(product.images[0], 640)} 640w, ${productImage(product.images[0], 960)} 960w`}
+            sizes="(max-width: 767px) calc(100vw - 32px), 50vw"
             alt={product.name}
             width="1000"
             height="1000"
@@ -229,6 +234,11 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
           </a>
         )}
 
+        <div class="mt-5 rounded-xl border border-stone-200 bg-white p-4 text-sm">
+          <p class="font-semibold">Envíos a todo el país · Pago con Mercado Pago</p>
+          <p class="mt-2 text-steel">Envío gratis desde ${SITE.freeShippingFrom.toLocaleString('es-AR')}. Consultá costo y plazo para tu localidad antes de pagar.</p>
+          <a href="/como-comprar#envios" class="mt-2 inline-block underline">Envíos, medios de pago y garantía</a>
+        </div>
         <h2 class="section-title mt-10">Descripción</h2>
         <p class="mt-2 text-steel">{product.description}</p>
 
@@ -256,6 +266,7 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
 </BaseLayout>
 
 <script>
+  import { productImage } from '@/lib/images';
   document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
     const main = gallery.querySelector<HTMLImageElement>('[data-gallery-main]');
     const openBtn = gallery.querySelector<HTMLButtonElement>('[data-gallery-open]');
@@ -286,8 +297,11 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
     const show = (nextIndex: number) => {
       index = (nextIndex + sources.length) % sources.length;
       const src = sources[index];
-      if (main) main.src = src;
-      if (lightboxImg) {
+      if (main) {
+        main.srcset = `${productImage(src, 640)} 640w, ${productImage(src, 960)} 960w`;
+        main.src = productImage(src, 960);
+      }
+      if (lightboxImg && dialog?.open) {
         lightboxImg.src = src;
         lightboxImg.alt = `${main?.alt ?? 'Foto'} ${index + 1} de ${sources.length}`;
       }
@@ -312,7 +326,8 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
             'aspect-square overflow-hidden rounded-xl border-2 bg-photo ' +
             (i === 0 ? 'border-ink' : 'border-stone-200 hover:border-stone-400');
           const img = document.createElement('img');
-          img.src = src;
+          img.src = productImage(src, 320);
+          img.loading = 'lazy';
           img.alt = '';
           img.width = 200;
           img.height = 200;
@@ -337,8 +352,8 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
 
     const open = () => {
       if (!dialog) return;
-      show(index);
       dialog.showModal();
+      show(index);
     };
     openBtn?.addEventListener('click', open);
 

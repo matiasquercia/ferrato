@@ -61,3 +61,27 @@ Fuentes oficiales:
 - El dev server inicialmente mostró errores de emulación Netlify y módulos Vite después de reinstalar dependencias; se deshabilitó devFeatures (solo desarrollo) y la validación funcional se hizo sobre el build compilado. No es una prueba de pago extremo a extremo.
 - Auditoría npm: 8 avisos altos heredados de la cadena de desarrollo Netlify (extract-zip e ipx/sharp y dependientes). La reparación automática propone bajar el adaptador de versión mayor; no se aplicó por riesgo de incompatibilidad. Revisar actualización compatible del proveedor antes de dar por cerrada la auditoría de dependencias.
 - No se accedió a reportes reales de Analytics ni a la configuración privada de Ads. No se verificó entrega de eventos en cuentas ni Core Web Vitals de campo.
+
+
+## Actualización: carrusel, conversión e IA (2026-09-28)
+
+- Hero de cuatro imágenes originales generadas: herramientas, tender, escalera y tabla de planchar. WebP responsive, primera imagen prioritaria, siguientes bajo demanda, transición sin desplazar contenido, pausa manual y por interacción, respeto de movimiento reducido. Son imágenes ilustrativas; las fichas conservan fotografías y datos reales del catálogo. Prompts en public/images/hero/CAROUSEL-PROMPTS.md.
+- Home con respuestas visibles sobre envíos, pagos, elección y garantía; cinco categorías con guías específicas y asesoramiento; fichas con condiciones junto a la compra. No se cambiaron precios, stock ni condiciones comerciales.
+- WebSite en home, Organization con identidad estable (sin simular un local físico), ItemList en categorías y Product con especificaciones reales mediante PropertyValue. JSON-LD escapado para evitar cerrar el script desde datos de catálogo. HTML prerenderizado, enlaces internos, canonical/sitemap; robots permite rastreadores de búsqueda, incluido OAI-SearchBot, con exclusiones de checkout/API. No se necesitan archivos especiales para las funciones IA de Google.
+- Galería responsive: miniaturas y fotos de página optimizadas; original grande solo al abrir el zoom. No se promete un resultado de Core Web Vitals sin datos de campo.
+- Nuevo evento GA4 view_item_list: una vez por documento de categoría tras consentimiento estadístico; no es conversión de Ads. Ocho pruebas de medición aprobadas.
+
+### Pendientes comerciales y de publicación
+
+La URL chatgpt.site es una vista de revisión para socios: pagos deshabilitados y noindex/robots bloqueado intencionalmente. No usarla como destino de anuncios ni pedir su indexación. Los cambios están en improve-home-measurement; la web comercial debe desplegarse con su dominio definitivo, backend y variables reales.
+
+Antes de invertir: confirmar identidad legal, contactos/redes del código, dominio, stock real, costo y plazo de envío, condiciones de financiación, garantía y devoluciones. Configurar IDs y validar Tag Assistant/DebugView. El purchase confirmado continúa pendiente de persistencia de pedidos y deduplicación del webhook; nunca usar la visita a éxito como compra.
+
+Enviar anuncios específicos a /categoria/escaleras, /categoria/tenders, etc., o a la ficha exacta. Verificar Search Console, sitemap y Merchant Center con datos idénticos a catálogo, sitio y políticas reales. Comprobar que CDN/firewall no bloquee bots legítimos. Medir clic -> ficha -> carrito -> checkout -> pago confirmado antes de optimizar campañas. Comparar tasas y costo por venta real con datos suficientes; ningún cambio de diseño garantiza conversión máxima ni recomendaciones de IA.
+
+Fuentes oficiales consultadas:
+- https://developers.google.com/search/docs/appearance/ai-features
+- https://developers.google.com/search/docs/appearance/site-names
+- https://developers.openai.com/api/docs/bots
+- https://support.google.com/google-ads/answer/6238826
+- https://support.google.com/google-ads/answer/7543502

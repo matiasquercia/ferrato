@@ -64,6 +64,10 @@ export function track(name: string, params: Params = {}) {
 function trackPageContent() {
   if (!consent.analytics || !gaReady || seen.has('content')) return;
   seen.add('content');
+  const list = document.querySelector<HTMLElement>('[data-view-list]')?.dataset.viewList;
+  if (list) {
+    try { track('view_item_list', JSON.parse(list)); } catch { /* Optional catalogue metadata. */ }
+  }
   const item = document.querySelector<HTMLElement>('[data-view-item]')?.dataset.viewItem;
   if (item) {
     try {

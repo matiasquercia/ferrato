@@ -1,4 +1,5 @@
 ---
+import BuyingAnswers from '@/components/BuyingAnswers.astro';
 import HeroSlides from '@/components/HeroSlides.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProductCard from '@/components/ProductCard.astro';
@@ -42,7 +43,7 @@ const benefits = [
 ];
 ---
 
-<BaseLayout>
+<BaseLayout jsonLd={{ "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE.url}/#website`, name: SITE.name, url: SITE.url, inLanguage: "es-AR" }}>
   <section class="home-hero hero-photo" data-hero aria-labelledby="hero-title">
     <HeroSlides />
     <div class="container-page hero-layout">
@@ -56,7 +57,7 @@ const benefits = [
           <span>Hacé más.</span>
         </h1>
         <p class="hero-description">
-          Escaleras de acero y soluciones para todos los días. Elegí el modelo que necesitás, comprá online y
+          Escaleras, tenders y soluciones para tu hogar. Elegí el modelo que necesitás, comprá online y
           recibilo en tu casa.
         </p>
         <div class="hero-actions">
@@ -206,4 +207,5 @@ const benefits = [
       </div>
     </div>
   </section>
+  <BuyingAnswers />
 </BaseLayout>
