@@ -38,12 +38,14 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": true,
-      "colors": ["Blanco brillante", "Negro brillante"],
+      "colors": [
+        "Blanco brillante",
+        "Negro brillante"
+      ],
       "images": [
-        "https://static.wixstatic.com/media/94a63e_f08c1527ee88475d93a29c65e6bdb51d~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_c9cfb36cc30b40f6a492120ee288d68f~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_10867156a99344a6b2d5ffbb1df39813~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_30b03fd169744d99bf88cbd24a325534~mv2.jpg"
+        "/images/productos/escalera-safari-fija-2-peldanos-1.jpg",
+        "/images/productos/escalera-safari-fija-2-peldanos-2.jpg",
+        "/images/productos/escalera-safari-fija-2-peldanos-3.jpg"
       ],
       "shortDescription": "Escalera fija de 2 peldaños en caño de acero de 1\", con placas antideslizantes.",
       "description": "Escalera fija de 2 peldaños construida con tubos de acero de 1\". Cuenta con placas plásticas antideslizantes en los escalones. Disponible en blanco brillante y negro brillante.",
@@ -66,12 +68,23 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": false,
-      "colors": ["Blanco brillante", "Negro brillante"],
+      "colors": [
+        "Blanco brillante",
+        "Negro brillante"
+      ],
       "images": [
-        "https://static.wixstatic.com/media/94a63e_963e250b921d456685ed0be771665e22~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_1b0a2118859a466cb4f8ac65d8ba9626~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_c14c4b1ab8184881bd2f0e105aed2148~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_2c215daae2bf4a0196d977ed8621eb6b~mv2.jpg"
+        "/images/productos/escalera-safari-2-peldanos-1.jpg",
+        "/images/productos/escalera-safari-2-peldanos-2.jpg",
+        "/images/productos/escalera-safari-2-peldanos-3.jpg",
+        "/images/productos/escalera-safari-2-peldanos-4.jpg",
+        "/images/productos/escalera-safari-2-peldanos-5.jpg",
+        "/images/productos/escalera-safari-2-peldanos-6.jpg",
+        "/images/productos/escalera-safari-2-peldanos-7.jpg",
+        "/images/productos/escalera-safari-2-peldanos-8.jpg",
+        "/images/productos/escalera-safari-2-peldanos-9.jpg",
+        "/images/productos/escalera-safari-2-peldanos-10.jpg",
+        "/images/productos/escalera-safari-2-peldanos-11.jpg",
+        "/images/productos/escalera-safari-2-peldanos-12.jpg"
       ],
       "shortDescription": "Escalera tijera de caño de acero, 2 peldaños antideslizantes. Altura abierta 0,90 m, soporta 110 kg.",
       "description": "Construida con tubos de acero con grosor de pared de 0,9 mm, diámetro de 1 1/4\" (pata principal) y 1\" (pata trasera). Cuenta con un travesaño de refuerzo soldado hecho de tubo de 1 1/4\" y un revestimiento de chapa en la articulación. Los peldaños están constituidos de chapa de acero calibre 0,9 mm y cuentan con una placa de plástico antideslizante. Tratamiento anticorrosivo y pintura epoxi en colores blanco brillante y negro brillante.",
@@ -102,11 +115,23 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": true,
-      "colors": ["Blanco brillante", "Negro brillante"],
+      "colors": [
+        "Blanco brillante",
+        "Negro brillante"
+      ],
       "images": [
-        "https://static.wixstatic.com/media/94a63e_1c5b767df59244f39dfc3d6d9278bd0c~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_f2cbf4e077e347e0a8c47cf65b452d8d~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_4031da627d7d424ebb9e47f6c822abd5~mv2.jpg"
+        "/images/productos/escalera-safari-3-peldanos-1.jpg",
+        "/images/productos/escalera-safari-3-peldanos-2.jpg",
+        "/images/productos/escalera-safari-3-peldanos-3.jpg",
+        "/images/productos/escalera-safari-3-peldanos-4.jpg",
+        "/images/productos/escalera-safari-3-peldanos-5.jpg",
+        "/images/productos/escalera-safari-3-peldanos-6.jpg",
+        "/images/productos/escalera-safari-3-peldanos-7.jpg",
+        "/images/productos/escalera-safari-3-peldanos-8.jpg",
+        "/images/productos/escalera-safari-3-peldanos-9.jpg",
+        "/images/productos/escalera-safari-3-peldanos-10.jpg",
+        "/images/productos/escalera-safari-3-peldanos-11.jpg",
+        "/images/productos/escalera-safari-3-peldanos-12.jpg"
       ],
       "shortDescription": "Escalera tijera de caño de acero, 3 peldaños antideslizantes. Altura abierta 1,13 m, soporta 110 kg.",
       "description": "Construida con tubos de acero con grosor de pared de 0,9 mm, diámetro de 1 1/4\" (pata principal) y 1\" (pata trasera). Cuenta con un travesaño de refuerzo soldado hecho de tubo de 1 1/4\" y un revestimiento de chapa en la articulación. Los peldaños están constituidos de chapa de acero calibre 0,9 mm y cuentan con una placa de plástico antideslizante. Tratamiento anticorrosivo y pintura epoxi en colores blanco brillante y negro brillante.",
@@ -137,11 +162,23 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": false,
-      "colors": ["Blanco brillante", "Negro brillante"],
+      "colors": [
+        "Blanco brillante",
+        "Negro brillante"
+      ],
       "images": [
-        "https://static.wixstatic.com/media/94a63e_11cd1e442eb74a539c05f3c4017c0863~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_0ca4519a77674c719ce6341a9bb367fd~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_271b1a0898e24d27a3a42df4fb05d8dd~mv2.jpg"
+        "/images/productos/escalera-safari-4-peldanos-1.jpg",
+        "/images/productos/escalera-safari-4-peldanos-2.jpg",
+        "/images/productos/escalera-safari-4-peldanos-3.jpg",
+        "/images/productos/escalera-safari-4-peldanos-4.jpg",
+        "/images/productos/escalera-safari-4-peldanos-5.jpg",
+        "/images/productos/escalera-safari-4-peldanos-6.jpg",
+        "/images/productos/escalera-safari-4-peldanos-7.jpg",
+        "/images/productos/escalera-safari-4-peldanos-8.jpg",
+        "/images/productos/escalera-safari-4-peldanos-9.jpg",
+        "/images/productos/escalera-safari-4-peldanos-10.jpg",
+        "/images/productos/escalera-safari-4-peldanos-11.jpg",
+        "/images/productos/escalera-safari-4-peldanos-12.jpg"
       ],
       "shortDescription": "Escalera tijera de caño de acero, 4 peldaños antideslizantes. Altura abierta 1,39 m, soporta 110 kg.",
       "description": "Construida con tubos de acero con grosor de pared de 0,9 mm, diámetro de 1 1/4\" (pata principal) y 1\" (pata trasera). Cuenta con un travesaño de refuerzo soldado hecho de tubo de 1 1/4\" y un revestimiento de chapa en la articulación. Los peldaños están constituidos de chapa de acero calibre 0,9 mm y cuentan con una placa de plástico antideslizante. Tratamiento anticorrosivo y pintura epoxi en colores blanco brillante y negro brillante.",
@@ -172,11 +209,23 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": true,
-      "colors": ["Blanco brillante", "Negro brillante"],
+      "colors": [
+        "Blanco brillante",
+        "Negro brillante"
+      ],
       "images": [
-        "https://static.wixstatic.com/media/94a63e_9d2a2afc471d41d5b297529d947e60b7~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_50a12d32424843e4a541d0a4d7c6e61b~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_7b183c7d5ffa4d42b826ff51cbb5b0fc~mv2.jpg"
+        "/images/productos/escalera-safari-5-peldanos-1.jpg",
+        "/images/productos/escalera-safari-5-peldanos-2.jpg",
+        "/images/productos/escalera-safari-5-peldanos-3.jpg",
+        "/images/productos/escalera-safari-5-peldanos-4.jpg",
+        "/images/productos/escalera-safari-5-peldanos-5.jpg",
+        "/images/productos/escalera-safari-5-peldanos-6.jpg",
+        "/images/productos/escalera-safari-5-peldanos-7.jpg",
+        "/images/productos/escalera-safari-5-peldanos-8.jpg",
+        "/images/productos/escalera-safari-5-peldanos-9.jpg",
+        "/images/productos/escalera-safari-5-peldanos-10.jpg",
+        "/images/productos/escalera-safari-5-peldanos-11.jpg",
+        "/images/productos/escalera-safari-5-peldanos-12.jpg"
       ],
       "shortDescription": "Escalera tijera de caño de acero, 5 peldaños antideslizantes. Altura abierta 1,60 m, soporta 110 kg.",
       "description": "Construida con tubos de acero con grosor de pared de 0,9 mm, diámetro de 1 1/4\" (pata principal) y 1\" (pata trasera). Cuenta con un travesaño de refuerzo soldado hecho de tubo de 1 1/4\" y un revestimiento de chapa en la articulación. Los peldaños están constituidos de chapa de acero calibre 0,9 mm y cuentan con una placa de plástico antideslizante. Tratamiento anticorrosivo y pintura epoxi en colores blanco brillante y negro brillante.",
@@ -207,11 +256,23 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": false,
-      "colors": ["Blanco brillante", "Negro brillante"],
+      "colors": [
+        "Blanco brillante",
+        "Negro brillante"
+      ],
       "images": [
-        "https://static.wixstatic.com/media/94a63e_1835dc4b335842378a2ac3a17759816e~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_6ca9d0a820b5416fa818a15535d8b759~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_2101f3f3da634eb5ab26c46e2c6941f7~mv2.jpg"
+        "/images/productos/escalera-safari-6-peldanos-1.jpg",
+        "/images/productos/escalera-safari-6-peldanos-2.jpg",
+        "/images/productos/escalera-safari-6-peldanos-3.jpg",
+        "/images/productos/escalera-safari-6-peldanos-4.jpg",
+        "/images/productos/escalera-safari-6-peldanos-5.jpg",
+        "/images/productos/escalera-safari-6-peldanos-6.jpg",
+        "/images/productos/escalera-safari-6-peldanos-7.jpg",
+        "/images/productos/escalera-safari-6-peldanos-8.jpg",
+        "/images/productos/escalera-safari-6-peldanos-9.jpg",
+        "/images/productos/escalera-safari-6-peldanos-10.jpg",
+        "/images/productos/escalera-safari-6-peldanos-11.jpg",
+        "/images/productos/escalera-safari-6-peldanos-12.jpg"
       ],
       "shortDescription": "Escalera tijera de caño de acero, 6 peldaños antideslizantes. Altura abierta 1,84 m, soporta 110 kg.",
       "description": "Construida con tubos de acero con grosor de pared de 0,9 mm, diámetro de 1 1/4\" (pata principal) y 1\" (pata trasera). Cuenta con un travesaño de refuerzo soldado hecho de tubo de 1 1/4\" y un revestimiento de chapa en la articulación. Los peldaños están constituidos de chapa de acero calibre 0,9 mm y cuentan con una placa de plástico antideslizante. Tratamiento anticorrosivo y pintura epoxi en colores blanco brillante y negro brillante.",
@@ -242,12 +303,23 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": false,
-      "colors": ["Blanco brillante", "Negro brillante"],
+      "colors": [
+        "Blanco brillante",
+        "Negro brillante"
+      ],
       "images": [
-        "https://static.wixstatic.com/media/94a63e_460d00f0a45d4ef1860f30acfb3153c0~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_82a0fae68224425b9bea61150b8cdd11~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_41964c97dd0e4d17a888cc6ee7ee0b07~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_f837891c63634ab9be52af3760c53e62~mv2.jpg"
+        "/images/productos/escalera-safari-7-peldanos-1.jpg",
+        "/images/productos/escalera-safari-7-peldanos-2.jpg",
+        "/images/productos/escalera-safari-7-peldanos-3.jpg",
+        "/images/productos/escalera-safari-7-peldanos-4.jpg",
+        "/images/productos/escalera-safari-7-peldanos-5.jpg",
+        "/images/productos/escalera-safari-7-peldanos-6.jpg",
+        "/images/productos/escalera-safari-7-peldanos-7.jpg",
+        "/images/productos/escalera-safari-7-peldanos-8.jpg",
+        "/images/productos/escalera-safari-7-peldanos-9.jpg",
+        "/images/productos/escalera-safari-7-peldanos-10.jpg",
+        "/images/productos/escalera-safari-7-peldanos-11.jpg",
+        "/images/productos/escalera-safari-7-peldanos-12.jpg"
       ],
       "shortDescription": "Escalera tijera de caño de acero, 7 peldaños antideslizantes. Altura abierta 2,04 m, soporta 110 kg.",
       "description": "Construida con tubos de acero con grosor de pared de 0,9 mm, diámetro de 1 1/4\" (pata principal) y 1\" (pata trasera). Cuenta con un travesaño de refuerzo soldado hecho de tubo de 1 1/4\" y un revestimiento de chapa en la articulación. Los peldaños están constituidos de chapa de acero calibre 0,9 mm y cuentan con una placa de plástico antideslizante. Tratamiento anticorrosivo y pintura epoxi en colores blanco brillante y negro brillante.",
@@ -278,13 +350,17 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": true,
-      "colors": ["Blanco brillante"],
+      "colors": [
+        "Blanco brillante"
+      ],
       "images": [
-        "https://static.wixstatic.com/media/94a63e_dbeb87f1b208461e9e23258929bf0e26~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_fc6860fdf6ea46e7a419f54d7c9ae5a3~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_8fb6819a544046ae8e9313d2bc26f3a1~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_9ef0665f27704d838cd7bbdcf887498b~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_9ce63339db734377869d5768a3b45801~mv2.jpg"
+        "/images/productos/banqueta-escalera-plegable-1.jpg",
+        "/images/productos/banqueta-escalera-plegable-2.jpg",
+        "/images/productos/banqueta-escalera-plegable-3.jpg",
+        "/images/productos/banqueta-escalera-plegable-4.jpg",
+        "/images/productos/banqueta-escalera-plegable-5.jpg",
+        "/images/productos/banqueta-escalera-plegable-6.jpg",
+        "/images/productos/banqueta-escalera-plegable-7.jpg"
       ],
       "shortDescription": "Banquito escalera plegable de caño de acero, blanco brillante, con escalones antideslizantes.",
       "description": "Construida con caño de acero de 1\" para la estructura base y 1 1/4\" para la pata plegable. Tratamiento anticorrosivo y pintura epoxi blanca brillante. Posee placas plásticas antideslizantes en los escalones.",
@@ -309,13 +385,17 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": true,
-      "colors": ["Aluminio brillante"],
+      "colors": [
+        "Aluminio brillante"
+      ],
       "images": [
-        "https://static.wixstatic.com/media/94a63e_c93efa4125694331ade1a9365657830c~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_7ad68bb5808c4a0698e5d7a62629fe18~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_07bb8d2c2a9c46a0adb61a2091443e71~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_b82def36166a41d8ba3dbf67f6811a09~mv2.jpg",
-        "https://static.wixstatic.com/media/94a63e_9c6d0d7a16eb4ebdb9f3be583ccc3111~mv2.jpg"
+        "/images/productos/banqueta-escalera-plegable-reforzada-1.jpg",
+        "/images/productos/banqueta-escalera-plegable-reforzada-2.jpg",
+        "/images/productos/banqueta-escalera-plegable-reforzada-3.jpg",
+        "/images/productos/banqueta-escalera-plegable-reforzada-4.jpg",
+        "/images/productos/banqueta-escalera-plegable-reforzada-5.jpg",
+        "/images/productos/banqueta-escalera-plegable-reforzada-6.jpg",
+        "/images/productos/banqueta-escalera-plegable-reforzada-7.jpg"
       ],
       "shortDescription": "Versión reforzada en caño de 1 1/4\", pintura epoxi aluminio brillante.",
       "description": "Construida con caño de acero de 1 1/4\" para la estructura base y 1 1/4\" para la pata plegable. Tratamiento anticorrosivo y pintura epoxi aluminio brillante. Posee placas plásticas antideslizantes en los escalones.",
@@ -340,8 +420,12 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": false,
-      "colors": ["Blanco"],
-      "images": ["https://static.wixstatic.com/media/94a63e_7f15c0cbce994759919121d4307c0987~mv2.jpg"],
+      "colors": [
+        "Blanco"
+      ],
+      "images": [
+        "/images/productos/tender-de-pie-basico-1.jpg"
+      ],
       "shortDescription": "Parrilla de 9 alambres, 9 metros de tendido.",
       "description": "Tendedero de pie con base de caño de 5/8\" y parrilla de 9 alambres de 4 mm de diámetro x 1000 mm. Capacidad de 9 metros de tendido. Color blanco.",
       "specs": {
@@ -362,8 +446,12 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": true,
-      "colors": ["Blanco"],
-      "images": ["https://static.wixstatic.com/media/94a63e_e5e69d4ce47c4548bf4f32dcc528bc90~mv2.jpg"],
+      "colors": [
+        "Blanco"
+      ],
+      "images": [
+        "/images/productos/tender-de-pie-con-alas-1.jpg"
+      ],
       "shortDescription": "Parrilla de 9 alambres + 2 alas, 12,60 metros de tendido.",
       "description": "Tendedero de pie con base de caño de 5/8\", parrilla de 9 alambres de 4 mm de diámetro x 1000 mm y 2 alas de alambre de 4 hilos cada una. Capacidad de 12,60 metros de tendido. Color blanco.",
       "specs": {
@@ -385,8 +473,12 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": false,
-      "colors": ["Blanco"],
-      "images": ["https://static.wixstatic.com/media/94a63e_54835938db9f4cac8acac837212a4223~mv2.jpg"],
+      "colors": [
+        "Blanco"
+      ],
+      "images": [
+        "/images/productos/tender-de-pie-con-alas-reforzado-1.jpg"
+      ],
       "shortDescription": "Base reforzada y alas de caño con 7 hilos c/u, 14,80 metros de tendido.",
       "description": "Tendedero de pie con base de caño de 5/8\" reforzado, parrilla de 9 alambres de 4 mm x 1000 mm y 2 alas de caño de 5/8\" con 7 hilos cada una. Capacidad de 14,80 metros de tendido. Color blanco.",
       "specs": {
@@ -409,7 +501,9 @@
       "stock": null,
       "featured": false,
       "colors": [],
-      "images": ["https://static.wixstatic.com/media/94a63e_aed6963269094672a2b8bac5a978cd2d~mv2.png"],
+      "images": [
+        "/images/productos/tender-extensible-de-pared-45x7-1.jpg"
+      ],
       "shortDescription": "Extensible de pared con 7 varillas plastificadas de 45 cm.",
       "description": "Tendedero extensible construido en chapa D.D. con tratamiento anticorrosivo y pintura epoxi. 7 varillas de alambre de acero plastificadas de 6 mm de diámetro x 45 cm de largo. Envasado en polietileno termocontraíble.",
       "specs": {
@@ -431,7 +525,9 @@
       "stock": null,
       "featured": true,
       "colors": [],
-      "images": ["https://static.wixstatic.com/media/94a63e_3f17df17f5954f7190b6a8a3b56d3d28~mv2.png"],
+      "images": [
+        "/images/productos/tender-extensible-de-pared-60x7-1.jpg"
+      ],
       "shortDescription": "Extensible de pared con 7 varillas plastificadas de 60 cm.",
       "description": "Tendedero extensible construido en chapa D.D. con tratamiento anticorrosivo y pintura epoxi. 7 varillas de alambre de acero plastificadas de 6 mm de diámetro x 60 cm de largo. Envasado en polietileno termocontraíble.",
       "specs": {
@@ -453,7 +549,12 @@
       "stock": null,
       "featured": false,
       "colors": [],
-      "images": ["https://static.wixstatic.com/media/94a63e_be74710018124c6ca99a3c7210bd6c6a~mv2.jpg"],
+      "images": [
+        "/images/productos/tabla-de-planchar-basica-1.jpg",
+        "/images/productos/tabla-de-planchar-basica-2.jpg",
+        "/images/productos/tabla-de-planchar-basica-3.jpg",
+        "/images/productos/tabla-de-planchar-basica-4.jpg"
+      ],
       "shortDescription": "Tabla de planchar Safari, modelo Básica.",
       "description": "Tabla de planchar Safari modelo Básica (código 2501). Consultanos por WhatsApp medidas y detalles.",
       "specs": {
@@ -473,7 +574,12 @@
       "stock": null,
       "featured": false,
       "colors": [],
-      "images": ["https://static.wixstatic.com/media/94a63e_125ad344bd9348ec848a3e764f63eddb~mv2.jpg"],
+      "images": [
+        "/images/productos/tabla-de-planchar-esencial-1.jpg",
+        "/images/productos/tabla-de-planchar-esencial-2.jpg",
+        "/images/productos/tabla-de-planchar-esencial-3.jpg",
+        "/images/productos/tabla-de-planchar-esencial-4.jpg"
+      ],
       "shortDescription": "Tabla de planchar Safari, modelo Esencial.",
       "description": "Tabla de planchar Safari modelo Esencial (código 2502). Consultanos por WhatsApp medidas y detalles.",
       "specs": {
@@ -493,7 +599,12 @@
       "stock": null,
       "featured": false,
       "colors": [],
-      "images": ["https://static.wixstatic.com/media/94a63e_1d7f9ea9591f4c38bcaa50eb44591eac~mv2.jpg"],
+      "images": [
+        "/images/productos/tabla-de-planchar-premier-1.jpg",
+        "/images/productos/tabla-de-planchar-premier-2.jpg",
+        "/images/productos/tabla-de-planchar-premier-3.jpg",
+        "/images/productos/tabla-de-planchar-premier-4.jpg"
+      ],
       "shortDescription": "Tabla de planchar Safari, modelo Premier.",
       "description": "Tabla de planchar Safari modelo Premier (código 2540). Consultanos por WhatsApp medidas y detalles.",
       "specs": {
@@ -513,7 +624,12 @@
       "stock": null,
       "featured": false,
       "colors": [],
-      "images": ["https://static.wixstatic.com/media/94a63e_f1c6b70e790949fdac1c75f813da347f~mv2.jpg"],
+      "images": [
+        "/images/productos/tabla-de-planchar-silver-1.jpg",
+        "/images/productos/tabla-de-planchar-silver-2.jpg",
+        "/images/productos/tabla-de-planchar-silver-3.jpg",
+        "/images/productos/tabla-de-planchar-silver-4.jpg"
+      ],
       "shortDescription": "Tabla de planchar Safari, modelo Silver.",
       "description": "Tabla de planchar Safari modelo Silver (código 2550). Consultanos por WhatsApp medidas y detalles.",
       "specs": {
@@ -532,8 +648,12 @@
       "compareAtPrice": null,
       "stock": null,
       "featured": false,
-      "colors": ["Blanco brillante"],
-      "images": ["https://static.wixstatic.com/media/94a63e_f6157a78517a41a7bc6840c23f78292d~mv2.jpg"],
+      "colors": [
+        "Blanco brillante"
+      ],
+      "images": [
+        "/images/productos/agarradera-de-seguridad-1.jpg"
+      ],
       "shortDescription": "Caño de 1\" con pintura epoxi blanca. Incluye tornillos y tarugos.",
       "description": "Agarradera de seguridad construida con caño de 1\". Tratamiento anticorrosivo y pintura epoxi blanco brillante. Viene con los tornillos y tarugos necesarios para su instalación.",
       "specs": {

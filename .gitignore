@@ -20,6 +20,9 @@ pnpm-debug.log*
 .env.*
 !.env.example
 
+# originales del Drive (se publican las copias comprimidas)
+photos/
+
 # SO / editores
 .DS_Store
 Thumbs.db
