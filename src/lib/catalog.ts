@@ -22,6 +22,8 @@ export interface Product {
   /** Colores/variantes disponibles. Si hay más de uno, el cliente elige al agregar al carrito. */
   colors: string[];
   images: string[];
+  /** Fotos por color. Si falta un color, se muestran `images`. */
+  imagesByColor?: Record<string, string[]>;
   shortDescription: string;
   description: string;
   specs: Record<string, string>;

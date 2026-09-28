@@ -11,6 +11,8 @@ export interface AddToCartProduct {
   image: string;
   maxStock: number;
   colors: string[];
+  /** Fotos de cada color. Al elegirlo, la ficha cambia la galería. */
+  imagesByColor?: Record<string, string[]>;
 }
 
 interface Props {
@@ -56,7 +58,7 @@ export default function AddToCartButton({ product, compact = false, withQuantity
         slug: product.slug,
         name: product.name,
         price,
-        image: product.image,
+        image: product.imagesByColor?.[color]?.[0] ?? product.image,
         maxStock: product.maxStock,
         variant: color,
       },
@@ -76,7 +78,13 @@ export default function AddToCartButton({ product, compact = false, withQuantity
               <button
                 key={c}
                 type="button"
-                onClick={() => setColor(c)}
+                onClick={() => {
+                  setColor(c);
+                  const images = product.imagesByColor?.[c];
+                  if (images?.length) {
+                    window.dispatchEvent(new CustomEvent('ferrato:color', { detail: { images } }));
+                  }
+                }}
                 aria-pressed={c === color}
                 className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
                   c === color
