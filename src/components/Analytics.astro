@@ -1,0 +1,35 @@
+---
+const config = {
+  ga: import.meta.env.PUBLIC_GA_ID || '',
+  ads: import.meta.env.PUBLIC_GOOGLE_ADS_ID || '',
+  whatsappLabel: import.meta.env.PUBLIC_ADS_WHATSAPP_LABEL || '',
+  checkoutLabel: import.meta.env.PUBLIC_ADS_CHECKOUT_LABEL || '',
+  pixel: import.meta.env.PUBLIC_META_PIXEL_ID || '',
+};
+---
+
+<div id="measurement-config" data-config={JSON.stringify(config)} hidden></div>
+<section id="cookie-notice" class="cookie-notice" aria-label="Preferencias de privacidad" hidden>
+  <div>
+    <strong>Tu privacidad, tu elección.</strong>
+    <p>
+      Usamos almacenamiento necesario para el carrito. Con tu permiso, también medimos visitas y publicidad.{' '}
+      <a href="/privacidad">Ver privacidad</a>.
+    </p>
+  </div>
+  <div class="cookie-actions">
+    <button type="button" class="btn-dark" data-consent="all">
+      Aceptar todas
+    </button>
+    <button type="button" class="btn" data-consent="analytics">
+      Solo estadísticas
+    </button>
+    <button type="button" class="btn" data-consent="none">
+      Solo necesarias
+    </button>
+  </div>
+</section>
+<script>
+  import { initializeMeasurement } from '@/lib/analytics';
+  initializeMeasurement();
+</script>

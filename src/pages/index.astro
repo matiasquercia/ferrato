@@ -44,49 +44,82 @@ const benefits = [
 ---
 
 <BaseLayout>
-  <section class="relative overflow-hidden bg-ink text-white">
-    <div class="container-page grid items-center gap-10 py-16 md:grid-cols-2 md:py-24">
-      <div>
-        <p class="mb-3 inline-block rounded-full bg-brand-500/15 px-3 py-1 text-sm font-semibold text-brand-300">
-          Escaleras, hogar y ferretería
+  <section class="home-hero" data-hero aria-labelledby="hero-title">
+    <div class="container-page hero-layout">
+      <div class="hero-copy">
+        <p class="eyebrow">
+          <span></span> FERRETERÍA · HOGAR · SAFARI
         </p>
-        <h1 class="font-display text-5xl leading-none font-bold uppercase sm:text-6xl lg:text-7xl">
-          Llegá más alto
+        <h1 id="hero-title">
+          Equipá tu casa.
           <br />
-          <span class="text-brand-500">con Ferrato</span>
+          <span>Hacé más.</span>
         </h1>
-        <p class="mt-5 max-w-lg text-lg text-stone-300">
-          Escaleras, banquetas, tenders, tablas de planchar, agarraderas y ferretería. También
-          trabajamos productos Safari. Comprá online y recibilo en tu casa.
+        <p class="hero-description">
+          Escaleras de acero y soluciones para todos los días. Elegí el modelo que necesitás, comprá online y
+          recibilo en tu casa.
         </p>
-        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a href="/categoria/escaleras" class="btn-primary w-full sm:w-auto">
-            Ver escaleras
+        <div class="hero-actions">
+          <a href="/categoria/escaleras" class="btn-primary">
+            Encontrá tu escalera <span aria-hidden="true">↗</span>
           </a>
-          <a href="/productos" class="btn w-full border border-stone-600 text-white hover:bg-stone-800 sm:w-auto">
-            Todo el catálogo
+          <a
+            href={whatsappContactUrl('¡Hola! Necesito asesoramiento para elegir un producto.')}
+            class="hero-advice"
+            target="_blank"
+            rel="noopener"
+          >
+            Te asesoramos por WhatsApp <span aria-hidden="true">→</span>
           </a>
+        </div>
+        <div class="hero-facts">
+          <span>Envíos a todo el país</span>
+          <span>Pagá con Mercado Pago</span>
         </div>
       </div>
       <a
         href={`/productos/${heroProduct.slug}`}
-        aria-label={heroProduct.name}
-        class="mx-auto block w-full max-w-md overflow-hidden rounded-3xl bg-photo"
+        class="hero-product"
+        data-item={JSON.stringify({
+          item_id: heroProduct.id,
+          item_name: heroProduct.name,
+          price: heroProduct.price,
+        })}
       >
+        <div class="hero-product-top">
+          <span>LÍNEA SAFARI</span>
+          <span>ACERO + PINTURA EPOXI</span>
+        </div>
         <img
-          src={productImage(heroProduct.images[0], 900)}
+          src={productImage(heroProduct.images[0], 960)}
+          srcset={`${productImage(heroProduct.images[0], 640)} 640w, ${productImage(heroProduct.images[0], 960)} 960w`}
+          sizes="(min-width: 768px) 48vw, 100vw"
           alt={heroProduct.name}
-          width="900"
-          height="900"
+          width="960"
+          height="640"
           fetchpriority="high"
-          class="aspect-square h-full w-full object-cover"
         />
+        <div class="hero-product-bottom">
+          <div>
+            <span>PARA LAS TAREAS DE TODOS LOS DÍAS</span>
+            <h2>{heroProduct.name}</h2>
+          </div>
+          <span class="hero-arrow" aria-hidden="true">
+            ↗
+          </span>
+        </div>
       </a>
+    </div>
+    <div class="hero-index container-page">
+      <span>HERRAMIENTAS PARA VIVIR MEJOR</span>
+      <a href="#cat-title">Explorá el catálogo ↓</a>
     </div>
   </section>
 
   <section class="container-page py-10" aria-labelledby="benefits-title">
-    <h2 id="benefits-title" class="sr-only">Por qué comprar en Ferrato</h2>
+    <h2 id="benefits-title" class="sr-only">
+      Por qué comprar en Ferrato
+    </h2>
     <ul class="grid gap-px overflow-hidden rounded-2xl border border-stone-200 bg-stone-200 shadow-[0_1px_2px_rgba(28,25,23,0.04),0_8px_24px_-12px_rgba(28,25,23,0.12)] sm:grid-cols-2 lg:grid-cols-4">
       {benefits.map((b) => {
         const Tag = b.href ? 'a' : 'div';
@@ -120,7 +153,10 @@ const benefits = [
   </section>
 
   <section class="container-page py-14" aria-labelledby="cat-title">
-    <h2 id="cat-title" class="section-title">Categorías</h2>
+    <h2 id="cat-title" class="section-title">
+      ¿Qué necesitás para tu casa?
+    </h2>
+    <p class="mt-3 text-steel">Encontrá tu próximo producto por categoría.</p>
     <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-5">
       {categories.map((c) => (
         <a
@@ -132,6 +168,8 @@ const benefits = [
             alt={c.name}
             width="320"
             height="320"
+            loading="lazy"
+            decoding="async"
             class="aspect-square w-full object-cover"
           />
           <span class="mt-3 block px-3 font-semibold">{c.name}</span>
@@ -147,7 +185,9 @@ const benefits = [
 
   <section class="container-page pb-6" aria-labelledby="feat-title">
     <div class="flex items-end justify-between">
-      <h2 id="feat-title" class="section-title">Destacados</h2>
+      <h2 id="feat-title" class="section-title">
+        Elegidos del catálogo
+      </h2>
       <a href="/productos/todos" class="text-sm font-semibold text-brand-700 hover:underline">
         Ver todos →
       </a>
@@ -156,6 +196,46 @@ const benefits = [
       {featured.map((p) => (
         <ProductCard product={p} />
       ))}
+    </div>
+  </section>
+  <section class="container-page mt-16" aria-labelledby="advice-title">
+    <div class="home-advice">
+      <div>
+        <p class="eyebrow">COMPRÁ CON ASESORAMIENTO</p>
+        <h2 id="advice-title">
+          El producto indicado.
+          <br />
+          Desde la primera consulta.
+        </h2>
+        <p>Consultanos por medidas, modelos y disponibilidad antes de elegir.</p>
+      </div>
+      <a
+        href={whatsappContactUrl('¡Hola! Quiero que me ayuden a elegir un producto.')}
+        target="_blank"
+        rel="noopener"
+        class="btn-primary"
+      >
+        Hablá con nosotros ↗
+      </a>
+    </div>
+    <div class="purchase-steps">
+      <div>
+        <span>01</span>
+        <h3>Elegí tu producto</h3>
+        <p>Revisá las medidas y los colores en cada ficha.</p>
+      </div>
+      <div>
+        <span>02</span>
+        <h3>Armá tu pedido</h3>
+        <p>Sumalo al carrito o consultanos por WhatsApp.</p>
+      </div>
+      <div>
+        <span>03</span>
+        <h3>Coordiná la entrega</h3>
+        <p>
+          <a href="/como-comprar#envios">Conocé cómo funcionan los envíos →</a>
+        </p>
+      </div>
     </div>
   </section>
 </BaseLayout>

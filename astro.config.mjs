@@ -13,7 +13,7 @@ export default defineConfig({
   // Todas las páginas se pre-renderizan (HTML estático = SEO y velocidad).
   // Sólo las rutas con `export const prerender = false` (API de checkout y webhook) corren en el servidor.
   output: 'static',
-  adapter: netlify(),
+  adapter: netlify({ devFeatures: false }),
   integrations: [
     react(),
     sitemap({

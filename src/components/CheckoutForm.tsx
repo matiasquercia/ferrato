@@ -1,5 +1,6 @@
+import { track, ecommerceItem } from '@/lib/analytics';
 import { useStore } from '@nanostores/react';
-import { useEffect, useState, type SubmitEvent } from 'react';
+import { useEffect, useRef, useState, type SubmitEvent } from 'react';
 import { lineKey, $cart, $cartTotal, removeFromCart, setQuantity } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
 import { productImage } from '@/lib/images';
@@ -12,6 +13,7 @@ interface Props {
 export default function CheckoutForm({ freeShippingFrom }: Props) {
   const items = useStore($cart);
   const total = useStore($cartTotal);
+  const submitting = useRef(false);
   const [mounted, setMounted] = useState(false);
   const [buyer, setBuyer] = useState({ name: '', email: '', phone: '', address: '', notes: '' });
   const [loading, setLoading] = useState(false);
@@ -36,6 +38,9 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
 
   const payWithMercadoPago = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting.current) return;
+    submitting.current = true;
+    track('begin_checkout', { currency: 'ARS', value: total, items: items.map(ecommerceItem) });
     setError(null);
     setLoading(true);
     try {
@@ -49,9 +54,12 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
       });
       const data = await res.json();
       if (!res.ok || !data.initPoint) throw new Error(data.error ?? 'No se pudo iniciar el pago.');
+      track('checkout_submit', { payment_method: 'mercadopago' });
       window.location.href = data.initPoint;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error inesperado.');
+      submitting.current = false;
+      track('checkout_error', { stage: 'create_preference' });
       setLoading(false);
     }
   };
@@ -136,6 +144,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
         <input
           className={input}
           required
+          aria-label="Nombre y apellido"
           placeholder="Nombre y apellido *"
           autoComplete="name"
           value={buyer.name}
@@ -145,6 +154,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
           className={input}
           required
           type="email"
+          aria-label="Email"
           placeholder="Email *"
           autoComplete="email"
           value={buyer.email}
@@ -153,6 +163,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
         <input
           className={input}
           type="tel"
+          aria-label="Teléfono"
           placeholder="Teléfono"
           autoComplete="tel"
           value={buyer.phone}
@@ -160,6 +171,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
         />
         <input
           className={input}
+          aria-label="Dirección y localidad"
           placeholder="Dirección y localidad"
           autoComplete="street-address"
           value={buyer.address}
@@ -168,6 +180,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
         <textarea
           className={input}
           rows={2}
+          aria-label="Notas del pedido"
           placeholder="Notas del pedido"
           value={buyer.notes}
           onChange={update('notes')}
@@ -192,6 +205,13 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
         <a href={whatsappUrl} target="_blank" rel="noopener" className="btn-whatsapp w-full">
           Pedir por WhatsApp
         </a>
+        <p className="text-xs text-steel">
+          Usamos tus datos para gestionar el pedido.{' '}
+          <a href="/privacidad" className="underline">
+            Consultá nuestra política de privacidad
+          </a>
+          .
+        </p>
         <p className="text-center text-xs text-steel">
           Pagá con tarjeta, en cuotas, con dinero en cuenta o efectivo.
         </p>

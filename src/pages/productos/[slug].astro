@@ -59,7 +59,15 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
   jsonLd={productLd}
   ogType="product"
 >
-  <div class="container-page py-10">
+  <div
+    class="container-page py-10"
+    data-view-item={JSON.stringify({
+      item_id: product.id,
+      item_name: product.name,
+      price: product.price,
+      item_category: product.category,
+    })}
+  >
     <Breadcrumbs
       items={[
         { name: category.name, href: `/categoria/${category.slug}` },
@@ -89,9 +97,7 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
               -{off}%
             </span>
           )}
-          <span
-            class="absolute right-4 bottom-4 rounded-full bg-ink/80 px-3 py-1 text-xs font-semibold text-white"
-          >
+          <span class="absolute right-4 bottom-4 rounded-full bg-ink/80 px-3 py-1 text-xs font-semibold text-white">
             Ampliar
           </span>
         </button>

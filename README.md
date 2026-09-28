@@ -15,7 +15,7 @@ Construida con [Astro](https://astro.build) + islas de React, Tailwind CSS, carr
 | Pagos          | Mercado Pago Checkout Pro (SDK oficial `mercadopago`) + WhatsApp               |
 | Catálogo       | `src/data/catalog.json`                                                        |
 | SEO            | Meta/OG por página, JSON-LD (Store, Product, Breadcrumb, FAQ), sitemap, robots |
-| Deploy         | Vercel (adapter `@astrojs/vercel`)                                             |
+| Deploy         | Netlify (adapter `@astrojs/netlify`)                                             |
 
 ## Empezar
 
@@ -87,7 +87,7 @@ en `scripts/safari-raw.json`.
 
 ### Precios y stock
 
-Safari no publica precios (vende sólo por mayor), así que todos los productos tienen `"price": null`. Mientras un
+El catálogo contiene precios cargados. Mientras un
 producto no tenga precio, la tienda muestra **"Precio a consultar"** y un botón de WhatsApp en lugar de "Agregar al
 carrito". Para habilitar la venta online, cargá el precio (ARS, entero):
 
@@ -154,14 +154,14 @@ flotante y uno de consulta en cada producto.
 - `title`, `description`, canonical, Open Graph y Twitter Card por página. Imagen OG por defecto: `public/og-default.png`.
 - Datos estructurados: `Store`, `Product` + `Offer` (precio/stock → rich results), `BreadcrumbList`, `FAQPage`.
 - `sitemap-index.xml` automático y `robots.txt` (excluye carrito, checkout y API).
-- GA4 y Meta Pixel se activan sólo con completar la variable.
+- GA4, Google Ads y Meta requieren configuración y consentimiento. Ver [auditoría y conexión de medición](AUDIT-MEASUREMENT.md).
 
 Después del primer deploy: registrá el dominio en [Google Search Console](https://search.google.com/search-console)
 y enviá `https://TU-DOMINIO/sitemap-index.xml`.
 
 ## Deploy
 
-**Vercel (configurado):** importá el repo en Vercel, cargá las variables de entorno y listo. Las páginas se sirven
+**Netlify (configurado):** importá el repo en Netlify, cargá las variables de entorno y listo. Las páginas se sirven
 estáticas y `/api/*` corre como función serverless.
 
 **Otro hosting:** cambiá el adapter en `astro.config.mjs` (`@astrojs/node`, `@astrojs/netlify`, etc.).

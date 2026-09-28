@@ -1,3 +1,4 @@
+import { track, ecommerceItem } from './analytics';
 import { persistentJSON } from '@nanostores/persistent';
 import { atom, computed } from 'nanostores';
 
@@ -33,6 +34,13 @@ export function addToCart(item: Omit<CartItem, 'quantity'>, quantity = 1) {
   } else {
     $cart.set([...items, { ...item, quantity: Math.min(quantity, item.maxStock) }]);
   }
+  const added = ($cart.get().find((i) => lineKey(i) === key)?.quantity ?? 0) - (existing?.quantity ?? 0);
+  if (added > 0)
+    track('add_to_cart', {
+      currency: 'ARS',
+      value: item.price * added,
+      items: [ecommerceItem({ ...item, quantity: added })],
+    });
   $cartOpen.set(true);
 }
 

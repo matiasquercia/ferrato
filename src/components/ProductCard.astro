@@ -13,9 +13,19 @@ const off = product.price !== null ? discountPercent(product.price, product.comp
 
 <article
   data-category={product.category}
+  data-item={JSON.stringify({
+    item_id: product.id,
+    item_name: product.name,
+    price: product.price,
+    item_category: product.category,
+  })}
   class="group flex flex-col overflow-hidden rounded-2xl border border-stone-300/80 bg-white transition hover:shadow-lg"
 >
-  <a href={`/productos/${product.slug}`} aria-label={product.name} class="relative block aspect-square overflow-hidden">
+  <a
+    href={`/productos/${product.slug}`}
+    aria-label={product.name}
+    class="relative block aspect-square overflow-hidden"
+  >
     <img
       src={productImage(product.images[0], 500)}
       alt={product.name}

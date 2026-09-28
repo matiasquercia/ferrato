@@ -10,7 +10,8 @@
     "check": "astro check",
     "format": "prettier --write .",
     "astro": "astro",
-    "images:download": "node scripts/download-images.mjs"
+    "images:download": "node scripts/download-images.mjs",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/netlify": "^8.2.6",
