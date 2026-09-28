@@ -69,7 +69,12 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
 
     <div class="mt-6 grid gap-10 md:grid-cols-2">
       <div data-gallery>
-        <div class="relative aspect-square overflow-hidden rounded-3xl border border-stone-300/80 bg-photo">
+        <button
+          type="button"
+          data-gallery-open
+          class="relative block w-full cursor-zoom-in overflow-hidden rounded-3xl border border-stone-300/80 bg-photo"
+          aria-label="Ampliar imagen"
+        >
           <img
             data-gallery-main
             src={productImage(product.images[0], 1000)}
@@ -77,20 +82,26 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
             width="1000"
             height="1000"
             fetchpriority="high"
-            class="h-full w-full object-contain p-4"
+            class="aspect-square h-full w-full object-contain p-4"
           />
           {off > 0 && (
             <span class="absolute top-4 left-4 rounded-full bg-red-600 px-3 py-1 text-sm font-bold text-white">
               -{off}%
             </span>
           )}
-        </div>
+          <span
+            class="absolute right-4 bottom-4 rounded-full bg-ink/80 px-3 py-1 text-xs font-semibold text-white"
+          >
+            Ampliar
+          </span>
+        </button>
         {product.images.length > 1 && (
           <div class="mt-3 grid grid-cols-5 gap-2">
             {product.images.map((img, i) => (
               <button
                 type="button"
-                data-gallery-thumb={productImage(img, 1000)}
+                data-gallery-thumb={productImage(img, 1600)}
+                data-index={i}
                 aria-label={`Ver imagen ${i + 1}`}
                 class:list={[
                   'aspect-square overflow-hidden rounded-xl border-2 bg-photo',
@@ -109,6 +120,50 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
             ))}
           </div>
         )}
+
+        <dialog
+          data-lightbox
+          class="fixed inset-0 m-0 h-full max-h-none w-full max-w-none border-0 bg-black/90 p-0 text-white backdrop:bg-black/80"
+          aria-label={`Fotos de ${product.name}`}
+        >
+          <div class="flex h-full flex-col">
+            <div class="flex items-center justify-between px-4 py-3">
+              <p data-lightbox-count class="text-sm font-semibold"></p>
+              <button
+                type="button"
+                data-lightbox-close
+                class="rounded-full px-3 py-2 text-sm font-semibold hover:bg-white/10"
+              >
+                Cerrar
+              </button>
+            </div>
+            <div class="relative flex min-h-0 flex-1 items-center justify-center px-14">
+              <button
+                type="button"
+                data-lightbox-prev
+                class:list={[
+                  'absolute left-3 grid h-11 w-11 place-items-center rounded-full bg-white/15 text-2xl hover:bg-white/25',
+                  product.images.length < 2 && 'hidden',
+                ]}
+                aria-label="Foto anterior"
+              >
+                ‹
+              </button>
+              <img data-lightbox-img alt="" class="max-h-full max-w-full object-contain" />
+              <button
+                type="button"
+                data-lightbox-next
+                class:list={[
+                  'absolute right-3 grid h-11 w-11 place-items-center rounded-full bg-white/15 text-2xl hover:bg-white/25',
+                  product.images.length < 2 && 'hidden',
+                ]}
+                aria-label="Foto siguiente"
+              >
+                ›
+              </button>
+            </div>
+          </div>
+        </dialog>
       </div>
 
       <div>
@@ -195,15 +250,70 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
 <script>
   document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
     const main = gallery.querySelector<HTMLImageElement>('[data-gallery-main]');
-    const thumbs = gallery.querySelectorAll<HTMLButtonElement>('[data-gallery-thumb]');
-    thumbs.forEach((thumb) =>
-      thumb.addEventListener('click', () => {
-        if (main) main.src = thumb.dataset.galleryThumb!;
-        thumbs.forEach((t) => {
-          t.classList.toggle('border-ink', t === thumb);
-          t.classList.toggle('border-stone-200', t !== thumb);
-        });
-      }),
-    );
+    const openBtn = gallery.querySelector<HTMLButtonElement>('[data-gallery-open]');
+    const thumbs = [...gallery.querySelectorAll<HTMLButtonElement>('[data-gallery-thumb]')];
+    const dialog = gallery.querySelector<HTMLDialogElement>('[data-lightbox]');
+    const lightboxImg = gallery.querySelector<HTMLImageElement>('[data-lightbox-img]');
+    const count = gallery.querySelector<HTMLElement>('[data-lightbox-count]');
+    const prev = gallery.querySelector<HTMLButtonElement>('[data-lightbox-prev]');
+    const next = gallery.querySelector<HTMLButtonElement>('[data-lightbox-next]');
+    const closeBtn = gallery.querySelector<HTMLButtonElement>('[data-lightbox-close]');
+    const sources = thumbs.length
+      ? thumbs.map((t) => t.dataset.galleryThumb!)
+      : [main?.src ?? ''].filter(Boolean);
+    let index = 0;
+
+    const markThumb = () => {
+      thumbs.forEach((t, i) => {
+        t.classList.toggle('border-ink', i === index);
+        t.classList.toggle('border-stone-200', i !== index);
+      });
+    };
+
+    const show = (nextIndex: number) => {
+      index = (nextIndex + sources.length) % sources.length;
+      const src = sources[index];
+      if (main) main.src = src;
+      if (lightboxImg) {
+        lightboxImg.src = src;
+        lightboxImg.alt = `${main?.alt ?? 'Foto'} ${index + 1} de ${sources.length}`;
+      }
+      if (count) count.textContent = `${index + 1} / ${sources.length}`;
+      const single = sources.length < 2;
+      prev?.classList.toggle('hidden', single);
+      next?.classList.toggle('hidden', single);
+      markThumb();
+    };
+
+    thumbs.forEach((thumb, i) => thumb.addEventListener('click', () => show(i)));
+
+    const open = () => {
+      if (!dialog) return;
+      show(index);
+      dialog.showModal();
+    };
+    openBtn?.addEventListener('click', open);
+
+    prev?.addEventListener('click', () => show(index - 1));
+    next?.addEventListener('click', () => show(index + 1));
+    closeBtn?.addEventListener('click', () => dialog?.close());
+    dialog?.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog?.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') show(index - 1);
+      if (event.key === 'ArrowRight') show(index + 1);
+    });
+
+    let startX = 0;
+    dialog?.addEventListener('pointerdown', (event) => {
+      startX = event.clientX;
+    });
+    dialog?.addEventListener('pointerup', (event) => {
+      if ((event.target as HTMLElement).closest('button')) return;
+      const delta = event.clientX - startX;
+      if (delta > 50) show(index - 1);
+      if (delta < -50) show(index + 1);
+    });
   });
 </script>
