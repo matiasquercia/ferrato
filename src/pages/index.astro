@@ -126,7 +126,7 @@ const benefits = [
       ¿Qué necesitás para tu casa?
     </h2>
     <p class="mt-3 text-steel">Encontrá tu próximo producto por categoría.</p>
-    <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-5">
+    <div class="category-grid mt-6">
       {categories.map((c) => (
         <a
           href={`/categoria/${c.slug}`}
@@ -161,7 +161,7 @@ const benefits = [
         Ver todos →
       </a>
     </div>
-    <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+    <div class="catalog-grid mt-6">
       {featured.map((p) => (
         <ProductCard product={p} />
       ))}

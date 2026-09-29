@@ -10,7 +10,7 @@ const { products } = Astro.props;
 {products.length === 0 ? (
   <p class="py-10 text-center text-steel">No hay productos en esta categoría todavía.</p>
 ) : (
-  <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+  <div class="catalog-grid">
     {products.map((p) => (
       <ProductCard product={p} />
     ))}

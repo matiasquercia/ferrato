@@ -15,7 +15,7 @@ const countLabel = (n: number) => (n === 1 ? '1 producto' : `${n} productos`);
   <div class="container-page py-10">
     <Breadcrumbs items={[{ name: 'Productos', href: '/productos' }]} />
     <h1 class="mt-4 font-display text-5xl font-bold uppercase">Productos</h1>
-    <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
+    <div class="category-grid mt-8">
       <a
         href="/productos/todos"
         class="group overflow-hidden rounded-2xl border border-stone-300/80 bg-white text-center transition hover:border-brand-500 hover:shadow-md"

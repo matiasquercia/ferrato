@@ -60,15 +60,15 @@ export default function CartDrawer() {
           <>
             <ul className="flex-1 divide-y divide-stone-100 overflow-y-auto p-5">
               {items.map((item) => (
-                <li key={lineKey(item)} className="flex gap-4 py-4">
+                <li key={lineKey(item)} className="flex flex-wrap gap-4 py-4">
                   <img
                     src={productImage(item.image, 160)}
                     alt=""
                     width={72}
                     height={72}
-                    className="h-18 w-18 rounded-lg bg-brand-50 object-cover"
+                    className="h-18 w-18 shrink-0 rounded-lg bg-brand-50 object-cover"
                   />
-                  <div className="flex flex-1 flex-col gap-1">
+                  <div className="flex min-w-0 flex-1 basis-36 flex-col gap-1">
                     <a
                       href={`/productos/${item.slug}`}
                       className="text-sm font-semibold leading-snug hover:text-brand-700"
@@ -108,7 +108,7 @@ export default function CartDrawer() {
                       </button>
                     </div>
                   </div>
-                  <span className="font-semibold">{formatPrice(item.price * item.quantity)}</span>
+                  <span className="ml-auto font-semibold">{formatPrice(item.price * item.quantity)}</span>
                 </li>
               ))}
             </ul>

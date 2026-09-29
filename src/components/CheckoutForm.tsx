@@ -70,19 +70,20 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
     'w-full rounded-lg border border-stone-300 bg-white px-4 py-3 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100';
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[1fr_420px]">
+    <div className="checkout-shell">
+    <div className="checkout-layout">
       <section aria-label="Productos" className="h-fit rounded-2xl border border-stone-200 bg-white">
         <ul className="divide-y divide-stone-100">
           {items.map((item) => (
-            <li key={lineKey(item)} className="flex items-center gap-4 p-5">
+            <li key={lineKey(item)} className="flex flex-wrap items-start gap-4 p-5">
               <img
                 src={productImage(item.image, 160)}
                 alt=""
                 width={80}
                 height={80}
-                className="h-20 w-20 rounded-xl bg-brand-50 object-cover"
+                className="h-20 w-20 shrink-0 rounded-xl bg-brand-50 object-cover"
               />
-              <div className="flex-1">
+              <div className="min-w-0 flex-1 basis-48">
                 <a href={`/productos/${item.slug}`} className="font-semibold hover:text-brand-700">
                   {item.name}
                   {item.variant && (
@@ -119,7 +120,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
                   </button>
                 </div>
               </div>
-              <span className="text-lg font-bold">{formatPrice(item.price * item.quantity)}</span>
+              <span className="ml-auto text-lg font-bold">{formatPrice(item.price * item.quantity)}</span>
             </li>
           ))}
         </ul>
@@ -216,6 +217,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
           Pagá con tarjeta, en cuotas, con dinero en cuenta o efectivo.
         </p>
       </form>
+    </div>
     </div>
   );
 }

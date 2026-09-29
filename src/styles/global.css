@@ -36,6 +36,42 @@ body {
 @utility btn-whatsapp {
   @apply btn bg-[#25D366] text-white hover:bg-[#1da851] focus-visible:outline-[#25D366];
 }
+/* Column count follows the parent width, same idea as a max-extent grid. */
+.catalog-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+.category-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+}
+/* Checkout switches to two columns only when the parent can hold both. */
+.checkout-shell {
+  container-type: inline-size;
+  container-name: checkout;
+}
+.checkout-layout {
+  display: grid;
+  gap: 2.5rem;
+}
+.checkout-layout > * {
+  width: 100%;
+  min-width: 0;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+@container checkout (min-width: 960px) {
+  .checkout-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 26rem);
+    align-items: start;
+  }
+  .checkout-layout > * {
+    max-width: none;
+    margin-inline: 0;
+  }
+}
 @utility section-title {
   @apply font-display text-4xl font-bold uppercase;
   &::after {
