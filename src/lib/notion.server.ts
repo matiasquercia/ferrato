@@ -5,6 +5,13 @@ import { formatOrderLines, type OrderRecord, type OrderStatus } from '@/lib/orde
 const NOTION_VERSION = '2022-06-28';
 const NOTION_API = 'https://api.notion.com/v1';
 
+const ADDRESS_PROPERTIES = {
+  'Calle y número': { rich_text: {} },
+  'Piso / depto': { rich_text: {} },
+  Localidad: { rich_text: {} },
+  'Código postal': { rich_text: {} },
+} as const;
+
 function config() {
   const token = import.meta.env.NOTION_TOKEN ?? process.env.NOTION_TOKEN;
   const databaseId = import.meta.env.NOTION_DATABASE_ID ?? process.env.NOTION_DATABASE_ID;
@@ -20,13 +27,17 @@ function title(value: string) {
   return { title: [{ type: 'text' as const, text: { content: value.slice(0, 200) } }] };
 }
 
-function properties(order: OrderRecord) {
+export function orderProperties(order: OrderRecord) {
   return {
     Pedido: title(order.orderId),
     Nombre: text(order.buyer.name),
     Email: { email: order.buyer.email || null },
     Teléfono: { phone_number: order.buyer.phone || null },
     Dirección: text(formatBuyerAddress(order.buyer)),
+    'Calle y número': text(order.buyer.street),
+    'Piso / depto': text(order.buyer.unit),
+    Localidad: text(order.buyer.locality),
+    'Código postal': text(order.buyer.postalCode),
     Notas: text(order.buyer.notes),
     Productos: text(`${formatOrderLines(order.lines)}\nTotal: ${formatPrice(order.total)}`),
     Total: { number: order.total },
@@ -54,6 +65,46 @@ async function notion(path: string, init: RequestInit) {
   return response.json() as Promise<Record<string, unknown>>;
 }
 
+let schemaReady: Promise<void> | null = null;
+
+async function ensureAddressProperties() {
+  const cfg = config();
+  if (!cfg) return;
+  const database = (await notion(`/databases/${cfg.databaseId}`, { method: 'GET' })) as {
+    properties?: Record<string, { name?: string }>;
+  } | null;
+  const existing = new Set(Object.keys(database?.properties ?? {}));
+  const missing = Object.fromEntries(
+    Object.entries(ADDRESS_PROPERTIES).filter(([name]) => !existing.has(name)),
+  );
+  if (Object.keys(missing).length === 0) return;
+  await notion(`/databases/${cfg.databaseId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ properties: missing }),
+  });
+}
+
+function ensureSchema() {
+  if (!schemaReady) {
+    schemaReady = ensureAddressProperties().catch((err) => {
+      schemaReady = null;
+      throw err;
+    });
+  }
+  return schemaReady;
+}
+
+function withoutSplitAddress(properties: ReturnType<typeof orderProperties>) {
+  const {
+    'Calle y número': _street,
+    'Piso / depto': _unit,
+    Localidad: _locality,
+    'Código postal': _postal,
+    ...rest
+  } = properties;
+  return rest;
+}
+
 export function isNotionConfigured() {
   return config() !== null;
 }
@@ -65,11 +116,23 @@ export async function saveOrderToNotion(order: OrderRecord) {
     return null;
   }
   try {
-    const page = await notion('/pages', {
-      method: 'POST',
-      body: JSON.stringify({ parent: { database_id: cfg.databaseId }, properties: properties(order) }),
-    });
-    return typeof page?.id === 'string' ? page.id : null;
+    try {
+      await ensureSchema();
+    } catch (err) {
+      console.warn('[notion] No se pudieron crear las columnas de dirección', err);
+    }
+    const payload = { parent: { database_id: cfg.databaseId }, properties: orderProperties(order) };
+    try {
+      const page = await notion('/pages', { method: 'POST', body: JSON.stringify(payload) });
+      return typeof page?.id === 'string' ? page.id : null;
+    } catch (err) {
+      const page = await notion('/pages', {
+        method: 'POST',
+        body: JSON.stringify({ ...payload, properties: withoutSplitAddress(payload.properties) }),
+      });
+      console.warn('[notion] Pedido guardado sin columnas de dirección separadas', order.orderId, err);
+      return typeof page?.id === 'string' ? page.id : null;
+    }
   } catch (err) {
     console.error('[notion] No se pudo crear el pedido', order.orderId, err);
     return null;

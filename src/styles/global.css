@@ -133,13 +133,17 @@ summary {
   background: #f9bf56;
 }
 .hero-copy h1 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.22em;
   font-size: clamp(3rem, 5.2vw, 5rem);
-  line-height: 1.02;
-  letter-spacing: -0.055em;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
   font-weight: 800;
   margin-top: 1.6rem;
 }
-.hero-copy h1 > span {
+.hero-copy h1 > span:last-child {
   color: #f9bf56;
 }
 .hero-description {
@@ -231,17 +235,6 @@ summary {
 }
 .hero-product:hover .hero-arrow {
   background: #f9bf56;
-}
-.hero-index {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  border-top: 1px solid #464b40;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  font-size: 0.65rem;
-  letter-spacing: 0.08em;
-  color: #c5c9bd;
 }
 .home-advice {
   display: flex;
@@ -352,9 +345,6 @@ summary {
     width: 100%;
     margin-inline: auto;
   }
-  .hero-index > span {
-    display: none;
-  }
   .home-advice {
     padding: 1.5rem;
     align-items: flex-start;
@@ -385,7 +375,12 @@ summary {
 }
 
 /* Original workshop campaign photograph, generated for Ferrato. */
-.hero-photo { position: relative; isolation: isolate; overflow: hidden; background: #171918; }
+.hero-photo {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #171918;
+}
 .hero-background {
   position: absolute;
   inset: 0;
@@ -395,21 +390,71 @@ summary {
   object-position: var(--hero-pos, right center);
   z-index: -2;
 }
-.hero-photo::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #11161366 0%, #11161330 40%, transparent 70%); z-index: -1; }
-.hero-photo .hero-layout { min-height: 620px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding-top: 4rem; padding-bottom: 4rem; }
-.hero-photo .hero-copy { max-width: 34rem; }
-.hero-photo .hero-index { position: relative; border-color: #ffffff30; }
-@media(max-width:767px) {
-  .hero-photo .hero-layout { min-height: 760px; grid-template-columns: 1fr; align-items: start; padding-top: 2.5rem; padding-bottom: 18rem; }
+.hero-photo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #11161366 0%, #11161330 40%, transparent 70%);
+  z-index: -1;
+}
+.hero-photo .hero-layout {
+  min-height: 620px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+.hero-photo .hero-copy {
+  max-width: 34rem;
+}
+@media (min-width: 768px) {
+  .hero-photo {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 6.5rem);
+    min-height: 36rem;
+  }
+  .hero-photo .hero-layout {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    min-height: 0;
+    align-items: center;
+  }
+  /* Keep the full 16:9 photo inside the hero so products never slide under the headline. */
+  .hero-background {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: right center;
+  }
+  .hero-photo::before {
+    background: linear-gradient(90deg, #171918f2 0%, #171918d8 28%, #17191880 48%, transparent 70%);
+    z-index: 0;
+  }
+}
+@media (max-width: 767px) {
+  .hero-photo .hero-layout {
+    min-height: 760px;
+    grid-template-columns: 1fr;
+    align-items: start;
+    padding-top: 2.5rem;
+    padding-bottom: 18rem;
+  }
   .hero-photo .hero-background {
     height: 58%;
     top: auto;
     bottom: 0;
     object-position: var(--hero-pos-mobile, 80% 50%);
   }
-  .hero-photo::before { background: linear-gradient(180deg, #171918 0%, #171918 38%, #171918b3 53%, transparent 76%); }
-  .hero-photo .hero-copy h1 { font-size: clamp(2.8rem, 12vw, 4.5rem); }
-  .hero-photo .hero-facts { margin-top: 1rem; }
-  .hero-photo .hero-index { background: #171918aa; }
+  .hero-photo::before {
+    background: linear-gradient(180deg, #171918 0%, #171918 38%, #171918b3 53%, transparent 76%);
+  }
+  .hero-photo .hero-copy h1 {
+    font-size: clamp(2.8rem, 12vw, 4.5rem);
+  }
+  .hero-photo .hero-facts {
+    margin-top: 1rem;
+  }
 }
 

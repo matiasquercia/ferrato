@@ -1,9 +1,9 @@
 ---
 const slides = [
-  { file: 'workshop-v2', label: 'Herramientas', pos: '82% 58%', posMobile: '88% 62%' },
-  { file: 'tender', label: 'Tenders', pos: '70% 48%', posMobile: '72% 42%' },
-  { file: 'escalera', label: 'Escaleras', pos: '78% 55%', posMobile: '80% 48%' },
-  { file: 'hogar', label: 'Hogar', pos: '74% 50%', posMobile: '78% 45%' },
+  { file: 'workshop-v2', label: 'Herramientas', pos: 'right center', posMobile: '88% 62%' },
+  { file: 'tender', label: 'Tenders', pos: 'right center', posMobile: '72% 42%' },
+  { file: 'escalera', label: 'Escaleras', pos: 'right center', posMobile: '80% 48%' },
+  { file: 'hogar', label: 'Hogar', pos: 'right center', posMobile: '78% 45%' },
 ];
 ---
 {slides.map((slide, i) => (
@@ -22,27 +22,15 @@ const slides = [
     decoding={i === 0 ? 'auto' : 'async'}
   />
 ))}
-<div class="hero-carousel-controls" hidden>
-  <button type="button" data-play aria-label="Pausar fotos">Pausar</button>
-</div>
 <script>
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   if (hero) {
     const images = [...hero.querySelectorAll<HTMLImageElement>('.hero-slide')];
-    const controls = hero.querySelector<HTMLElement>('.hero-carousel-controls')!;
-    const play = controls.querySelector<HTMLButtonElement>('[data-play]')!;
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     let current = 0;
     let generation = 0;
     let playing = !reduced.matches;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    hero.querySelector('#hero-controls-slot')?.append(controls);
-    controls.hidden = false;
-
-    function updatePlay() {
-      play.textContent = playing ? 'Pausar' : 'Reproducir';
-      play.setAttribute('aria-label', playing ? 'Pausar fotos' : 'Reproducir fotos');
-    }
 
     async function load(index: number) {
       const img = images[index];
@@ -78,18 +66,11 @@ const slides = [
       schedule();
     }
 
-    play.addEventListener('click', () => {
-      playing = !playing;
-      updatePlay();
-      schedule();
-    });
     document.addEventListener('visibilitychange', schedule);
     reduced.addEventListener('change', () => {
       playing = !reduced.matches;
-      updatePlay();
       schedule();
     });
-    updatePlay();
     schedule();
   }
 </script>
@@ -100,29 +81,6 @@ const slides = [
   }
   .hero-slide.is-active {
     opacity: 1;
-  }
-  .hero-carousel-controls {
-    display: flex;
-    align-items: center;
-  }
-  .hero-carousel-controls[hidden] {
-    display: none;
-  }
-  .hero-carousel-controls button {
-    min-height: 44px;
-    padding: 0 0.75rem;
-    cursor: pointer;
-    color: #c5c9bd;
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .hero-carousel-controls button:hover {
-    color: #fff;
-  }
-  .hero-carousel-controls button:focus-visible {
-    outline: 2px solid #eeb34d;
-    outline-offset: 2px;
   }
   @media (prefers-reduced-motion: reduce) {
     .hero-slide {
