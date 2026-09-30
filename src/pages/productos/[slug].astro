@@ -78,7 +78,7 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
       ]}
     />
 
-    <div class="mt-6 grid gap-10 md:grid-cols-2">
+    <div class="product-layout mt-6 grid gap-6 md:grid-cols-2 md:gap-10">
       <div data-gallery>
         <button
           type="button"
@@ -95,7 +95,7 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
             width="1000"
             height="1000"
             fetchpriority="high"
-            class="aspect-square h-full w-full object-cover"
+            class="aspect-square h-auto w-full object-cover"
           />
           {off > 0 && (
             <span class="absolute top-4 left-4 rounded-full bg-red-600 px-3 py-1 text-sm font-bold text-white">
@@ -182,7 +182,7 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
         <p class="text-sm font-semibold tracking-wide text-steel uppercase">
           {product.brand} · Cód. {product.sku}
         </p>
-        <h1 class="mt-2 font-display text-4xl leading-tight font-bold uppercase sm:text-5xl">
+        <h1 class="product-title mt-2 font-display text-3xl leading-tight font-bold uppercase sm:text-5xl">
           {product.name}
         </h1>
         <div class="mt-4 flex items-baseline gap-3">

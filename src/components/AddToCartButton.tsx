@@ -100,12 +100,12 @@ export default function AddToCartButton({ product, compact = false, withQuantity
           )}
         </fieldset>
       )}
-      <div className="flex gap-3">
+      <div className={withQuantity ? 'product-purchase-controls' : 'flex gap-3'}>
         {withQuantity && !outOfStock && (
           <div className="flex items-center rounded-lg border border-stone-300 bg-white">
             <button
               type="button"
-              className="px-3 py-2 text-lg"
+              className="min-h-11 min-w-11 px-3 py-2 text-lg"
               onClick={() => setQty((q) => Math.max(1, q - 1))}
               aria-label="Restar"
             >
@@ -116,7 +116,7 @@ export default function AddToCartButton({ product, compact = false, withQuantity
             </span>
             <button
               type="button"
-              className="px-3 py-2 text-lg"
+              className="min-h-11 min-w-11 px-3 py-2 text-lg"
               onClick={() => setQty((q) => Math.min(product.maxStock, q + 1))}
               aria-label="Sumar"
             >
@@ -128,7 +128,7 @@ export default function AddToCartButton({ product, compact = false, withQuantity
           type="button"
           onClick={onAdd}
           disabled={outOfStock}
-          className={`btn-primary flex-1 ${compact ? 'py-2 text-sm' : ''}`}
+          className={`btn-primary min-w-0 flex-1 ${compact ? 'py-2 text-sm' : ''}`}
         >
           {outOfStock ? 'Sin stock' : added ? '¡Agregado! ✓' : 'Agregar al carrito'}
         </button>

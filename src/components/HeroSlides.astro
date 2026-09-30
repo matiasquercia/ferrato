@@ -14,7 +14,7 @@ const slides = [
     srcset={i === 0 ? `/images/hero/${slide.file}-960.webp 960w, /images/hero/${slide.file}-1672.webp 1672w` : undefined}
     data-src={`/images/hero/${slide.file}-1672.webp`}
     data-srcset={`/images/hero/${slide.file}-960.webp 960w, /images/hero/${slide.file}-1672.webp 1672w`}
-    sizes="100vw"
+    sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) 55vw, 700px"
     alt=""
     width="1672"
     height="941"
@@ -27,9 +27,11 @@ const slides = [
   if (hero) {
     const images = [...hero.querySelectorAll<HTMLImageElement>('.hero-slide')];
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const mobile = matchMedia('(max-width: 767px)');
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
     let current = 0;
     let generation = 0;
-    let playing = !reduced.matches;
+    let visible = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
     async function load(index: number) {
@@ -43,7 +45,7 @@ const slides = [
 
     function schedule() {
       clearTimeout(timer);
-      if (playing && !document.hidden) {
+      if (!reduced.matches && !mobile.matches && !connection?.saveData && visible && !document.hidden) {
         timer = setTimeout(() => {
           void show(current + 1);
         }, 5500);
@@ -67,10 +69,12 @@ const slides = [
     }
 
     document.addEventListener('visibilitychange', schedule);
-    reduced.addEventListener('change', () => {
-      playing = !reduced.matches;
+    reduced.addEventListener('change', schedule);
+    mobile.addEventListener('change', schedule);
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
       schedule();
-    });
+    }).observe(hero);
     schedule();
   }
 </script>

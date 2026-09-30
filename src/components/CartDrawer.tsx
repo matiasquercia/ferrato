@@ -1,5 +1,5 @@
 import { useStore } from '@nanostores/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { lineKey, $cart, $cartOpen, $cartTotal, removeFromCart, setQuantity } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
 import { productImage } from '@/lib/images';
@@ -10,39 +10,52 @@ export default function CartDrawer() {
   const total = useStore($cartTotal);
   // El carrito vive en localStorage: renderizamos recién en el cliente para evitar errores de hidratación.
   const [mounted, setMounted] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && $cartOpen.set(false);
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-  }, [open]);
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (!open) {
+      if (dialog.open) dialog.close();
+      return;
+    }
+    if (!dialog.open) dialog.showModal();
+    const scrollY = window.scrollY;
+    const { position, top, width, overflow } = document.body.style;
+    Object.assign(document.body.style, { position: 'fixed', top: `-${scrollY}px`, width: '100%', overflow: 'hidden' });
+    return () => {
+      Object.assign(document.body.style, { position, top, width, overflow });
+      const scrollBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = 'auto';
+      window.scrollTo(0, scrollY);
+      document.documentElement.style.scrollBehavior = scrollBehavior;
+    };
+  }, [open, mounted]);
 
   if (!mounted) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
+    <dialog
+      ref={dialogRef}
+      aria-label="Carrito de compras"
+      className="cart-modal fixed inset-0 m-0 h-full max-h-none w-full max-w-none border-0 bg-transparent p-0 text-ink backdrop:bg-transparent"
+      onCancel={(event) => { event.preventDefault(); $cartOpen.set(false); }}
+      onClose={() => $cartOpen.set(false)}
+    >
       <div
         className={`absolute inset-0 bg-black/40 transition-opacity ${open ? 'opacity-100' : 'opacity-0'}`}
         onClick={() => $cartOpen.set(false)}
       />
       <aside
-        role="dialog"
-        aria-label="Carrito de compras"
-        className={`absolute top-0 right-0 flex h-full w-full max-w-md flex-col bg-white shadow-2xl transition-transform ${
-          open ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className="absolute top-0 right-0 flex h-full w-full max-w-md flex-col bg-white shadow-2xl"
       >
         <div className="flex items-center justify-between border-b border-stone-200 p-5">
           <h2 className="font-display text-2xl font-bold uppercase">Tu carrito</h2>
           <button
             type="button"
             onClick={() => $cartOpen.set(false)}
-            className="rounded-lg p-2 hover:bg-stone-100"
+            className="min-h-11 min-w-11 rounded-lg p-2 hover:bg-stone-100"
             aria-label="Cerrar carrito"
           >
             ✕
@@ -58,7 +71,7 @@ export default function CartDrawer() {
           </div>
         ) : (
           <>
-            <ul className="flex-1 divide-y divide-stone-100 overflow-y-auto p-5">
+            <ul className="min-h-0 flex-1 divide-y divide-stone-100 overflow-y-auto overscroll-contain p-5">
               {items.map((item) => (
                 <li key={lineKey(item)} className="flex flex-wrap gap-4 py-4">
                   <img
@@ -83,7 +96,7 @@ export default function CartDrawer() {
                       <div className="flex items-center rounded-md border border-stone-300">
                         <button
                           type="button"
-                          className="px-2"
+                          className="min-h-11 min-w-11 px-2"
                           onClick={() => setQuantity(lineKey(item), item.quantity - 1)}
                           aria-label="Restar"
                         >
@@ -92,7 +105,7 @@ export default function CartDrawer() {
                         <span className="w-7 text-center text-sm">{item.quantity}</span>
                         <button
                           type="button"
-                          className="px-2"
+                          className="min-h-11 min-w-11 px-2"
                           onClick={() => setQuantity(lineKey(item), item.quantity + 1)}
                           aria-label="Sumar"
                         >
@@ -101,7 +114,7 @@ export default function CartDrawer() {
                       </div>
                       <button
                         type="button"
-                        className="text-xs text-red-600 hover:underline"
+                        className="min-h-11 text-xs text-red-600 hover:underline"
                         onClick={() => removeFromCart(lineKey(item))}
                       >
                         Quitar
@@ -112,7 +125,7 @@ export default function CartDrawer() {
                 </li>
               ))}
             </ul>
-            <div className="space-y-3 border-t border-stone-200 p-5">
+            <div className="cart-modal-summary shrink-0 space-y-3 border-t border-stone-200 p-5">
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
                 <span>{formatPrice(total)}</span>
@@ -124,6 +137,6 @@ export default function CartDrawer() {
           </>
         )}
       </aside>
-    </div>
+    </dialog>
   );
 }

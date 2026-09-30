@@ -1,7 +1,8 @@
 import { track, ecommerceItem } from './analytics';
-import { getProductById } from './catalog';
-import { persistentJSON } from '@nanostores/persistent';
+import { getProductById, maxQuantity } from './catalog';
+import { persistentAtom, setPersistentEngine, windowPersistentEvents } from '@nanostores/persistent';
 import { atom, computed } from 'nanostores';
+import { safeStorageEngine } from './storage';
 
 export interface CartItem {
   /** id del producto en el catálogo */
@@ -20,7 +21,29 @@ export interface CartItem {
 export const lineKey = (i: Pick<CartItem, 'id' | 'variant'>) => (i.variant ? `${i.id}::${i.variant}` : i.id);
 
 /** Carrito persistido en localStorage (se comparte entre pestañas). */
-export const $cart = persistentJSON<CartItem[]>('ferrato:cart', []);
+if (typeof window !== 'undefined') {
+  setPersistentEngine(safeStorageEngine(() => window.localStorage), windowPersistentEvents);
+}
+export const $cart = persistentAtom<CartItem[]>('ferrato:cart', [], {
+  encode: JSON.stringify,
+  decode(raw) {
+    try {
+      const value: unknown = JSON.parse(raw);
+      if (!Array.isArray(value)) return [];
+      return value.flatMap((item): CartItem[] => {
+        if (!item || typeof item.id !== 'string' || !Number.isInteger(item.quantity) || item.quantity < 1) return [];
+        const product = getProductById(item.id);
+        if (!product || product.price === null || maxQuantity(product) < 1) return [];
+        const variant = product.colors.includes(item.variant) ? item.variant : product.colors[0];
+        return [{
+          id: product.id, slug: product.slug, name: product.name, price: product.price,
+          image: product.imagesByColor?.[variant]?.[0] ?? product.images[0], variant,
+          quantity: Math.min(item.quantity, maxQuantity(product)), maxStock: maxQuantity(product),
+        }];
+      });
+    } catch { return []; }
+  },
+});
 export const $cartOpen = atom(false);
 
 export const $cartCount = computed($cart, (items) => items.reduce((n, i) => n + i.quantity, 0));

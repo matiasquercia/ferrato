@@ -68,7 +68,11 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
 
   useEffect(() => {
     if (!mounted) return;
-    window.localStorage.setItem(DRAFT_KEY, JSON.stringify(buyer));
+    try {
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(buyer));
+    } catch {
+      // The form remains usable when Safari/private browsing blocks persistence.
+    }
   }, [buyer, mounted]);
 
   if (!mounted) return <p className="py-16 text-center text-steel">Cargando carrito…</p>;

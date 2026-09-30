@@ -17,12 +17,16 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 body {
   @apply bg-canvas text-ink antialiased;
 }
 @utility container-page {
   @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
 }
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
@@ -374,11 +378,17 @@ summary {
   }
 }
 
-/* Original workshop campaign photograph, generated for Ferrato. */
+/* Keep the copy and photograph in separate columns so tools stay visible. */
 .hero-photo {
+  background: #171918;
+}
+.hero-visual {
   position: relative;
-  isolation: isolate;
   overflow: hidden;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  min-width: 0;
+  border-radius: 0.75rem;
   background: #171918;
 }
 .hero-background {
@@ -386,75 +396,186 @@ summary {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: var(--hero-pos, right center);
-  z-index: -2;
-}
-.hero-photo::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, #11161366 0%, #11161330 40%, transparent 70%);
-  z-index: -1;
+  object-fit: contain;
 }
 .hero-photo .hero-layout {
-  min-height: 620px;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  padding-top: 4rem;
-  padding-bottom: 4rem;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 2rem;
+  padding-block: clamp(2rem, 5vw, 4rem);
 }
 .hero-photo .hero-copy {
   max-width: 34rem;
 }
+.product-layout > * {
+  min-width: 0;
+}
+.product-title {
+  overflow-wrap: anywhere;
+}
+.product-purchase-controls {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+}
+.product-purchase-controls > :only-child {
+  grid-column: 1 / -1;
+}
+.mobile-menu {
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 8rem);
+  max-height: calc(100dvh - 8rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.mobile-menu a {
+  min-height: 44px;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+.whatsapp-float {
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  right: max(1rem, env(safe-area-inset-right));
+}
+.cart-modal,
+[data-lightbox] {
+  height: 100vh;
+  height: 100dvh;
+}
+.cart-modal-summary {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+}
+.cart-modal aside > div:first-child {
+  padding-top: max(1.25rem, env(safe-area-inset-top));
+}
+[data-lightbox] > div > div:first-child {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 1.25rem;
+}
+.footer-grid > * {
+  min-width: 0;
+}
+.footer-brand,
+.footer-categories {
+  grid-column: 1 / -1;
+}
+.footer-brand {
+  text-align: center;
+}
+.footer-brand img {
+  margin-inline: auto;
+}
+.footer-brand p {
+  max-width: 28rem;
+  margin-inline: auto;
+}
+.footer-categories ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1.25rem;
+}
+.site-footer nav > p {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #44403c;
+}
+.site-footer ul {
+  margin-top: 0.5rem;
+}
+.site-footer li {
+  margin: 0;
+}
+.site-footer li a,
+.site-footer li button {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+.site-footer > div:last-child p {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+  text-align: center;
+}
 @media (min-width: 768px) {
-  .hero-photo {
-    display: flex;
-    flex-direction: column;
-    height: calc(100dvh - 6.5rem);
-    min-height: 36rem;
+  .footer-grid {
+    grid-template-columns: minmax(0, 1.3fr) repeat(3, minmax(0, 1fr));
+    gap: 2rem;
   }
-  .hero-photo .hero-layout {
-    position: relative;
-    z-index: 1;
-    flex: 1 1 auto;
-    min-height: 0;
-    align-items: center;
+  .footer-brand,
+  .footer-categories {
+    grid-column: auto;
   }
-  /* Keep the full 16:9 photo inside the hero so products never slide under the headline. */
-  .hero-background {
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: right center;
+  .footer-brand {
+    text-align: left;
   }
-  .hero-photo::before {
-    background: linear-gradient(90deg, #171918f2 0%, #171918d8 28%, #17191880 48%, transparent 70%);
-    z-index: 0;
+  .footer-brand img {
+    margin-inline: 0;
+  }
+  .footer-categories ul {
+    grid-template-columns: 1fr;
   }
 }
 @media (max-width: 767px) {
   .hero-photo .hero-layout {
-    min-height: 760px;
     grid-template-columns: 1fr;
-    align-items: start;
-    padding-top: 2.5rem;
-    padding-bottom: 18rem;
-  }
-  .hero-photo .hero-background {
-    height: 58%;
-    top: auto;
-    bottom: 0;
-    object-position: var(--hero-pos-mobile, 80% 50%);
-  }
-  .hero-photo::before {
-    background: linear-gradient(180deg, #171918 0%, #171918 38%, #171918b3 53%, transparent 76%);
+    gap: 1.5rem;
+    padding-block: 2rem 1rem;
   }
   .hero-photo .hero-copy h1 {
-    font-size: clamp(2.8rem, 12vw, 4.5rem);
+    font-size: clamp(2rem, 9vw, 3.5rem);
+    margin-top: 1rem;
+  }
+  .hero-description {
+    margin-top: 1rem;
+  }
+  .hero-actions {
+    margin-top: 1.25rem;
   }
   .hero-photo .hero-facts {
     margin-top: 1rem;
+  }
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  .section-title {
+    font-size: clamp(1.6rem, 7vw, 2.25rem);
+    overflow-wrap: anywhere;
+  }
+}
+@media (min-width: 360px) and (max-width: 639px) {
+  .catalog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .catalog-grid article > div {
+    padding: 0.75rem;
+  }
+  .catalog-grid h3 {
+    font-size: 0.875rem;
+    overflow-wrap: anywhere;
+  }
+  .catalog-grid .text-xl {
+    font-size: 1.125rem;
+  }
+  .catalog-grid .btn-primary,
+  .catalog-grid .btn-whatsapp {
+    min-height: 44px;
+    padding-inline: 0.5rem;
+    font-size: 0.8rem;
+  }
+}
+@media (max-width: 359px) {
+  .product-purchase-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .product-purchase-controls > div {
+    width: max-content;
   }
 }
 

@@ -12,7 +12,7 @@ export default function CartButton() {
     <button
       type="button"
       onClick={() => $cartOpen.set(true)}
-      className="relative rounded-lg p-2 hover:bg-stone-100"
+      className="relative grid min-h-11 min-w-11 place-items-center rounded-lg p-2 hover:bg-stone-100"
       aria-label={`Abrir carrito${mounted ? `, ${count} productos` : ''}`}
     >
       <svg

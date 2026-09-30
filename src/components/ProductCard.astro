@@ -28,6 +28,8 @@ const off = product.price !== null ? discountPercent(product.price, product.comp
   >
     <img
       src={productImage(product.images[0], 500)}
+      srcset={`${productImage(product.images[0], 320)} 320w, ${productImage(product.images[0], 640)} 640w`}
+      sizes="(max-width: 359px) calc(100vw - 32px), (max-width: 639px) calc((100vw - 48px) / 2), (max-width: 1023px) 45vw, 300px"
       alt={product.name}
       width="500"
       height="500"
