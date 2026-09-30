@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { InvalidWebhookSignatureError, WebhookSignatureValidator } from 'mercadopago';
 import { getMercadoPagoClient, paymentApi } from '@/lib/mercadopago.server';
+import { updateNotionOrderStatus } from '@/lib/notion.server';
+import type { OrderStatus } from '@/lib/order';
 
 export const prerender = false;
 
@@ -42,16 +44,25 @@ export const POST: APIRoute = async ({ request, url }) => {
 
   try {
     const payment = await paymentApi(mp).get({ id: dataId });
+    const orderId = payment.external_reference ?? '';
+    const notionStatus: OrderStatus | null =
+      payment.status === 'approved' ? 'Pagado' : payment.status === 'rejected' ? 'Rechazado' : null;
+
     console.info('[webhook] Pago', {
       id: payment.id,
       status: payment.status,
-      orderId: payment.external_reference,
+      orderId,
       amount: payment.transaction_amount,
       email: payment.payer?.email,
     });
 
-    // TODO: persistir el pedido (DB / Google Sheets), descontar stock y
-    // notificar al equipo (email / WhatsApp) cuando payment.status === 'approved'.
+    if (orderId && notionStatus) {
+      try {
+        await updateNotionOrderStatus(orderId, notionStatus);
+      } catch (err) {
+        console.error('[webhook] No se pudo actualizar Notion', orderId, err);
+      }
+    }
   } catch (err) {
     console.error('[webhook] Error consultando pago', err);
     // 500 => Mercado Pago reintenta la notificación.

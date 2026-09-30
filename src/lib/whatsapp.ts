@@ -4,6 +4,7 @@ import { SITE } from './site';
 
 export interface BuyerInfo {
   name: string;
+  email?: string;
   phone?: string;
   address?: string;
   notes?: string;
@@ -22,6 +23,7 @@ export function buildWhatsAppOrderUrl(items: CartItem[], buyer?: BuyerInfo) {
     '',
     `*Total: ${formatPrice(total)}*`,
     buyer?.name ? `\nNombre: ${buyer.name}` : '',
+    buyer?.email ? `Email: ${buyer.email}` : '',
     buyer?.phone ? `Teléfono: ${buyer.phone}` : '',
     buyer?.address ? `Dirección / localidad: ${buyer.address}` : '',
     buyer?.notes ? `Notas: ${buyer.notes}` : '',

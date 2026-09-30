@@ -5,6 +5,8 @@ interface ImportMetaEnv {
   readonly PUBLIC_META_PIXEL_ID?: string;
   readonly MP_ACCESS_TOKEN?: string;
   readonly MP_WEBHOOK_SECRET?: string;
+  readonly NOTION_TOKEN?: string;
+  readonly NOTION_DATABASE_ID?: string;
 }
 interface ImportMeta {
   readonly env: ImportMetaEnv;
