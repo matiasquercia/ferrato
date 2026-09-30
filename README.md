@@ -15,7 +15,7 @@ Construida con [Astro](https://astro.build) + islas de React, Tailwind CSS, carr
 | Pagos          | Mercado Pago Checkout Pro (SDK oficial `mercadopago`) + WhatsApp               |
 | Catálogo       | `src/data/catalog.json`                                                        |
 | SEO            | Meta/OG por página, JSON-LD (Store, Product, Breadcrumb, FAQ), sitemap, robots |
-| Deploy         | Netlify (adapter `@astrojs/netlify`)                                             |
+| Deploy         | Cloudflare Workers (adapter `@astrojs/cloudflare`)                              |
 
 ## Empezar
 
@@ -161,8 +161,25 @@ y enviá `https://TU-DOMINIO/sitemap-index.xml`.
 
 ## Deploy
 
-**Netlify (configurado):** importá el repo en Netlify, cargá las variables de entorno y listo. Las páginas se sirven
-estáticas y `/api/*` corre como función serverless.
+**Cloudflare (configurado):** el Worker `ferralto` sirve el catálogo estático y las rutas `/api/*`.
+El dominio principal es `https://ferralto.com`; las rutas de Cloudflare cubren
+`ferralto.com/*` y `www.ferralto.com/*`. La URL alternativa es
+`https://ferralto.builditlikegod.workers.dev`.
+
+`wrangler.jsonc` declara la URL pública, WhatsApp y el almacenamiento de sesiones.
+Las credenciales de Mercado Pago (`MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`) y Notion
+(`NOTION_TOKEN`, `NOTION_DATABASE_ID`) se cargan como secretos del Worker, nunca en Git.
+Configurar también el webhook de Mercado Pago en
+`https://ferralto.com/api/webhooks/mercadopago`.
+
+Para publicar: `npm ci`, `npm run build`, `npm run deploy` con una sesión de
+Cloudflare autorizada. El deploy actual se realiza con Wrangler; los pushes a GitHub
+ejecutan los chequeos de CI, pero no publican automáticamente.
+
+Porkbun conserva el registro del dominio. Su delegación DNS está configurada a
+`alfred.ns.cloudflare.com` y `blakely.ns.cloudflare.com`; los registros de correo
+de Porkbun se conservan en Cloudflare. Universal SSL y Always Use HTTPS están
+habilitados; la emisión del certificado depende de la activación de la zona.
 
 **Otro hosting:** cambiá el adapter en `astro.config.mjs` (`@astrojs/node`, `@astrojs/netlify`, etc.).
 

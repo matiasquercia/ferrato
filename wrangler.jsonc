@@ -4,6 +4,15 @@
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-09-30",
   "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "ferralto.com/*", "zone_name": "ferralto.com" },
+    { "pattern": "www.ferralto.com/*", "zone_name": "ferralto.com" }
+  ],
+  "kv_namespaces": [
+    { "binding": "SESSION", "id": "480c90c7be5542d1abe6053e08bf336c" }
+  ],
   "vars": {
     "PUBLIC_SITE_URL": "https://ferralto.com",
     "PUBLIC_WHATSAPP_NUMBER": "5491131008720"
