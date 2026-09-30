@@ -39,7 +39,7 @@ export function orderProperties(order: OrderRecord) {
     Localidad: text(order.buyer.locality),
     'Código postal': text(order.buyer.postalCode),
     Notas: text(order.buyer.notes),
-    Productos: text(`${formatOrderLines(order.lines)}\nTotal: ${formatPrice(order.total)}`),
+    Productos: text(`${formatOrderLines(order.lines)}\nProductos: ${formatPrice(order.subtotal)}\nEnvío: ${order.shipping.amount === null ? 'A cotizar; total final pendiente' : formatPrice(order.shipping.amount)}\n${order.shipping.amount === null ? 'Subtotal productos' : 'Total con envío'}: ${formatPrice(order.total)}`),
     Total: { number: order.total },
     Estado: { select: { name: order.status } },
     Canal: { select: { name: order.channel === 'whatsapp' ? 'WhatsApp' : 'Mercado Pago' } },

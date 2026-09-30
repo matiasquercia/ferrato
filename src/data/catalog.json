@@ -53,7 +53,8 @@
         "Estructura": "Tubo de acero de 1\"",
         "Escalones": "Placa plástica antideslizante",
         "Colores": "Negro brillante",
-        "Código Safari": "2012"
+        "Código Safari": "2012",
+        "Peso": "2,96 kg"
       }
     },
     {
@@ -156,7 +157,7 @@
       "description": "Construida con tubos de acero con grosor de pared de 0,9 mm, diámetro de 1 1/4\" (pata principal) y 1\" (pata trasera). Cuenta con un travesaño de refuerzo soldado hecho de tubo de 1 1/4\" y un revestimiento de chapa en la articulación. Los peldaños están constituidos de chapa de acero calibre 0,9 mm y cuentan con una placa de plástico antideslizante. Tratamiento anticorrosivo y pintura epoxi en colores blanco brillante y negro brillante.",
       "specs": {
         "Peldaños": "3",
-        "Peso": "5,9 kg",
+        "Peso": "5 kg",
         "Altura abierta": "1,13 m",
         "Altura cerrada": "1,23 m",
         "Soporta": "110 kg",
@@ -500,7 +501,7 @@
         "Estructura": "Caño de acero 1\" (base) y 1 1/4\" (pata plegable)",
         "Terminación": "Anticorrosivo + epoxi blanco brillante",
         "Escalones": "Placas plásticas antideslizantes",
-        "Peso": "4,7 kg",
+        "Peso": "4,6 kg",
         "Medidas cerrada": "0,64 x 0,38 x 0,34 m",
         "Medidas abierta": "0,64 x 0,38 x 0,60 m",
         "Código Safari": "2001",
@@ -553,7 +554,7 @@
         "Estructura": "Caño de acero 1 1/4\" (base y pata plegable)",
         "Terminación": "Anticorrosivo + epoxi aluminio brillante",
         "Escalones": "Placas plásticas antideslizantes",
-        "Peso": "5,2 kg",
+        "Peso": "5,42 kg",
         "Medidas cerrada": "0,64 x 0,38 x 0,34 m",
         "Medidas abierta": "0,64 x 0,38 x 0,63 m",
         "Código Safari": "2011"

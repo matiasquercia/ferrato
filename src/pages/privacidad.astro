@@ -1,19 +1,20 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { SITE } from '@/lib/site';
+import { whatsappContactUrl } from '@/lib/whatsapp';
 ---
 
 <BaseLayout
   title="Privacidad y cookies"
-  description="Cómo se usan los datos de pedidos y las preferencias de medición en Ferrato."
+  description="Cómo se usan los datos de pedidos y las preferencias de medición en Ferralto."
 >
   <article class="container-page max-w-3xl py-12 space-y-7">
     <h1 class="section-title">Privacidad y cookies</h1>
     <p>
       Esta página explica el uso de datos en la tienda online de {SITE.name}. Para consultas sobre tu
       información, escribinos a{' '}
-      <a class="underline" href={`mailto:${SITE.email}`}>
-        {SITE.email}
+      <a class="underline" href={whatsappContactUrl()}>
+        WhatsApp
       </a>
       .
     </p>
@@ -61,7 +62,7 @@ import { SITE } from '@/lib/site';
       <h2 class="text-xl font-bold">Consultas sobre tus datos</h2>
       <p>
         Podés solicitar información, corrección o eliminación de tus datos de contacto escribiendo a{' '}
-        {SITE.email}. Los datos necesarios para gestionar operaciones y cumplir obligaciones aplicables pueden
+        <a class="underline" href={whatsappContactUrl()}>WhatsApp</a>. Los datos necesarios para gestionar operaciones y cumplir obligaciones aplicables pueden
         requerir conservación.
       </p>
     </section>

@@ -16,18 +16,22 @@ export const getStaticPaths = (() =>
 
 const { category } = Astro.props as { category: Category };
 const items = getProductsByCategory(category.slug);
+const categoryTitle = category.slug === 'escaleras' ? 'Escaleras Safari' : category.name;
+const categoryDescription = category.slug === 'escaleras'
+  ? 'Comprá escaleras Safari en Ferralto para tu hogar. Modelos de 2 a 7 peldaños y escalerita fija. Compará precios, medidas y colores; consultá tu envío antes de pagar.'
+  : category.description;
 const guide = buyingGuides[category.slug];
 const ld = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   mainEntity: { '@type': 'ItemList', itemListElement: items.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name, url: new URL(`/productos/${item.slug}`, SITE.url).href })) },
-  name: category.name,
-  description: category.description,
+  name: categoryTitle,
+  description: categoryDescription,
   url: new URL(`/categoria/${category.slug}`, SITE.url).href,
 };
 ---
 
-<BaseLayout title={`${category.name} — comprá online`} description={category.description} jsonLd={ld}>
+<BaseLayout title={`${categoryTitle} — comprá online`} description={categoryDescription} jsonLd={ld}>
   <div class="container-page py-10">
     <Breadcrumbs
       items={[
@@ -35,8 +39,9 @@ const ld = {
         { name: category.name, href: `/categoria/${category.slug}` },
       ]}
     />
-    <h1 class="mt-4 font-display text-5xl font-bold uppercase">{category.name}</h1>
-    <p class="mt-2 max-w-2xl text-steel">{category.description}</p>
+    <h1 class="mt-4 font-display text-5xl font-bold uppercase">{categoryTitle}</h1>
+    <p class="mt-2 max-w-2xl text-steel">{categoryDescription}</p>
+    {category.slug === 'escaleras' && <p class="mt-3 max-w-2xl text-steel">Ferralto vende al consumidor final: podés comprar una escalera Safari para tu casa y recibir asesoramiento para elegir el modelo.</p>}
     <p class="mt-4 text-sm font-semibold">Envíos a todo el país · Mercado Pago · Asesoramiento antes de comprar</p>
     <a class="mt-3 inline-block text-sm underline" href={whatsappContactUrl(`¡Hola! Necesito ayuda para elegir: ${category.name}.`)} target="_blank" rel="noopener">Te ayudamos a elegir →</a>
     <div class="mt-8" data-view-list={JSON.stringify({ item_list_id: category.slug, item_list_name: category.name, items: items.map((p, index) => ({ item_id: p.id, item_name: p.name, item_category: p.category, price: p.price, index })) })}>

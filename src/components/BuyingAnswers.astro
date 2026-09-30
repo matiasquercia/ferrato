@@ -1,5 +1,4 @@
 ---
-import { SITE } from '@/lib/site';
 import { whatsappContactUrl } from '@/lib/whatsapp';
 ---
 <section class="container-page py-12" aria-labelledby="buying-answers-title">
@@ -7,11 +6,11 @@ import { whatsappContactUrl } from '@/lib/whatsapp';
     <div>
       <p class="text-sm font-semibold uppercase tracking-widest text-steel">Antes de comprar</p>
       <h2 id="buying-answers-title" class="mt-3 font-display text-4xl font-bold">Elegí con la información a mano.</h2>
-      <p class="mt-4 max-w-lg text-steel">En Ferrato encontrás escaleras, banquetas, tenders, tablas de planchar y agarraderas. Compará modelos, precios y especificaciones en nuestro catálogo.</p>
+      <p class="mt-4 max-w-lg text-steel">En Ferralto encontrás escaleras, banquetas, tenders, tablas de planchar y agarraderas. Compará modelos, precios y especificaciones en nuestro catálogo.</p>
       <a class="btn-primary mt-6 inline-flex" href={whatsappContactUrl('¡Hola! Quiero confirmar medidas y envío antes de comprar.')} target="_blank" rel="noopener">Consultá medidas y envío ↗</a>
     </div>
     <div class="divide-y divide-stone-300">
-      <details class="py-5" open><summary class="cursor-pointer font-semibold">¿Hacen envíos a todo el país?</summary><p class="mt-3 text-steel">Sí. El envío es gratis en compras desde ${SITE.freeShippingFrom.toLocaleString('es-AR')}. Consultanos por el costo y el plazo de entrega a tu localidad antes de pagar.</p></details>
+      <details class="py-5" open><summary class="cursor-pointer font-semibold">¿Hacen envíos a todo el país?</summary><p class="mt-3 text-steel">Sí, según cobertura. Calculá el envío en el carrito con tu localidad y código postal. Si requiere una cotización, confirmamos costo y plazo por WhatsApp antes del pago. El envío se cobra por separado.</p></details>
       <details class="py-5"><summary class="cursor-pointer font-semibold">¿Cómo puedo pagar?</summary><p class="mt-3 text-steel">Podés pagar con Mercado Pago. Las opciones de financiación y sus condiciones se muestran al realizar el pago. <a class="underline" href="/como-comprar#pagos">Ver medios de pago</a>.</p></details>
       <details class="py-5"><summary class="cursor-pointer font-semibold">¿Cómo sé qué modelo elegir?</summary><p class="mt-3 text-steel">Revisá las medidas, materiales y colores de la ficha de cada producto. Si te falta un dato, te asesoramos por WhatsApp antes de comprar.</p></details>
       <details class="py-5"><summary class="cursor-pointer font-semibold">¿Dónde consulto por garantía?</summary><p class="mt-3 text-steel">Encontrá la información en <a class="underline" href="/como-comprar#garantia">cómo comprar y garantía</a>. Para confirmar cobertura, cambios o devoluciones de tu pedido, contactanos antes de comprar.</p></details>

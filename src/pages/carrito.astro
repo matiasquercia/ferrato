@@ -1,12 +1,11 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import CheckoutForm from '@/components/CheckoutForm';
-import { SITE } from '@/lib/site';
 ---
 
 <BaseLayout title="Carrito" noindex>
   <div class="container-page py-10">
     <h1 class="mb-8 font-display text-5xl font-bold uppercase">Finalizar compra</h1>
-    <CheckoutForm client:load freeShippingFrom={SITE.freeShippingFrom} />
+    <CheckoutForm client:load />
   </div>
 </BaseLayout>

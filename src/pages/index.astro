@@ -17,7 +17,7 @@ const whatsappLogo =
 const benefits = [
   {
     title: 'Envíos a todo el país',
-    text: `Gratis en compras desde $${SITE.freeShippingFrom.toLocaleString('es-AR')}.`,
+    text: 'Costo y plazo confirmados antes del pago.',
     tone: 'bg-brand-50 text-brand-700 ring-brand-100',
     svg: `<svg ${icon}><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>`,
   },
@@ -84,7 +84,7 @@ const benefits = [
 
   <section class="container-page py-10" aria-labelledby="benefits-title">
     <h2 id="benefits-title" class="sr-only">
-      Por qué comprar en Ferrato
+      Por qué comprar en Ferralto
     </h2>
     <ul class="grid gap-px overflow-hidden rounded-2xl border border-stone-200 bg-stone-200 shadow-[0_1px_2px_rgba(28,25,23,0.04),0_8px_24px_-12px_rgba(28,25,23,0.12)] sm:grid-cols-2 lg:grid-cols-4">
       {benefits.map((b) => {

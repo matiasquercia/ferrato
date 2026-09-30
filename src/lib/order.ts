@@ -2,6 +2,8 @@ import { prettyLocality, verifyAddress, verifyLocality, verifyPostalCode } from 
 import { getProductById, maxQuantity } from '@/lib/catalog';
 import { formatPrice } from '@/lib/format';
 import { validateBuyer, type Buyer } from '@/lib/buyer';
+import { shippingForOrder } from '@/lib/shipping.server';
+import type { ShippingEstimate } from '@/lib/shipping';
 
 export type OrderChannel = 'mercadopago' | 'whatsapp';
 export type OrderStatus = 'Pendiente' | 'Pagado' | 'Rechazado' | 'WhatsApp';
@@ -31,6 +33,8 @@ export interface OrderRecord {
   status: OrderStatus;
   lines: ResolvedOrderLine[];
   total: number;
+  subtotal: number;
+  shipping: ShippingEstimate;
 }
 
 export function newOrderId() {
@@ -90,7 +94,7 @@ export function formatOrderLines(lines: ResolvedOrderLine[]) {
     .join('\n');
 }
 
-export async function buildOrder(input: { items: unknown; buyer: unknown; channel: OrderChannel; orderId?: string }) {
+export async function buildOrder(input: { items: unknown; buyer: unknown; channel: OrderChannel; orderId?: string; shippingAmount?: unknown }) {
   const buyerResult = validateBuyer(input.buyer);
   if (!buyerResult.ok) {
     return { ok: false as const, error: buyerResult.message ?? 'Datos incompletos.', status: 400, errors: buyerResult.errors };
@@ -131,6 +135,14 @@ export async function buildOrder(input: { items: unknown; buyer: unknown; channe
   const linesResult = resolveOrderLines(input.items);
   if (!linesResult.ok) return linesResult;
 
+  const shipping = shippingForOrder(linesResult.lines, buyerResult.buyer.postalCode, normalizedLocality);
+  if (input.channel === 'mercadopago') {
+    if (shipping.amount === null) return { ok: false as const, error: shipping.message, status: 422 };
+    if (input.shippingAmount !== shipping.amount) return {
+      ok: false as const, error: 'El costo de envío cambió. Volvé a calcularlo antes de pagar.', status: 409,
+    };
+  }
+
   const order: OrderRecord = {
     orderId: input.orderId ?? newOrderId(),
     buyer: {
@@ -141,7 +153,9 @@ export async function buildOrder(input: { items: unknown; buyer: unknown; channe
     channel: input.channel,
     status: input.channel === 'whatsapp' ? 'WhatsApp' : 'Pendiente',
     lines: linesResult.lines,
-    total: linesResult.total,
+    subtotal: linesResult.total,
+    shipping,
+    total: linesResult.total + (shipping.amount ?? 0),
   };
   return { ok: true as const, order };
 }

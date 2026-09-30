@@ -13,16 +13,16 @@ const json = (data: unknown, status = 200) =>
 
 export const POST: APIRoute = async ({ request, url }) => {
   const mp = getMercadoPagoClient();
-  if (!mp) return json({ error: 'Mercado Pago no está configurado (falta MP_ACCESS_TOKEN).' }, 503);
+  if (!mp) return json({ error: 'El pago online no está disponible en este momento. Coordiná tu pedido por WhatsApp.' }, 503);
 
-  let body: { items?: unknown; buyer?: unknown };
+  let body: { items?: unknown; buyer?: unknown; shippingAmount?: unknown };
   try {
     body = await request.json();
   } catch {
     return json({ error: 'Pedido inválido.' }, 400);
   }
 
-  const built = await buildOrder({ items: body.items, buyer: body.buyer, channel: 'mercadopago' });
+  const built = await buildOrder({ items: body.items, buyer: body.buyer, shippingAmount: body.shippingAmount, channel: 'mercadopago' });
   if (!built.ok) return json({ error: built.error, errors: 'errors' in built ? built.errors : undefined }, built.status);
 
   const { order } = built;
@@ -32,7 +32,7 @@ export const POST: APIRoute = async ({ request, url }) => {
   try {
     const preference = await preferenceApi(mp).create({
       body: {
-        items: order.lines.map((line) => ({
+        items: [...order.lines.map((line) => ({
           id: line.id,
           title: line.variant ? `${line.name} - ${line.variant}` : line.name,
           description: line.shortDescription,
@@ -41,7 +41,10 @@ export const POST: APIRoute = async ({ request, url }) => {
           quantity: line.quantity,
           currency_id: 'ARS',
           unit_price: line.unitPrice,
-        })),
+        })), {
+          id: `shipping-${order.shipping.rateId}`, title: 'Envío del pedido',
+          quantity: 1, currency_id: 'ARS', unit_price: order.shipping.amount!,
+        }],
         external_reference: order.orderId,
         payer: {
           name: order.buyer.name,
@@ -52,6 +55,9 @@ export const POST: APIRoute = async ({ request, url }) => {
           phone: order.buyer.phone,
           address: formatBuyerAddress(order.buyer),
           notes: order.buyer.notes,
+          shipping_amount: order.shipping.amount,
+          shipping_rate_id: order.shipping.rateId,
+          products_subtotal: order.subtotal,
         },
         back_urls: {
           success: `${baseUrl}/checkout/exito`,
@@ -62,7 +68,7 @@ export const POST: APIRoute = async ({ request, url }) => {
           auto_return: 'all' as const,
           notification_url: `${baseUrl}/api/webhooks/mercadopago`,
         }),
-        statement_descriptor: 'FERRATO',
+        statement_descriptor: 'FERRALTO',
       },
     });
 

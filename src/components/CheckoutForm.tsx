@@ -15,10 +15,7 @@ import { lineKey, $cart, $cartTotal, removeFromCart, setQuantity } from '@/lib/c
 import { formatPrice } from '@/lib/format';
 import { productImage } from '@/lib/images';
 import { buildWhatsAppOrderUrl } from '@/lib/whatsapp';
-
-interface Props {
-  freeShippingFrom: number;
-}
+import type { ShippingEstimate } from '@/lib/shipping';
 
 const DRAFT_KEY = 'ferrato:buyer';
 const inputBase =
@@ -36,7 +33,7 @@ function loadDraft(): Buyer {
   }
 }
 
-export default function CheckoutForm({ freeShippingFrom }: Props) {
+export default function CheckoutForm() {
   const items = useStore($cart);
   const total = useStore($cartTotal);
   const submitting = useRef(false);
@@ -60,6 +57,28 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
   const localityRef = useRef<HTMLInputElement>(null);
   const lookupTimer = useRef<number>(0);
   const suggestAbort = useRef<AbortController | null>(null);
+  const [shippingResult, setShippingResult] = useState<{ key: string; estimate: ShippingEstimate; subtotal: number } | null>(null);
+  const [shippingBusy, setShippingBusy] = useState(false);
+  const [shippingError, setShippingError] = useState('');
+  const shippingKey = JSON.stringify([items.map((i) => [i.id, i.variant, i.quantity]), buyer.postalCode.trim(), buyer.locality.trim()]);
+  const shipping = shippingResult?.key === shippingKey && shippingResult.subtotal === total ? shippingResult.estimate : null;
+
+  const calculateShipping = async () => {
+    setShippingBusy(true);
+    setShippingError('');
+    setShippingResult(null);
+    const key = shippingKey;
+    try {
+      const res = await fetch('/api/shipping', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: items.map((i) => ({ id: i.id, variant: i.variant, quantity: i.quantity })), postalCode: buyer.postalCode, locality: buyer.locality }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.shipping) throw new Error(data.error ?? 'No pudimos calcular el envío.');
+      setShippingResult({ key, estimate: data.shipping, subtotal: data.subtotal });
+    } catch (err) { setShippingError(err instanceof Error ? err.message : 'Consultá el envío por WhatsApp.'); }
+    finally { setShippingBusy(false); }
+  };
 
   useEffect(() => {
     setBuyer(loadDraft());
@@ -314,6 +333,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
   const payload = () => ({
     items: items.map((i) => ({ id: i.id, variant: i.variant, quantity: i.quantity })),
     buyer,
+    shippingAmount: shipping?.amount,
   });
 
   const focusFirstError = (errors: Partial<Record<BuyerField, string>>) => {
@@ -368,6 +388,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
   const payWithMercadoPago = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (submitting.current) return;
+    if (shipping?.amount == null) { setError('Calculá o consultá el envío antes de pagar.'); return; }
     if (!(await ensureValid())) return;
     submitting.current = true;
     track('begin_checkout', { currency: 'ARS', value: total, items: items.map(ecommerceItem) });
@@ -405,10 +426,9 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
       // El pedido por WhatsApp sigue; Notion es un respaldo.
     }
     track('checkout_submit', { payment_method: 'whatsapp' });
-    window.location.href = buildWhatsAppOrderUrl(items, buyer);
+    window.location.href = buildWhatsAppOrderUrl(items, buyer, shipping);
   };
 
-  const missingForShipping = Math.max(0, freeShippingFrom - total);
   const visibleErrors = BUYER_FIELDS.filter(({ id }) => showError(id));
 
   return (
@@ -467,15 +487,13 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
             ))}
           </ul>
           <div className="space-y-2 border-t border-stone-200 p-5">
-            <p className="text-sm text-steel">
-              {missingForShipping > 0
-                ? `Te faltan ${formatPrice(missingForShipping)} para tener envío gratis.`
-                : '¡Tenés envío gratis!'}
-            </p>
+            <div className="flex justify-between"><span>Productos</span><span>{formatPrice(total)}</span></div>
+            <div className="flex justify-between"><span>Envío</span><span>{shipping?.amount != null ? formatPrice(shipping.amount) : 'A cotizar'}</span></div>
             <div className="flex justify-between text-xl font-bold">
-              <span>Total</span>
-              <span>{formatPrice(total)}</span>
+              <span>{shipping?.amount != null ? 'Total con envío' : 'Subtotal productos'}</span>
+              <span>{formatPrice(total + (shipping?.amount ?? 0))}</span>
             </div>
+            {shipping?.amount == null && <p className="text-xs text-steel">El envío se confirma antes del pago. No está incluido en el subtotal.</p>}
           </div>
         </section>
 
@@ -789,6 +807,18 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
             </div>
           </div>
 
+          <section aria-labelledby="shipping-title" className="rounded-xl border border-stone-200 bg-stone-50 p-4">
+            <h2 id="shipping-title" className="font-semibold">Calculá tu envío</h2>
+            <p className="mt-2 text-sm text-steel">Completá localidad y código postal para consultar el envío de este carrito.</p>
+            <button type="button" className="btn-dark mt-3 w-full" disabled={shippingBusy || !buyer.locality.trim() || !buyer.postalCode.trim()} onClick={calculateShipping}>
+              {shippingBusy ? 'Consultando…' : 'Calcular envío'}
+            </button>
+            <p role="status" className="mt-3 text-sm">{shippingError || shipping?.message || 'El costo depende del destino, el peso y las medidas del paquete. Si necesita cotización, lo coordinamos por WhatsApp antes de pagar.'}</p>
+            {shipping?.amount != null && <p className="mt-2 font-semibold">Envío estimado: {formatPrice(shipping.amount)}</p>}
+            {shipping?.status === 'quote_required' && shipping.reference && <div className="mt-3 rounded-lg border border-orange-200 bg-orange-50 p-3"><p className="font-semibold">Envío orientativo: {formatPrice(shipping.reference.amount)}</p><p className="mt-1 text-sm">{shipping.reference.message}</p></div>}
+            {shipping?.status === 'quote_required' && <a className="mt-3 inline-block font-semibold underline" href={buildWhatsAppOrderUrl(items, buyer, shipping)} target="_blank" rel="noopener">Consultar envío por WhatsApp ↗</a>}
+          </section>
+
           <p className="sr-only" aria-live="polite">
             {openList && suggestions.length > 0
               ? `${suggestions.length} sugerencias`
@@ -827,7 +857,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
 
           <button
             type="submit"
-            disabled={Boolean(loading)}
+            disabled={Boolean(loading) || shipping?.amount == null || shippingBusy}
             className="btn w-full bg-[#009ee3] text-white hover:bg-[#0086c3]"
           >
             {loading === 'mp' ? 'Redirigiendo…' : 'Pagar con Mercado Pago'}

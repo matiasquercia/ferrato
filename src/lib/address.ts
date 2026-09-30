@@ -23,7 +23,7 @@ export interface AddressSuggestion {
 const GEOREF_BASE = 'https://apis.datos.gob.ar/georef/api';
 const GEOREF_HEADERS = {
   Accept: 'application/json',
-  'User-Agent': 'Ferrato (ventas@ferrato.com.ar)',
+  'User-Agent': 'Ferralto (https://www.ferralto.com)',
 };
 
 type StreetRow = {

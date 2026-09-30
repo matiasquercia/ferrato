@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { SITE } from '@/lib/site';
 const faqs = [
   {
     q: '¿Cómo compro?',
@@ -8,7 +7,7 @@ const faqs = [
   },
   {
     q: '¿Hacen envíos?',
-    a: `Sí, enviamos a todo el país. El envío es gratis en compras desde $${SITE.freeShippingFrom.toLocaleString('es-AR')}. También podés retirar en ${SITE.city}.`,
+    a: 'Hacemos envíos según cobertura. En el carrito podés consultar el costo con tu localidad y código postal. Para productos voluminosos o destinos sin tarifa confirmada, cotizamos por WhatsApp antes del pago. El envío se cobra por separado y se suma al precio de los productos. El plazo se informa al confirmar el transporte. Para retirar, coordiná previamente por WhatsApp.',
   },
   {
     q: '¿Qué medios de pago aceptan?',
@@ -32,7 +31,7 @@ const ld = {
 
 <BaseLayout
   title="Cómo comprar, envíos y pagos"
-  description="Cómo comprar en Ferrato: envíos a todo el país, medios de pago y garantía."
+  description="Cómo comprar en Ferralto: envíos a todo el país, medios de pago y garantía."
   jsonLd={ld}
 >
   <div class="container-page max-w-3xl py-12">
