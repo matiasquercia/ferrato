@@ -26,12 +26,6 @@ const GEOREF_HEADERS = {
   'User-Agent': 'Ferrato (ventas@ferrato.com.ar)',
 };
 
-const KIND_ORDER: Record<AddressSuggestionKind, number> = {
-  address: 0,
-  street: 1,
-  locality: 2,
-};
-
 type StreetRow = {
   id?: string;
   nombre?: string;
@@ -47,15 +41,84 @@ type LocalityRow = {
   provincia?: { nombre?: string };
 };
 
-export function addressFormatError(value: string): string | null {
+export function streetFormatError(value: string): string | null {
   const v = value.trim();
-  if (v.length < 8) return 'Indicá calle, número y localidad para el envío.';
+  if (v.length < 5) return 'Indicá la calle y el número, por ejemplo Av. Corrientes 1234.';
   if (!/[a-záéíóúüñ]/i.test(v)) return 'Escribí el nombre de la calle.';
   if (!/\d/.test(v)) return 'Falta el número de la calle.';
-  if (!/,/.test(v) && v.split(/\s+/).length < 3) {
-    return 'Incluí también la localidad, por ejemplo Av. Corrientes 1234, CABA.';
+  return null;
+}
+
+export function localityFormatError(value: string): string | null {
+  const v = value.trim();
+  if (v.length < 2) return 'Indicá la localidad.';
+  if (!/[a-záéíóúüñ]/i.test(v)) return 'Escribí el nombre de la localidad.';
+  return null;
+}
+
+export function postalCodeError(value: string): string | null {
+  const v = value.trim().toUpperCase().replace(/\s/g, '');
+  if (!v) return 'Indicá el código postal.';
+  if (!/^[A-Z]?\d{4}([A-Z]{3})?$/.test(v)) {
+    return 'Usá el código postal argentino, por ejemplo 1043 o C1043AAE.';
   }
   return null;
+}
+
+export function postalCodeDigits(value: string) {
+  const v = value.trim().toUpperCase().replace(/\s/g, '');
+  const match = v.match(/^[A-Z]?(\d{4})([A-Z]{3})?$/);
+  return match?.[1] ?? null;
+}
+
+export function postalCodePrefix(value: string) {
+  const v = value.trim().toUpperCase().replace(/\s/g, '');
+  const match = v.match(/^([A-Z])\d{4}[A-Z]{3}$/);
+  return match?.[1] ?? null;
+}
+
+const CPA_PROVINCE: Record<string, string[]> = {
+  A: ['salta'],
+  B: ['buenos aires'],
+  C: ['ciudad autonoma de buenos aires', 'caba'],
+  D: ['san luis'],
+  E: ['entre rios'],
+  F: ['la rioja'],
+  G: ['santiago del estero'],
+  H: ['chaco'],
+  J: ['san juan'],
+  K: ['catamarca'],
+  L: ['la pampa'],
+  M: ['mendoza'],
+  N: ['misiones'],
+  P: ['formosa'],
+  Q: ['neuquen'],
+  R: ['rio negro'],
+  S: ['santa fe'],
+  T: ['tucuman'],
+  U: ['chubut'],
+  V: ['tierra del fuego'],
+  W: ['corrientes'],
+  X: ['cordoba'],
+  Y: ['jujuy'],
+  Z: ['santa cruz'],
+};
+
+export interface PostalPlace {
+  name: string;
+  state: string;
+  details: string;
+}
+
+export function unitFormatError(value: string): string | null {
+  if (value.trim().length > 40) return 'El piso o depto no puede superar los 40 caracteres.';
+  return null;
+}
+
+export function composeAddressQuery(street: string, locality = '') {
+  const direccion = street.trim().replace(/\s+/g, ' ');
+  const lugar = locality.trim().replace(/\s+/g, ' ');
+  return lugar ? `${direccion}, ${lugar}` : direccion;
 }
 
 export function parseAddressQuery(value: string) {
@@ -95,10 +158,97 @@ export function labelsMatch(a: string, b: string) {
 export function prettyLocality(locality: string, province = '') {
   const loc = locality.trim();
   const haystack = normalize(`${loc} ${province}`);
-  if (/ciudad autonoma de buenos aires/.test(haystack) || /^comuna \d+/.test(haystack)) {
+  if (
+    /ciudad autonoma de buenos aires/.test(haystack) ||
+    /capital federal/.test(haystack) ||
+    /^comuna \d+/.test(haystack)
+  ) {
     return 'CABA';
   }
   return loc;
+}
+
+export function isCabaAlias(query: string) {
+  const q = normalize(query);
+  return (
+    q === 'caba' ||
+    q === 'c a b a' ||
+    q === 'cap fed' ||
+    q === 'capital federal' ||
+    q.startsWith('ciudad autonoma')
+  );
+}
+
+export function resolveLocality(query: string, suggestions: AddressSuggestion[]) {
+  const formatError = localityFormatError(query);
+  if (formatError) return { ok: false as const, error: formatError, suggestions };
+
+  if (isCabaAlias(query) || labelsMatch(prettyLocality(query), 'CABA')) {
+    return {
+      ok: true as const,
+      locality: 'CABA',
+      province: 'Ciudad Autónoma de Buenos Aires',
+      suggestions,
+    };
+  }
+
+  const exact = suggestions.filter(
+    (row) => labelsMatch(row.locality ?? '', query) || labelsMatch(row.title, query),
+  );
+  if (exact.length === 1) {
+    return {
+      ok: true as const,
+      locality: exact[0].locality ?? exact[0].title,
+      province: exact[0].province ?? '',
+      suggestions,
+    };
+  }
+  if (exact.length > 1) {
+    return {
+      ok: false as const,
+      error: 'Hay varias localidades con ese nombre. Elegí una de la lista.',
+      suggestions: exact,
+    };
+  }
+  if (suggestions.length === 0) {
+    return {
+      ok: false as const,
+      error: 'No encontramos esa localidad. Elegí una de la lista.',
+      suggestions,
+    };
+  }
+  return {
+    ok: false as const,
+    error: 'Hay varias localidades. Elegí una de la lista.',
+    suggestions,
+  };
+}
+
+export function localityMatchesPostalPlace(
+  locality: string,
+  province: string,
+  place: PostalPlace,
+) {
+  const loc = prettyLocality(locality, province);
+  const locNorm = normalize(loc);
+  const haystack = normalize([place.name, place.state, place.details, province].filter(Boolean).join(' '));
+  if (!locNorm) return false;
+  if (labelsMatch(loc, prettyLocality(place.name, place.state))) return true;
+  if (locNorm === 'caba') {
+    return /ciudad autonoma|capital federal|comuna \d+/.test(haystack);
+  }
+  if (locNorm.length >= 4 && haystack.includes(locNorm)) return true;
+  const provinceNorm = normalize(prettyLocality(province) === 'CABA' ? 'ciudad autonoma de buenos aires' : province);
+  return locNorm.length >= 6 && Boolean(provinceNorm) && haystack.includes(provinceNorm) && haystack.includes(locNorm);
+}
+
+export function postalPrefixMatches(code: string, locality: string, province = '') {
+  const prefix = postalCodePrefix(code);
+  if (!prefix) return true;
+  const allowed = CPA_PROVINCE[prefix];
+  if (!allowed) return true;
+  const haystack = normalize(`${prettyLocality(locality, province)} ${province}`);
+  return allowed.some((name) => haystack.includes(name) || name.includes(haystack));
 }
 
 export function aliasLocalities(query: string): AddressSuggestion[] {
@@ -123,21 +273,28 @@ export function aliasLocalities(query: string): AddressSuggestion[] {
   ];
 }
 
-export function applySuggestion(current: string, suggestion: AddressSuggestion): string {
-  if (suggestion.kind === 'address') return suggestion.value;
-  const { direccion } = parseAddressQuery(current);
-  const { number } = splitStreetAndNumber(direccion);
-
-  if (suggestion.kind === 'street') {
-    const name = suggestion.street ?? suggestion.title;
-    const locality = suggestion.locality ?? '';
-    if (number) return locality ? `${name} ${number}, ${locality}` : `${name} ${number}`;
-    return `${name} `;
+export function applySuggestion(
+  current: { street: string; locality: string },
+  suggestion: AddressSuggestion,
+): { street: string; locality: string } {
+  if (suggestion.kind === 'address') {
+    return {
+      street: `${suggestion.street} ${suggestion.number}`,
+      locality: suggestion.locality ?? current.locality,
+    };
   }
-
-  const locality = suggestion.locality ?? suggestion.title;
-  if (!direccion) return locality;
-  return `${direccion}, ${locality}`;
+  if (suggestion.kind === 'street') {
+    const { number } = splitStreetAndNumber(current.street);
+    const name = suggestion.street ?? suggestion.title;
+    return {
+      street: number ? `${name} ${number}` : `${name} `,
+      locality: current.locality || suggestion.locality || '',
+    };
+  }
+  return {
+    street: current.street,
+    locality: suggestion.locality ?? suggestion.title,
+  };
 }
 
 function cityScore(locality: string, province: string) {
@@ -311,37 +468,21 @@ async function searchLocalities(nombre: string): Promise<AddressSuggestion[]> {
     .filter((row): row is AddressSuggestion => row !== null);
 }
 
-export async function suggestAddress(query: string): Promise<AddressSuggestion[]> {
-  const trimmed = query.trim();
+export async function suggestStreets(street: string, locality = ''): Promise<AddressSuggestion[]> {
+  const trimmed = street.trim();
   if (trimmed.length < 3) return [];
-
-  const { direccion, lugar } = parseAddressQuery(query);
-  const { street, number } = splitStreetAndNumber(direccion);
-
-  if (lugar) {
-    const [localities, addresses] = await Promise.all([
-      searchLocalities(lugar),
-      number ? lookupAddress(query).then((rows) => rows.map(matchToSuggestion)) : Promise.resolve([]),
-    ]);
-    const aliases = aliasLocalities(lugar).map((row) => ({
-      ...row,
-      value: applySuggestion(query, row),
-    }));
-    const localityRows = [...aliases, ...localities].map((row) => ({
-      ...row,
-      value: `${direccion}, ${row.locality ?? row.title}`,
-    }));
-    return uniqueSuggestions([...addresses, ...localityRows])
-      .sort((a, b) => KIND_ORDER[a.kind] - KIND_ORDER[b.kind])
-      .slice(0, 8);
-  }
-
+  const { street: name, number } = splitStreetAndNumber(trimmed);
   if (number) {
-    return (await lookupAddress(query)).map(matchToSuggestion);
+    return (await lookupAddress(composeAddressQuery(trimmed, locality))).map(matchToSuggestion);
   }
-
-  const [cabaStreets, streets] = await Promise.all([searchStreets(street, 'caba'), searchStreets(street)]);
+  const [cabaStreets, streets] = await Promise.all([searchStreets(name, 'caba'), searchStreets(name)]);
   return uniqueSuggestions([...cabaStreets, ...streets]).slice(0, 8);
+}
+
+export async function suggestLocalities(query: string): Promise<AddressSuggestion[]> {
+  if (query.trim().length < 2) return [];
+  const rows = await searchLocalities(query);
+  return uniqueSuggestions([...aliasLocalities(query), ...rows]).slice(0, 8);
 }
 
 export function resolveAddress(query: string, matches: AddressMatch[]) {
@@ -352,8 +493,7 @@ export function resolveAddress(query: string, matches: AddressMatch[]) {
     return {
       ok: false as const,
       matches,
-      error:
-        'No encontramos esa dirección. Escribí calle, número y localidad, por ejemplo Av. Corrientes 1234, CABA.',
+      error: 'No encontramos esa calle y número. Revisá los datos o elegí una sugerencia.',
     };
   }
   return {
@@ -363,10 +503,13 @@ export function resolveAddress(query: string, matches: AddressMatch[]) {
   };
 }
 
-export async function verifyAddress(query: string) {
-  const format = addressFormatError(query);
-  if (format) return { ok: false as const, error: format, matches: [] as AddressMatch[] };
+export async function verifyAddress(street: string, locality: string) {
+  const streetError = streetFormatError(street);
+  if (streetError) return { ok: false as const, error: streetError, matches: [] as AddressMatch[] };
+  const localityError = localityFormatError(locality);
+  if (localityError) return { ok: false as const, error: localityError, matches: [] as AddressMatch[] };
   try {
+    const query = composeAddressQuery(street, locality);
     const matches = await lookupAddress(query);
     const resolved = resolveAddress(query, matches);
     if (!resolved.ok) return resolved;
@@ -377,6 +520,162 @@ export async function verifyAddress(query: string) {
       ok: false as const,
       matches: [] as AddressMatch[],
       error: 'No pudimos verificar la dirección en este momento. Probá de nuevo en unos segundos.',
+    };
+  }
+}
+
+export async function verifyLocality(query: string) {
+  const formatError = localityFormatError(query);
+  if (formatError) return { ok: false as const, error: formatError, suggestions: [] as AddressSuggestion[] };
+  if (isCabaAlias(query) || labelsMatch(prettyLocality(query), 'CABA')) {
+    return {
+      ok: true as const,
+      locality: 'CABA',
+      province: 'Ciudad Autónoma de Buenos Aires',
+      suggestions: aliasLocalities('caba'),
+    };
+  }
+  try {
+    const suggestions = await suggestLocalities(query);
+    return resolveLocality(query, suggestions);
+  } catch (err) {
+    console.error('[address] No se pudo verificar la localidad', err);
+    return {
+      ok: false as const,
+      suggestions: [] as AddressSuggestion[],
+      error: 'No pudimos verificar la localidad en este momento. Probá de nuevo en unos segundos.',
+    };
+  }
+}
+
+type NominatimRow = {
+  display_name?: string;
+  address?: {
+    suburb?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+    state?: string;
+    state_district?: string;
+  };
+};
+
+type ZippopotamPlace = {
+  'place name'?: string;
+  state?: string;
+};
+
+const postalCache = new Map<string, PostalPlace[]>();
+
+async function lookupNominatimPostal(digits: string): Promise<PostalPlace[]> {
+  const params = new URLSearchParams({
+    postalcode: digits,
+    country: 'Argentina',
+    format: 'json',
+    addressdetails: '1',
+    limit: '8',
+  });
+  const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+    headers: GEOREF_HEADERS,
+  });
+  if (!response.ok) throw new Error(`Nominatim ${response.status}`);
+  const rows = (await response.json()) as NominatimRow[];
+  return rows.map((row) => {
+    const address = row.address ?? {};
+    const name = address.suburb || address.city || address.town || address.village || address.state || digits;
+    return {
+      name,
+      state: address.state ?? '',
+      details: [address.state_district, address.city, row.display_name].filter(Boolean).join(' '),
+    };
+  });
+}
+
+async function lookupZippopotamPostal(digits: string): Promise<PostalPlace[]> {
+  const response = await fetch(`https://api.zippopotam.us/AR/${digits}`, {
+    headers: { Accept: 'application/json' },
+  });
+  if (response.status === 404) return [];
+  if (!response.ok) throw new Error(`Zippopotam ${response.status}`);
+  const data = (await response.json()) as { places?: ZippopotamPlace[] };
+  return (data.places ?? []).map((place) => ({
+    name: place['place name'] ?? digits,
+    state: place.state ?? '',
+    details: `${place['place name'] ?? ''} ${place.state ?? ''}`,
+  }));
+}
+
+export async function lookupPostalPlaces(digits: string): Promise<PostalPlace[]> {
+  const cached = postalCache.get(digits);
+  if (cached) return cached;
+  const settled = await Promise.allSettled([lookupNominatimPostal(digits), lookupZippopotamPostal(digits)]);
+  const places: PostalPlace[] = [];
+  let failed = 0;
+  for (const result of settled) {
+    if (result.status === 'fulfilled') places.push(...result.value);
+    else failed += 1;
+  }
+  if (failed === settled.length) throw new Error('postal lookup failed');
+  const unique: PostalPlace[] = [];
+  const seen = new Set<string>();
+  for (const place of places) {
+    const key = `${normalize(place.name)}|${normalize(place.state)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(place);
+  }
+  if (unique.length > 0 || failed === 0) postalCache.set(digits, unique);
+  if (postalCache.size > 200) postalCache.clear();
+  return unique;
+}
+
+export async function verifyPostalCode(code: string, locality = '', province = '') {
+  const formatError = postalCodeError(code);
+  if (formatError) return { ok: false as const, error: formatError, places: [] as PostalPlace[] };
+  const digits = postalCodeDigits(code);
+  if (!digits) return { ok: false as const, error: postalCodeError(code) ?? 'Indicá el código postal.', places: [] as PostalPlace[] };
+
+  if (locality && !postalPrefixMatches(code, locality, province)) {
+    return {
+      ok: false as const,
+      error: `Ese código postal no corresponde a ${prettyLocality(locality, province)}.`,
+      places: [] as PostalPlace[],
+    };
+  }
+
+  try {
+    const places = await lookupPostalPlaces(digits);
+    if (places.length === 0) {
+      const n = Number(digits);
+      if (prettyLocality(locality, province) === 'CABA' && n >= 1000 && n <= 1499) {
+        return {
+          ok: true as const,
+          postalCode: digits,
+          places: [{ name: 'CABA', state: 'Ciudad Autónoma de Buenos Aires', details: 'CABA' }],
+        };
+      }
+      return {
+        ok: false as const,
+        error: 'No encontramos ese código postal. Revisá los números o usá el CPA.',
+        places,
+      };
+    }
+    if (!locality.trim()) return { ok: true as const, postalCode: digits, places };
+    const matches = places.filter((place) => localityMatchesPostalPlace(locality, province, place));
+    if (matches.length === 0) {
+      return {
+        ok: false as const,
+        error: `Ese código postal no corresponde a ${prettyLocality(locality, province)}.`,
+        places,
+      };
+    }
+    return { ok: true as const, postalCode: digits, places: matches };
+  } catch (err) {
+    console.error('[address] No se pudo verificar el código postal', err);
+    return {
+      ok: false as const,
+      places: [] as PostalPlace[],
+      error: 'No pudimos verificar el código postal en este momento. Probá de nuevo en unos segundos.',
     };
   }
 }

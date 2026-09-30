@@ -1,16 +1,9 @@
+import { formatBuyerAddress, type Buyer } from './buyer';
 import { formatPrice } from './format';
 import type { CartItem } from './cart';
 import { SITE } from './site';
 
-export interface BuyerInfo {
-  name: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  notes?: string;
-}
-
-export function buildWhatsAppOrderUrl(items: CartItem[], buyer?: BuyerInfo) {
+export function buildWhatsAppOrderUrl(items: CartItem[], buyer?: Buyer) {
   const lines = items.map(
     (i) =>
       `• ${i.quantity} x ${i.name}${i.variant ? ` (${i.variant})` : ''} — ${formatPrice(i.price * i.quantity)}`,
@@ -25,7 +18,7 @@ export function buildWhatsAppOrderUrl(items: CartItem[], buyer?: BuyerInfo) {
     buyer?.name ? `\nNombre: ${buyer.name}` : '',
     buyer?.email ? `Email: ${buyer.email}` : '',
     buyer?.phone ? `Teléfono: ${buyer.phone}` : '',
-    buyer?.address ? `Dirección / localidad: ${buyer.address}` : '',
+    buyer?.street ? `Dirección: ${formatBuyerAddress(buyer)}` : '',
     buyer?.notes ? `Notas: ${buyer.notes}` : '',
   ]
     .filter((l) => l !== '')

@@ -1,10 +1,20 @@
-import { addressFormatError } from '@/lib/address';
+import {
+  localityFormatError,
+  parseAddressQuery,
+  postalCodeError,
+  splitStreetAndNumber,
+  streetFormatError,
+  unitFormatError,
+} from '@/lib/address';
 
 export interface Buyer {
   name: string;
   email: string;
   phone: string;
-  address: string;
+  street: string;
+  unit: string;
+  locality: string;
+  postalCode: string;
   notes: string;
 }
 
@@ -14,16 +24,36 @@ export const BUYER_FIELDS: { id: BuyerField; label: string; required: boolean }[
   { id: 'name', label: 'Nombre y apellido', required: true },
   { id: 'email', label: 'Email', required: true },
   { id: 'phone', label: 'Teléfono', required: true },
-  { id: 'address', label: 'Dirección y localidad', required: true },
+  { id: 'street', label: 'Calle y número', required: true },
+  { id: 'unit', label: 'Piso / depto', required: false },
+  { id: 'locality', label: 'Localidad', required: true },
+  { id: 'postalCode', label: 'Código postal', required: true },
   { id: 'notes', label: 'Notas del pedido', required: false },
 ];
 
-export const emptyBuyer = (): Buyer => ({ name: '', email: '', phone: '', address: '', notes: '' });
+export const emptyBuyer = (): Buyer => ({
+  name: '',
+  email: '',
+  phone: '',
+  street: '',
+  unit: '',
+  locality: '',
+  postalCode: '',
+  notes: '',
+});
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function phoneDigits(value: string) {
   return value.replace(/\D/g, '');
+}
+
+export function formatBuyerAddress(buyer: Pick<Buyer, 'street' | 'unit' | 'locality' | 'postalCode'>) {
+  const parts = [buyer.street.trim()];
+  if (buyer.unit.trim()) parts.push(buyer.unit.trim());
+  if (buyer.locality.trim()) parts.push(buyer.locality.trim());
+  if (buyer.postalCode.trim()) parts.push(`CP ${buyer.postalCode.trim()}`);
+  return parts.filter(Boolean).join(', ');
 }
 
 export function parseBuyer(input: unknown): Buyer {
@@ -33,8 +63,24 @@ export function parseBuyer(input: unknown): Buyer {
     name: text('name'),
     email: text('email').toLowerCase(),
     phone: text('phone'),
-    address: text('address'),
+    street: text('street'),
+    unit: text('unit'),
+    locality: text('locality'),
+    postalCode: text('postalCode').toUpperCase().replace(/\s/g, ''),
     notes: text('notes'),
+  };
+}
+
+export function hydrateBuyer(input: unknown): Buyer {
+  const buyer = parseBuyer(input);
+  const raw = input && typeof input === 'object' ? (input as Record<string, unknown>) : {};
+  if (buyer.street || typeof raw.address !== 'string' || !raw.address.trim()) return buyer;
+  const parsed = parseAddressQuery(raw.address);
+  const { street, number } = splitStreetAndNumber(parsed.direccion);
+  return {
+    ...buyer,
+    street: number ? `${street} ${number}` : parsed.direccion,
+    locality: buyer.locality || parsed.lugar,
   };
 }
 
@@ -56,9 +102,10 @@ export function validateBuyerField(field: BuyerField, buyer: Buyer): string | nu
     }
     return null;
   }
-  if (field === 'address') {
-    return addressFormatError(value);
-  }
+  if (field === 'street') return streetFormatError(value);
+  if (field === 'unit') return unitFormatError(value);
+  if (field === 'locality') return localityFormatError(value);
+  if (field === 'postalCode') return postalCodeError(value);
   if (field === 'notes' && value.length > 500) return 'Las notas no pueden superar los 500 caracteres.';
   return null;
 }

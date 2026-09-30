@@ -1,9 +1,13 @@
 import { track, ecommerceItem } from '@/lib/analytics';
 import { useStore } from '@nanostores/react';
 import { useEffect, useRef, useState } from 'react';
-import { BUYER_FIELDS, emptyBuyer, validateBuyer, type Buyer, type BuyerField } from '@/lib/buyer';
+import { BUYER_FIELDS, emptyBuyer, hydrateBuyer, validateBuyer, type Buyer, type BuyerField } from '@/lib/buyer';
 import {
   applySuggestion,
+  prettyLocality,
+  streetFormatError,
+  localityFormatError,
+  postalCodeError,
   suggestionKindLabel,
   type AddressSuggestion,
 } from '@/lib/address';
@@ -26,7 +30,7 @@ function loadDraft(): Buyer {
   if (typeof window === 'undefined') return emptyBuyer();
   try {
     const raw = window.localStorage.getItem(DRAFT_KEY);
-    return raw ? { ...emptyBuyer(), ...JSON.parse(raw) } : emptyBuyer();
+    return raw ? hydrateBuyer(JSON.parse(raw)) : emptyBuyer();
   } catch {
     return emptyBuyer();
   }
@@ -44,11 +48,16 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
   const [loading, setLoading] = useState<'mp' | 'wa' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
-  const [verifiedAddress, setVerifiedAddress] = useState('');
+  const [suggestField, setSuggestField] = useState<'street' | 'locality'>('street');
+  const [verifiedKey, setVerifiedKey] = useState('');
+  const [localityOk, setLocalityOk] = useState('');
+  const [postalOk, setPostalOk] = useState('');
+  const [geoErrors, setGeoErrors] = useState<Partial<Record<'street' | 'locality' | 'postalCode', string>>>({});
   const [addressBusy, setAddressBusy] = useState(false);
   const [openList, setOpenList] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const addressRef = useRef<HTMLInputElement>(null);
+  const streetRef = useRef<HTMLInputElement>(null);
+  const localityRef = useRef<HTMLInputElement>(null);
   const lookupTimer = useRef<number>(0);
   const suggestAbort = useRef<AbortController | null>(null);
 
@@ -76,40 +85,42 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
   }
 
   const validation = validateBuyer(buyer);
-  const addressError =
-    submitted || touched.address
-      ? validation.errors.address ?? (verifiedAddress ? undefined : validation.ok ? 'Confirmá una dirección real de la lista.' : undefined)
-      : undefined;
-  const showError = (field: BuyerField) =>
-    field === 'address' ? addressError : submitted || touched[field] ? validation.errors[field] : undefined;
-
-  const setAddress = (value: string, verified = false) => {
-    setBuyer((current) => ({ ...current, address: value }));
-    if (verified) {
-      setVerifiedAddress(value);
-      setSuggestions([]);
-      setOpenList(false);
-      setActiveIndex(-1);
-      return;
-    }
-    if (value !== verifiedAddress) setVerifiedAddress('');
+  const currentKey = `${buyer.street.trim()}|${buyer.locality.trim()}`;
+  const verified = verifiedKey === currentKey && Boolean(verifiedKey);
+  const localityVerified = localityOk === buyer.locality.trim() && Boolean(localityOk);
+  const postalVerified =
+    postalOk === `${buyer.postalCode.trim().toUpperCase()}|${buyer.locality.trim()}` && Boolean(postalOk);
+  const showError = (field: BuyerField) => {
+    if (!(submitted || touched[field])) return undefined;
+    if (field === 'street') return validation.errors.street ?? geoErrors.street;
+    if (field === 'locality') return validation.errors.locality ?? geoErrors.locality;
+    if (field === 'postalCode') return validation.errors.postalCode ?? geoErrors.postalCode;
+    return validation.errors[field];
   };
 
-  const placeCursor = (at: number) => {
+  const closeSuggestions = () => {
+    setSuggestions([]);
+    setOpenList(false);
+    setActiveIndex(-1);
+  };
+
+  const placeCursor = (field: 'street' | 'locality', at: number) => {
     requestAnimationFrame(() => {
-      const input = addressRef.current;
+      const input = field === 'street' ? streetRef.current : localityRef.current;
       if (!input) return;
       input.focus();
       input.setSelectionRange(at, at);
     });
   };
 
-  const lookupAddress = async (query: string, mode: 'suggest' | 'verify' = 'verify') => {
-    const trimmed = query.trim();
-    if (mode === 'suggest' && trimmed.length < 3) {
-      setSuggestions([]);
-      setOpenList(false);
-      setActiveIndex(-1);
+  const lookupAddress = async (
+    field: 'street' | 'locality' | 'postalCode',
+    next: Buyer,
+    mode: 'suggest' | 'verify' = 'verify',
+  ) => {
+    const query = field === 'street' ? next.street : field === 'locality' ? next.locality : next.postalCode;
+    if (mode === 'suggest' && field !== 'postalCode' && query.trim().length < (field === 'locality' ? 2 : 3)) {
+      closeSuggestions();
       return { verified: false as const };
     }
     suggestAbort.current?.abort();
@@ -117,72 +128,161 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
     suggestAbort.current = abort;
     setAddressBusy(true);
     try {
-      const suffix = mode === 'suggest' ? '&suggest=1' : '';
-      const res = await fetch(`/api/address?q=${encodeURIComponent(query)}${suffix}`, { signal: abort.signal });
+      const params = new URLSearchParams();
+      if (mode === 'suggest' && field !== 'postalCode') {
+        params.set('type', field);
+        params.set('q', query);
+        if (field === 'street' && next.locality) params.set('locality', next.locality);
+      } else if (field === 'locality') {
+        params.set('type', 'verify-locality');
+        params.set('q', next.locality);
+      } else if (field === 'postalCode') {
+        params.set('type', 'postal');
+        params.set('q', next.postalCode);
+        if (next.locality) params.set('locality', next.locality);
+      } else {
+        params.set('street', next.street);
+        params.set('locality', next.locality);
+      }
+      const res = await fetch(`/api/address?${params}`, { signal: abort.signal });
       const data = (await res.json()) as {
         verified?: boolean;
+        field?: 'street' | 'locality' | 'postalCode';
         normalized?: string;
+        locality?: string;
+        province?: string;
+        postalCode?: string;
+        match?: { street: string; number: number; locality: string; province: string };
         suggestions?: AddressSuggestion[];
         error?: string;
       };
       const options = data.suggestions ?? [];
-      setSuggestions(options);
-      if (data.verified && data.normalized) {
-        setVerifiedAddress(data.normalized);
-        if (mode === 'verify' && data.normalized !== query) {
-          setBuyer((current) => ({ ...current, address: data.normalized! }));
-        }
-        setOpenList(options.length > 1);
-        setActiveIndex(options.length > 1 ? 0 : -1);
-        return { verified: true as const, normalized: data.normalized };
+      if (mode === 'suggest' && field !== 'postalCode') {
+        setSuggestField(field);
+        setSuggestions(options);
+        setOpenList(options.length > 0);
+        setActiveIndex(options.length > 0 ? 0 : -1);
       }
-      if (mode === 'verify') setVerifiedAddress('');
-      setOpenList(options.length > 0);
-      setActiveIndex(options.length > 0 ? 0 : -1);
-      return { verified: false as const, error: data.error, suggestions: options };
+      if (data.verified && data.match) {
+        const street = `${data.match.street} ${data.match.number}`;
+        const locality = prettyLocality(data.match.locality, data.match.province);
+        setBuyer((current) => ({ ...current, street, locality }));
+        setVerifiedKey(`${street}|${locality}`);
+        setLocalityOk(locality);
+        setGeoErrors((current) => ({ ...current, street: undefined, locality: undefined }));
+        if (mode === 'verify') closeSuggestions();
+        return { verified: true as const, street, locality };
+      }
+      if (data.verified && field === 'locality' && data.locality) {
+        setBuyer((current) => ({ ...current, locality: data.locality ?? current.locality }));
+        setLocalityOk(data.locality);
+        setGeoErrors((current) => ({ ...current, locality: undefined }));
+        if (mode === 'verify') closeSuggestions();
+        return { verified: true as const, locality: data.locality };
+      }
+      if (data.verified && field === 'postalCode') {
+        setPostalOk(`${next.postalCode.trim().toUpperCase()}|${next.locality.trim()}`);
+        setGeoErrors((current) => ({ ...current, postalCode: undefined }));
+        return { verified: true as const };
+      }
+      if (mode === 'verify') {
+        const errorField = data.field ?? (field === 'postalCode' ? 'postalCode' : /localidad|coincidencias/i.test(data.error ?? '') ? 'locality' : 'street');
+        if (errorField === 'street') setVerifiedKey('');
+        if (errorField === 'locality') setLocalityOk('');
+        if (errorField === 'postalCode') setPostalOk('');
+        setGeoErrors((current) => ({ ...current, [errorField]: data.error ?? 'Revisá este dato.' }));
+        if (options.length > 0 && (errorField === 'street' || errorField === 'locality')) {
+          setSuggestField(errorField);
+          setSuggestions(options);
+          setOpenList(true);
+          setActiveIndex(0);
+        }
+      }
+      return { verified: false as const, error: data.error, field: data.field, suggestions: options };
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') return { verified: false as const };
-      setSuggestions([]);
-      if (mode === 'verify') setVerifiedAddress('');
-      return { verified: false as const, error: 'No pudimos verificar la dirección. Probá de nuevo.' };
+      if (mode === 'verify') {
+        const message = 'No pudimos verificar este dato. Probá de nuevo.';
+        if (field === 'street') setVerifiedKey('');
+        if (field === 'locality') setLocalityOk('');
+        if (field === 'postalCode') setPostalOk('');
+        setGeoErrors((current) => ({ ...current, [field]: message }));
+        return { verified: false as const, error: message, field };
+      }
+      return { verified: false as const, error: 'No pudimos verificar este dato. Probá de nuevo.' };
     } finally {
       if (suggestAbort.current === abort) setAddressBusy(false);
     }
   };
 
   const pickSuggestion = (suggestion: AddressSuggestion) => {
-    const next = applySuggestion(buyer.address, suggestion);
-    if (suggestion.kind === 'address') {
-      setAddress(next, true);
+    const next = applySuggestion({ street: buyer.street, locality: buyer.locality }, suggestion);
+    const verified = suggestion.kind === 'address';
+    setBuyer((current) => ({ ...current, street: next.street, locality: next.locality }));
+    setGeoErrors((current) => ({
+      ...current,
+      street: verified ? undefined : current.street,
+      locality: suggestion.kind === 'locality' || verified ? undefined : current.locality,
+    }));
+    closeSuggestions();
+    if (suggestion.kind === 'locality') {
+      setLocalityOk(next.locality.trim());
+      setPostalOk('');
+      setVerifiedKey('');
+    }
+    if (verified) {
+      setVerifiedKey(`${next.street.trim()}|${next.locality.trim()}`);
+      setLocalityOk(next.locality.trim());
       return;
     }
-    setAddress(next);
-    setOpenList(false);
-    setSuggestions([]);
-    setActiveIndex(-1);
-    if (suggestion.kind === 'street' && next.endsWith(' ')) placeCursor(next.length);
-    if (suggestion.kind === 'locality') {
+    setVerifiedKey('');
+    if (suggestion.kind === 'street' && next.street.endsWith(' ')) placeCursor('street', next.street.length);
+    if (suggestion.kind === 'locality' && next.street && !streetFormatError(next.street)) {
       window.clearTimeout(lookupTimer.current);
-      lookupTimer.current = window.setTimeout(() => lookupAddress(next, 'verify'), 200);
+      lookupTimer.current = window.setTimeout(
+        () => lookupAddress('street', { ...buyer, ...next }, 'verify'),
+        200,
+      );
     }
   };
 
   const update = (field: BuyerField) => (e: { target: { value: string } }) => {
-    if (field === 'address') {
-      const value = e.target.value;
-      setAddress(value);
-      window.clearTimeout(lookupTimer.current);
-      lookupTimer.current = window.setTimeout(() => lookupAddress(value, 'suggest'), 280);
-      return;
+    const value = e.target.value;
+    const next = { ...buyer, [field]: value };
+    setBuyer(next);
+    if (field === 'street' || field === 'locality' || field === 'postalCode') {
+      if (field === 'street') setVerifiedKey('');
+      if (field === 'locality') {
+        setVerifiedKey('');
+        setLocalityOk('');
+        setPostalOk('');
+      }
+      if (field === 'postalCode') setPostalOk('');
+      setGeoErrors((current) => ({ ...current, [field]: undefined }));
     }
-    setBuyer((current) => ({ ...current, [field]: e.target.value }));
+    if (field === 'street' || field === 'locality') {
+      window.clearTimeout(lookupTimer.current);
+      lookupTimer.current = window.setTimeout(() => lookupAddress(field, next, 'suggest'), 280);
+    }
   };
 
   const blur = (field: BuyerField) => () => {
     setTouched((current) => ({ ...current, [field]: true }));
-    if (field !== 'address') return;
-    window.setTimeout(() => setOpenList(false), 120);
-    if (buyer.address && !verifiedAddress) lookupAddress(buyer.address, 'verify');
+    if (field === 'street' || field === 'locality') {
+      window.setTimeout(() => setOpenList(false), 120);
+    }
+    if (field === 'locality' && !localityFormatError(buyer.locality)) {
+      lookupAddress('locality', buyer, 'verify');
+      return;
+    }
+    if (field === 'postalCode' && !postalCodeError(buyer.postalCode)) {
+      lookupAddress('postalCode', buyer, 'verify');
+      return;
+    }
+    const key = `${buyer.street.trim()}|${buyer.locality.trim()}`;
+    if (field === 'street' && buyer.street && buyer.locality && key !== verifiedKey) {
+      lookupAddress('street', buyer, 'verify');
+    }
   };
 
   const onAddressKeyDown = (event: { key: string; preventDefault: () => void }) => {
@@ -223,13 +323,39 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
     setSubmitted(true);
     setError(null);
     const next = validateBuyer(buyer);
-    if (!next.ok) {
-      focusFirstError(next.errors);
-      return false;
+    const errors: Partial<Record<BuyerField, string>> = { ...next.errors };
+    let locality = buyer.locality;
+
+    if (!errors.locality) {
+      const localityCheck = localityVerified
+        ? { verified: true as const, locality: buyer.locality }
+        : await lookupAddress('locality', buyer, 'verify');
+      if (!localityCheck.verified) {
+        errors.locality = localityCheck.error ?? 'Indicá una localidad real.';
+      } else if (localityCheck.locality) {
+        locality = localityCheck.locality;
+      }
     }
-    const checked = verifiedAddress ? { verified: true as const } : await lookupAddress(buyer.address, 'verify');
-    if (!checked.verified) {
-      focusFirstError({ address: checked.error ?? 'Confirmá una dirección real de la lista.' });
+
+    const current = { ...buyer, locality };
+    if (!errors.street && !errors.locality) {
+      const addressCheck = verified ? { verified: true as const } : await lookupAddress('street', current, 'verify');
+      if (!addressCheck.verified) {
+        errors.street = addressCheck.error ?? 'Confirmá una calle y número reales.';
+      }
+    }
+
+    if (!errors.postalCode) {
+      const postalCheck = postalVerified
+        ? { verified: true as const }
+        : await lookupAddress('postalCode', current, 'verify');
+      if (!postalCheck.verified) {
+        errors.postalCode = postalCheck.error ?? 'Indicá un código postal real.';
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      focusFirstError(errors);
       return false;
     }
     return true;
@@ -365,7 +491,7 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
                 {visibleErrors.map(({ id, label }) => (
                   <li key={id}>
                     <a href={`#${id}`} className="underline">
-                      {label}: {validation.errors[id]}
+                      {label}: {showError(id)}
                     </a>
                   </li>
                 ))}
@@ -444,88 +570,228 @@ export default function CheckoutForm({ freeShippingFrom }: Props) {
             )}
           </div>
 
-          <div className="relative">
-            <label htmlFor="address" className="mb-1 block text-sm font-semibold">
-              Dirección y localidad <span className="text-red-700">*</span>
-            </label>
-            <input
-              ref={addressRef}
-              id="address"
-              role="combobox"
-              aria-expanded={openList}
-              aria-controls="address-list"
-              aria-autocomplete="list"
-              aria-activedescendant={activeIndex >= 0 ? `address-option-${activeIndex}` : undefined}
-              className={`${inputBase} ${showError('address') ? inputErr : inputOk}`}
-              autoComplete="off"
-              spellCheck={false}
-              value={buyer.address}
-              onChange={update('address')}
-              onBlur={blur('address')}
-              onFocus={() => suggestions.length > 0 && setOpenList(true)}
-              onKeyDown={onAddressKeyDown}
-              aria-invalid={Boolean(showError('address'))}
-              aria-describedby={showError('address') ? 'address-error' : 'address-hint'}
-            />
-            {openList && suggestions.length > 0 && (
-              <ul
-                id="address-list"
-                role="listbox"
-                className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-stone-200 bg-white py-1 shadow-lg"
-              >
-                {suggestions.map((suggestion, index) => (
-                  <li
-                    key={suggestion.id}
-                    id={`address-option-${index}`}
-                    role="option"
-                    aria-selected={index === activeIndex}
-                  >
-                    <button
-                      type="button"
-                      className={`flex min-h-11 w-full items-start gap-3 px-4 py-2.5 text-left text-sm hover:bg-brand-50 ${
-                        index === activeIndex ? 'bg-brand-50' : ''
-                      }`}
-                      onMouseDown={(event) => event.preventDefault()}
-                      onMouseEnter={() => setActiveIndex(index)}
-                      onClick={() => pickSuggestion(suggestion)}
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="relative sm:col-span-2">
+              <label htmlFor="street" className="mb-1 block text-sm font-semibold">
+                Calle y número <span className="text-red-700">*</span>
+              </label>
+              <input
+                ref={streetRef}
+                id="street"
+                role="combobox"
+                aria-expanded={openList && suggestField === 'street'}
+                aria-controls="street-list"
+                aria-autocomplete="list"
+                aria-activedescendant={
+                  openList && suggestField === 'street' && activeIndex >= 0 ? `street-option-${activeIndex}` : undefined
+                }
+                className={`${inputBase} ${showError('street') ? inputErr : inputOk}`}
+                autoComplete="street-address"
+                spellCheck={false}
+                value={buyer.street}
+                onChange={update('street')}
+                onBlur={blur('street')}
+                onFocus={() => setSuggestField('street')}
+                onKeyDown={onAddressKeyDown}
+                aria-invalid={Boolean(showError('street'))}
+                aria-describedby={showError('street') ? 'street-error' : 'street-hint'}
+              />
+              {openList && suggestField === 'street' && suggestions.length > 0 && (
+                <ul
+                  id="street-list"
+                  role="listbox"
+                  className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-stone-200 bg-white py-1 shadow-lg"
+                >
+                  {suggestions.map((suggestion, index) => (
+                    <li
+                      key={suggestion.id}
+                      id={`street-option-${index}`}
+                      role="option"
+                      aria-selected={index === activeIndex}
                     >
-                      <span className="mt-0.5 w-16 shrink-0 text-[11px] font-medium text-steel">
-                        {suggestionKindLabel(suggestion.kind)}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block font-medium">{suggestion.title}</span>
-                        {suggestion.subtitle && (
-                          <span className="block text-xs text-steel">{suggestion.subtitle}</span>
-                        )}
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p className="sr-only" aria-live="polite">
-              {openList && suggestions.length > 0
-                ? `${suggestions.length} sugerencias de dirección`
-                : addressBusy
-                  ? 'Buscando calles y localidades'
-                  : ''}
-            </p>
-            {showError('address') ? (
-              <p id="address-error" className="mt-1 text-sm text-red-700">
-                {showError('address')}
-              </p>
-            ) : verifiedAddress ? (
-              <p id="address-hint" className="mt-1 text-xs text-green-700">
-                Dirección verificada: {verifiedAddress}
-              </p>
-            ) : (
-              <p id="address-hint" className="mt-1 text-xs text-steel">
-                {addressBusy
-                  ? 'Buscando calles y localidades…'
-                  : 'Empezá por la calle: te sugerimos coincidencias. Completá con número y localidad.'}
-              </p>
-            )}
+                      <button
+                        type="button"
+                        className={`flex min-h-11 w-full items-start gap-3 px-4 py-2.5 text-left text-sm hover:bg-brand-50 ${
+                          index === activeIndex ? 'bg-brand-50' : ''
+                        }`}
+                        onMouseDown={(event) => event.preventDefault()}
+                        onMouseEnter={() => setActiveIndex(index)}
+                        onClick={() => pickSuggestion(suggestion)}
+                      >
+                        <span className="mt-0.5 w-16 shrink-0 text-[11px] font-medium text-steel">
+                          {suggestionKindLabel(suggestion.kind)}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block font-medium">{suggestion.title}</span>
+                          {suggestion.subtitle && (
+                            <span className="block text-xs text-steel">{suggestion.subtitle}</span>
+                          )}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {showError('street') ? (
+                <p id="street-error" className="mt-1 text-sm text-red-700">
+                  {showError('street')}
+                </p>
+              ) : (
+                <p id="street-hint" className="mt-1 text-xs text-steel">
+                  {addressBusy && suggestField === 'street'
+                    ? 'Buscando calles…'
+                    : 'Por ejemplo Av. Corrientes 1234.'}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="unit" className="mb-1 block text-sm font-semibold">
+                Piso / depto
+              </label>
+              <input
+                id="unit"
+                className={`${inputBase} ${showError('unit') ? inputErr : inputOk}`}
+                autoComplete="address-line2"
+                value={buyer.unit}
+                onChange={update('unit')}
+                onBlur={blur('unit')}
+                aria-invalid={Boolean(showError('unit'))}
+                aria-describedby={showError('unit') ? 'unit-error' : 'unit-hint'}
+              />
+              {showError('unit') ? (
+                <p id="unit-error" className="mt-1 text-sm text-red-700">
+                  {showError('unit')}
+                </p>
+              ) : (
+                <p id="unit-hint" className="mt-1 text-xs text-steel">
+                  Opcional, por ejemplo 3° B.
+                </p>
+              )}
+            </div>
           </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="relative sm:col-span-2">
+              <label htmlFor="locality" className="mb-1 block text-sm font-semibold">
+                Localidad <span className="text-red-700">*</span>
+              </label>
+              <input
+                ref={localityRef}
+                id="locality"
+                role="combobox"
+                aria-expanded={openList && suggestField === 'locality'}
+                aria-controls="locality-list"
+                aria-autocomplete="list"
+                aria-activedescendant={
+                  openList && suggestField === 'locality' && activeIndex >= 0
+                    ? `locality-option-${activeIndex}`
+                    : undefined
+                }
+                className={`${inputBase} ${showError('locality') ? inputErr : inputOk}`}
+                autoComplete="address-level2"
+                spellCheck={false}
+                value={buyer.locality}
+                onChange={update('locality')}
+                onBlur={blur('locality')}
+                onFocus={() => setSuggestField('locality')}
+                onKeyDown={onAddressKeyDown}
+                aria-invalid={Boolean(showError('locality'))}
+                aria-describedby={showError('locality') ? 'locality-error' : 'locality-hint'}
+              />
+              {openList && suggestField === 'locality' && suggestions.length > 0 && (
+                <ul
+                  id="locality-list"
+                  role="listbox"
+                  className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-stone-200 bg-white py-1 shadow-lg"
+                >
+                  {suggestions.map((suggestion, index) => (
+                    <li
+                      key={suggestion.id}
+                      id={`locality-option-${index}`}
+                      role="option"
+                      aria-selected={index === activeIndex}
+                    >
+                      <button
+                        type="button"
+                        className={`flex min-h-11 w-full items-start gap-3 px-4 py-2.5 text-left text-sm hover:bg-brand-50 ${
+                          index === activeIndex ? 'bg-brand-50' : ''
+                        }`}
+                        onMouseDown={(event) => event.preventDefault()}
+                        onMouseEnter={() => setActiveIndex(index)}
+                        onClick={() => pickSuggestion(suggestion)}
+                      >
+                        <span className="mt-0.5 w-16 shrink-0 text-[11px] font-medium text-steel">
+                          {suggestionKindLabel(suggestion.kind)}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block font-medium">{suggestion.title}</span>
+                          {suggestion.subtitle && (
+                            <span className="block text-xs text-steel">{suggestion.subtitle}</span>
+                          )}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {showError('locality') ? (
+                <p id="locality-error" className="mt-1 text-sm text-red-700">
+                  {showError('locality')}
+                </p>
+              ) : verified ? (
+                <p id="locality-hint" className="mt-1 text-xs text-green-700">
+                  Dirección verificada.
+                </p>
+              ) : localityVerified ? (
+                <p id="locality-hint" className="mt-1 text-xs text-green-700">
+                  Localidad verificada.
+                </p>
+              ) : (
+                <p id="locality-hint" className="mt-1 text-xs text-steel">
+                  {addressBusy && suggestField === 'locality' ? 'Buscando localidades…' : 'Por ejemplo CABA o Rosario.'}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="postalCode" className="mb-1 block text-sm font-semibold">
+                Código postal <span className="text-red-700">*</span>
+              </label>
+              <input
+                id="postalCode"
+                className={`${inputBase} ${showError('postalCode') ? inputErr : inputOk}`}
+                autoComplete="postal-code"
+                inputMode="text"
+                value={buyer.postalCode}
+                onChange={update('postalCode')}
+                onBlur={blur('postalCode')}
+                aria-invalid={Boolean(showError('postalCode'))}
+                aria-describedby={showError('postalCode') ? 'postal-error' : 'postal-hint'}
+              />
+              {showError('postalCode') ? (
+                <p id="postal-error" className="mt-1 text-sm text-red-700">
+                  {showError('postalCode')}
+                </p>
+              ) : postalVerified ? (
+                <p id="postal-hint" className="mt-1 text-xs text-green-700">
+                  Código postal verificado.
+                </p>
+              ) : (
+                <p id="postal-hint" className="mt-1 text-xs text-steel">
+                  Por ejemplo 1043 o C1043AAE.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <p className="sr-only" aria-live="polite">
+            {openList && suggestions.length > 0
+              ? `${suggestions.length} sugerencias`
+              : addressBusy
+                ? 'Buscando coincidencias'
+                : ''}
+          </p>
 
           <div>
             <label htmlFor="notes" className="mb-1 block text-sm font-semibold">

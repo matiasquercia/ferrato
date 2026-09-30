@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { formatBuyerAddress } from '@/lib/buyer';
 import { productImage } from '@/lib/images';
 import { getMercadoPagoClient, preferenceApi } from '@/lib/mercadopago.server';
 import { saveOrderToNotion } from '@/lib/notion.server';
@@ -49,7 +50,7 @@ export const POST: APIRoute = async ({ request, url }) => {
         metadata: {
           order_id: order.orderId,
           phone: order.buyer.phone,
-          address: order.buyer.address,
+          address: formatBuyerAddress(order.buyer),
           notes: order.buyer.notes,
         },
         back_urls: {

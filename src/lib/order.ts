@@ -1,4 +1,4 @@
-import { verifyAddress } from '@/lib/address';
+import { prettyLocality, verifyAddress, verifyLocality, verifyPostalCode } from '@/lib/address';
 import { getProductById, maxQuantity } from '@/lib/catalog';
 import { formatPrice } from '@/lib/format';
 import { validateBuyer, type Buyer } from '@/lib/buyer';
@@ -95,13 +95,37 @@ export async function buildOrder(input: { items: unknown; buyer: unknown; channe
   if (!buyerResult.ok) {
     return { ok: false as const, error: buyerResult.message ?? 'Datos incompletos.', status: 400, errors: buyerResult.errors };
   }
-  const address = await verifyAddress(buyerResult.buyer.address);
+  const locality = await verifyLocality(buyerResult.buyer.locality);
+  if (!locality.ok) {
+    return {
+      ok: false as const,
+      error: locality.error,
+      status: 400,
+      errors: { locality: locality.error },
+    };
+  }
+  const address = await verifyAddress(buyerResult.buyer.street, locality.locality);
   if (!address.ok) {
+    const field = /localidad|coincidencias/i.test(address.error) ? 'locality' : 'street';
     return {
       ok: false as const,
       error: address.error,
       status: 400,
-      errors: { address: address.error },
+      errors: { [field]: address.error },
+    };
+  }
+  const normalizedLocality = prettyLocality(address.match.locality, address.match.province);
+  const postal = await verifyPostalCode(
+    buyerResult.buyer.postalCode,
+    normalizedLocality,
+    address.match.province,
+  );
+  if (!postal.ok) {
+    return {
+      ok: false as const,
+      error: postal.error,
+      status: 400,
+      errors: { postalCode: postal.error },
     };
   }
   const linesResult = resolveOrderLines(input.items);
@@ -109,7 +133,11 @@ export async function buildOrder(input: { items: unknown; buyer: unknown; channe
 
   const order: OrderRecord = {
     orderId: input.orderId ?? newOrderId(),
-    buyer: { ...buyerResult.buyer, address: address.match.label },
+    buyer: {
+      ...buyerResult.buyer,
+      street: `${address.match.street} ${address.match.number}`,
+      locality: normalizedLocality,
+    },
     channel: input.channel,
     status: input.channel === 'whatsapp' ? 'WhatsApp' : 'Pendiente',
     lines: linesResult.lines,

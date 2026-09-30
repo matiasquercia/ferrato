@@ -1,3 +1,4 @@
+import { formatBuyerAddress } from '@/lib/buyer';
 import { formatPrice } from '@/lib/format';
 import { formatOrderLines, type OrderRecord, type OrderStatus } from '@/lib/order';
 
@@ -25,7 +26,7 @@ function properties(order: OrderRecord) {
     Nombre: text(order.buyer.name),
     Email: { email: order.buyer.email || null },
     Teléfono: { phone_number: order.buyer.phone || null },
-    Dirección: text(order.buyer.address),
+    Dirección: text(formatBuyerAddress(order.buyer)),
     Notas: text(order.buyer.notes),
     Productos: text(`${formatOrderLines(order.lines)}\nTotal: ${formatPrice(order.total)}`),
     Total: { number: order.total },
