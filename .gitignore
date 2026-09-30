@@ -3,6 +3,8 @@ dist/
 .vercel/
 .netlify/
 .output/
+.wrangler/
+.dev.vars*
 
 # astro
 .astro/

@@ -19,4 +19,4 @@ jobs:
       - run: npm run check
       - run: npm run build
         env:
-          PUBLIC_SITE_URL: https://www.ferrato.com.ar
+          PUBLIC_SITE_URL: https://ferralto.com

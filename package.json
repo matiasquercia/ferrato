@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "deploy": "wrangler deploy",
     "preview": "astro preview",
     "check": "astro check",
     "format": "prettier --write .",
@@ -14,6 +15,7 @@
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.3.3",
     "@astrojs/netlify": "^8.2.6",
     "@astrojs/react": "^7.0.0",
     "@astrojs/sitemap": "^3.7.4",
@@ -27,7 +29,8 @@
     "nanostores": "^1.5.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "wrangler": "^4.145.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
