@@ -59,7 +59,7 @@ export const POST: APIRoute = async ({ request, url }) => {
           pending: `${baseUrl}/checkout/pendiente`,
         },
         ...(isPublicUrl && {
-          auto_return: 'approved' as const,
+          auto_return: 'all' as const,
           notification_url: `${baseUrl}/api/webhooks/mercadopago`,
         }),
         statement_descriptor: 'FERRATO',

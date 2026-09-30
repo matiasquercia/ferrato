@@ -1,13 +1,16 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { whatsappContactUrl } from '@/lib/whatsapp';
+
 interface Props {
   title: string;
   message: string;
   tone: 'success' | 'pending' | 'error';
   clearCart?: boolean;
+  orderId?: string;
 }
-const { title, message, tone, clearCart = false } = Astro.props;
+
+const { title, message, tone, clearCart = false, orderId = '' } = Astro.props;
 const icon = { success: '✓', pending: '⏳', error: '!' }[tone];
 const color = {
   success: 'bg-green-100 text-green-700',
@@ -23,7 +26,7 @@ const color = {
     </div>
     <h1 class="mt-6 font-display text-4xl font-bold uppercase">{title}</h1>
     <p class="mt-3 text-steel">{message}</p>
-    <p id="order-ref" class="mt-2 text-sm text-steel"></p>
+    {orderId && <p class="mt-2 text-sm text-steel">Número de pedido: {orderId}</p>}
     <div class="mt-8 flex flex-wrap justify-center gap-3">
       <a href="/productos" class="btn-dark">
         Seguir comprando
@@ -38,13 +41,13 @@ const color = {
       </a>
     </div>
   </div>
-  <script define:vars={{ clearCart }}>
-    const ref = new URLSearchParams(location.search).get('external_reference');
-    if (ref) document.getElementById('order-ref').textContent = `Número de pedido: ${ref}`;
-    if (clearCart) {
-      try {
-        localStorage.removeItem('ferrato:cart');
-      } catch {}
-    }
-  </script>
+  {
+    clearCart && (
+      <script is:inline>
+        try {
+          localStorage.removeItem('ferrato:cart');
+        } catch {}
+      </script>
+    )
+  }
 </BaseLayout>

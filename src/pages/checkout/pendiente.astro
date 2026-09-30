@@ -1,10 +1,18 @@
 ---
 import CheckoutResult from '@/components/CheckoutResult.astro';
+import { paymentReturnCopy, paymentReturnTone } from '@/lib/mercadopago-return';
+
+export const prerender = false;
+
+const tone = paymentReturnTone(Astro.url.searchParams, 'pending');
+const copy = paymentReturnCopy(tone);
+const orderId = Astro.url.searchParams.get('external_reference') ?? '';
 ---
 
 <CheckoutResult
-  tone="pending"
-  clearCart
-  title="Pago pendiente"
-  message="Tu pago está en proceso. Apenas se acredite te avisamos por email."
+  tone={tone}
+  clearCart={tone !== 'error'}
+  orderId={orderId}
+  title={copy.title}
+  message={copy.message}
 />
