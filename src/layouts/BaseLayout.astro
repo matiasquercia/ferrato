@@ -35,7 +35,7 @@ const organizationLd = {
   '@id': `${SITE.url}/#organization`,
   name: SITE.name,
   url: SITE.url,
-  logo: new URL('/ferralto-logo.svg', SITE.url).href,
+  logo: new URL('/logo.png', SITE.url).href,
 
   address: { '@type': 'PostalAddress', addressLocality: SITE.city, addressCountry: 'AR' },
   sameAs: Object.values(SITE.social),

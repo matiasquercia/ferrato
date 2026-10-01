@@ -57,7 +57,7 @@ export function postalDigits(value: string): string | null {
 const normalize = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase().replace(/\s+/g, ' ');
 const pending = (): ShippingEstimate => ({
   status: 'quote_required', amount: null,
-  message: 'Este envío necesita una cotización. Confirmamos el costo y el plazo por WhatsApp antes de que pagues.',
+  message: 'No hay una tarifa automática disponible para este pedido y destino. Solicitá la cotización por WhatsApp para confirmar el costo y el plazo antes de pagar.',
 });
 export function estimateShipping(
   lines: { sku: string; quantity: number }[], postalCode: string, locality: string,

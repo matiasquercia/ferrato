@@ -45,6 +45,7 @@ const benefits = [
 
 <BaseLayout jsonLd={{ "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE.url}/#website`, name: SITE.name, url: SITE.url, inLanguage: "es-AR" }}>
   <section class="home-hero hero-photo" data-hero aria-labelledby="hero-title">
+    <HeroSlides />
     <div class="container-page hero-layout">
       <div class="hero-copy">
         <p class="eyebrow">
@@ -75,9 +76,6 @@ const benefits = [
           <span>Envíos a todo el país</span>
           <span>Pagá con Mercado Pago</span>
         </div>
-      </div>
-      <div class="hero-visual" aria-hidden="true">
-        <HeroSlides />
       </div>
     </div>
   </section>
