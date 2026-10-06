@@ -1,9 +1,10 @@
+import { serverSecret } from './env.server';
 import { DEFAULT_SHIPPING_POLICY, estimateShipping, type ShippingConfiguration } from './shipping';
 import { shippingReference } from './shipping-reference.server';
 
 /** Private configuration: never included in a browser bundle. No unverified tariffs. */
 export function shippingConfig(): ShippingConfiguration {
-  const raw = process.env.SHIPPING_CONFIG_JSON;
+  const raw = serverSecret('SHIPPING_CONFIG_JSON');
   if (raw) {
     try {
       const parsed = JSON.parse(raw);

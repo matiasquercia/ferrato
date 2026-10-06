@@ -1,4 +1,5 @@
 import { formatBuyerAddress } from '@/lib/buyer';
+import { serverSecret } from '@/lib/env.server';
 import { formatPrice } from '@/lib/format';
 import { formatOrderLines, type OrderRecord, type OrderStatus } from '@/lib/order';
 
@@ -13,8 +14,8 @@ const ADDRESS_PROPERTIES = {
 } as const;
 
 function config() {
-  const token = import.meta.env.NOTION_TOKEN ?? process.env.NOTION_TOKEN;
-  const databaseId = import.meta.env.NOTION_DATABASE_ID ?? process.env.NOTION_DATABASE_ID;
+  const token = serverSecret('NOTION_TOKEN');
+  const databaseId = serverSecret('NOTION_DATABASE_ID');
   if (!token || !databaseId) return null;
   return { token, databaseId };
 }

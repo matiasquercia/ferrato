@@ -3,7 +3,7 @@
   "name": "ferralto",
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-09-30",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat", "nodejs_compat_populate_process_env"],
   "workers_dev": true,
   "preview_urls": false,
   "routes": [

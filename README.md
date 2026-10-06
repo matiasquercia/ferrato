@@ -44,6 +44,8 @@ npm run dev              # http://localhost:4321
 | `PUBLIC_WHATSAPP_NUMBER` | Número de ventas, formato `5491123456789`                             |
 | `MP_ACCESS_TOKEN`        | Access token de Mercado Pago (**secreto**, sólo servidor)             |
 | `MP_WEBHOOK_SECRET`      | Clave secreta de webhooks para validar la firma de las notificaciones |
+| `NOTION_TOKEN`           | Token de la integración de Notion (**secreto**)                       |
+| `NOTION_DATABASE_ID`     | ID de la base de pedidos en Notion (**secreto**)                      |
 | `PUBLIC_GA_ID`           | (opcional) Google Analytics 4                                         |
 | `PUBLIC_META_PIXEL_ID`   | (opcional) Meta Pixel para campañas en Instagram/Facebook             |
 
@@ -161,20 +163,35 @@ y enviá `https://TU-DOMINIO/sitemap-index.xml`.
 
 ## Deploy
 
-**Cloudflare (configurado):** el Worker `ferralto` sirve el catálogo estático y las rutas `/api/*`.
-El dominio principal es `https://ferralto.com`; las rutas de Cloudflare cubren
-`ferralto.com/*` y `www.ferralto.com/*`. La URL alternativa es
+Cada push a `main` publica el Worker `ferralto` en Cloudflare (`.github/workflows/deploy.yml`).
+El dominio es `https://ferralto.com` (`www.ferralto.com` también). URL alternativa:
 `https://ferralto.builditlikegod.workers.dev`.
 
-`wrangler.jsonc` declara la URL pública, WhatsApp y el almacenamiento de sesiones.
-Las credenciales de Mercado Pago (`MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`) y Notion
-(`NOTION_TOKEN`, `NOTION_DATABASE_ID`) se cargan como secretos del Worker, nunca en Git.
-Configurar también el webhook de Mercado Pago en
-`https://ferralto.com/api/webhooks/mercadopago`.
+### Secretos de GitHub (obligatorio para el deploy automático)
 
-Para publicar: `npm ci`, `npm run build`, `npm run deploy` con una sesión de
-Cloudflare autorizada. El deploy actual se realiza con Wrangler; los pushes a GitHub
-ejecutan los chequeos de CI, pero no publican automáticamente.
+En el repo: **Settings → Secrets and variables → Actions**. Crear:
+
+| Secret                   | Qué es                                                                 |
+| ------------------------ | ---------------------------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`   | Token de Cloudflare con permiso de editar Workers y rutas del dominio  |
+| `CLOUDFLARE_ACCOUNT_ID`  | Account ID (Workers & Pages → Overview, barra lateral derecha)         |
+| `MP_ACCESS_TOKEN`        | Access token de **producción** de Mercado Pago                         |
+| `MP_WEBHOOK_SECRET`      | Clave secreta del webhook de Mercado Pago                              |
+| `NOTION_TOKEN`           | Token de la integración de Notion                                      |
+| `NOTION_DATABASE_ID`     | ID de la base de pedidos                                               |
+| `SHIPPING_CONFIG_JSON`   | (opcional) tarifas privadas; ver `SHIPPING-OPERATIONS.md`              |
+
+Token de Cloudflare: [API Tokens](https://dash.cloudflare.com/profile/api-tokens) → *Create token* →
+plantilla **Edit Cloudflare Workers**. Incluí la zona `ferralto.com` si el token pide permisos de zona.
+
+Los valores de Mercado Pago y Notion se suben al Worker en cada deploy. Si un secreto queda vacío en GitHub,
+no se pisa el valor que ya tenga el Worker.
+
+Webhook de Mercado Pago: evento **Pagos**, URL `https://ferralto.com/api/webhooks/mercadopago`.
+
+`PUBLIC_SITE_URL` y `PUBLIC_WHATSAPP_NUMBER` están en `wrangler.jsonc` (no son secretos).
+
+Deploy local: `npm ci`, `npm run build`, `npm run deploy` con Wrangler autenticado.
 
 Porkbun conserva el registro del dominio. Su delegación DNS está configurada a
 `alfred.ns.cloudflare.com` y `blakely.ns.cloudflare.com`; los registros de correo
@@ -190,7 +207,8 @@ git remote add origin git@github.com:TU-USUARIO/ferrato.git
 git push -u origin main
 ```
 
-GitHub Actions corre `check` + `build` en cada push y PR (`.github/workflows/ci.yml`).
+GitHub Actions corre tests en cada PR (`.github/workflows/ci.yml`) y publica a Cloudflare
+en cada push a `main` (`.github/workflows/deploy.yml`).
 
 ## Próximos pasos sugeridos
 

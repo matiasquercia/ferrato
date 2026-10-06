@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { InvalidWebhookSignatureError, WebhookSignatureValidator } from 'mercadopago';
+import { serverSecret } from '@/lib/env.server';
 import { getMercadoPagoClient, paymentApi } from '@/lib/mercadopago.server';
 import { updateNotionOrderStatus } from '@/lib/notion.server';
 import type { OrderStatus } from '@/lib/order';
@@ -16,7 +17,7 @@ export const POST: APIRoute = async ({ request, url }) => {
   const dataId = url.searchParams.get('data.id') ?? body.data?.id;
   const type = url.searchParams.get('type') ?? body.type;
 
-  const secret = import.meta.env.MP_WEBHOOK_SECRET ?? process.env.MP_WEBHOOK_SECRET;
+  const secret = serverSecret('MP_WEBHOOK_SECRET');
   if (secret) {
     try {
       WebhookSignatureValidator.validate({

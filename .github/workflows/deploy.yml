@@ -1,0 +1,68 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run check
+      - run: npm run build
+        env:
+          PUBLIC_SITE_URL: https://ferralto.com
+          PUBLIC_WHATSAPP_NUMBER: '5491131008720'
+      - name: Check Cloudflare credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Faltan CLOUDFLARE_API_TOKEN o CLOUDFLARE_ACCOUNT_ID en GitHub Secrets."
+            exit 1
+          fi
+      - name: Sync Worker secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+          MP_WEBHOOK_SECRET: ${{ secrets.MP_WEBHOOK_SECRET }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          SHIPPING_CONFIG_JSON: ${{ secrets.SHIPPING_CONFIG_JSON }}
+        run: |
+          put() {
+            local name="$1"
+            local value="$2"
+            if [ -z "$value" ]; then
+              echo "Omitido $name (vacío en GitHub Secrets; se conserva el valor del Worker si ya existe)."
+              return 0
+            fi
+            printf '%s' "$value" | npx wrangler secret put "$name"
+          }
+          put MP_ACCESS_TOKEN "$MP_ACCESS_TOKEN"
+          put MP_WEBHOOK_SECRET "$MP_WEBHOOK_SECRET"
+          put NOTION_TOKEN "$NOTION_TOKEN"
+          put NOTION_DATABASE_ID "$NOTION_DATABASE_ID"
+          put SHIPPING_CONFIG_JSON "$SHIPPING_CONFIG_JSON"
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
