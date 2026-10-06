@@ -3,7 +3,7 @@ import { getProductById, maxQuantity } from '@/lib/catalog';
 import { formatPrice } from '@/lib/format';
 import { validateBuyer, type Buyer } from '@/lib/buyer';
 import { shippingForOrder } from '@/lib/shipping.server';
-import type { ShippingEstimate } from '@/lib/shipping';
+import { authorizeCheckoutShipping, type ShippingEstimate } from '@/lib/shipping';
 
 export type OrderChannel = 'mercadopago' | 'whatsapp';
 export type OrderStatus = 'Pendiente' | 'Pagado' | 'Rechazado' | 'WhatsApp';
@@ -137,10 +137,8 @@ export async function buildOrder(input: { items: unknown; buyer: unknown; channe
 
   const shipping = shippingForOrder(linesResult.lines, buyerResult.buyer.postalCode, normalizedLocality);
   if (input.channel === 'mercadopago') {
-    if (shipping.amount === null) return { ok: false as const, error: shipping.message, status: 422 };
-    if (input.shippingAmount !== shipping.amount) return {
-      ok: false as const, error: 'El costo de envío cambió. Volvé a calcularlo antes de pagar.', status: 409,
-    };
+    const authorized = authorizeCheckoutShipping(shipping, input.shippingAmount);
+    if (!authorized.ok) return authorized;
   }
 
   const order: OrderRecord = {

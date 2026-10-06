@@ -8,7 +8,7 @@ const source = ts.transpileModule(readFileSync(new URL('../src/lib/shipping.ts',
 }).outputText;
 const context = { exports: {} };
 vm.runInNewContext(source, context);
-const { priceShipping, estimateShipping, DEFAULT_SHIPPING_POLICY } = context.exports;
+const { priceShipping, estimateShipping, authorizeCheckoutShipping, DEFAULT_SHIPPING_POLICY } = context.exports;
 const policy = { ...DEFAULT_SHIPPING_POLICY, collectionRate: 0.10 };
 const now = Date.parse('2026-09-30T15:00:00Z');
 const rate = {
@@ -60,4 +60,14 @@ test('empty tariff inventory stays pending even for a high-value order', () => {
   const result = quote([]);
   assert.equal(result.status, 'quote_required');
   assert.equal(result.amount, null);
+});
+test('Mercado Pago can charge products only when shipping is still a quote', () => {
+  const pending = quote([]);
+  assert.equal(authorizeCheckoutShipping(pending, 0).ok, true);
+  assert.equal(authorizeCheckoutShipping(pending, undefined).ok, false);
+  assert.equal(authorizeCheckoutShipping(pending, null).ok, false);
+  const estimated = quote([rate]);
+  assert.equal(authorizeCheckoutShipping(estimated, estimated.amount).ok, true);
+  assert.equal(authorizeCheckoutShipping(estimated, 0).ok, false);
+  assert.equal(authorizeCheckoutShipping(estimated, 999).status, 409);
 });

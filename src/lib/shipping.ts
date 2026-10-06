@@ -87,3 +87,22 @@ export function estimateShipping(
   });
   return candidates.sort((a, b) => a.amount - b.amount)[0] ?? pending();
 }
+
+/** Mercado Pago may charge products only when no verified tariff exists (`shippingAmount` 0). */
+export function authorizeCheckoutShipping(
+  shipping: ShippingEstimate,
+  requestedAmount: unknown,
+): { ok: true } | { ok: false; error: string; status: number } {
+  if (shipping.amount !== null) {
+    if (requestedAmount !== shipping.amount) {
+      return {
+        ok: false,
+        error: 'El costo de envío cambió. Volvé a calcularlo antes de pagar.',
+        status: 409,
+      };
+    }
+    return { ok: true };
+  }
+  if (requestedAmount === 0) return { ok: true };
+  return { ok: false, error: shipping.message, status: 422 };
+}

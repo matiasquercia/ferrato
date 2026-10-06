@@ -60,8 +60,10 @@ export default function CheckoutForm() {
   const [shippingResult, setShippingResult] = useState<{ key: string; estimate: ShippingEstimate; subtotal: number } | null>(null);
   const [shippingBusy, setShippingBusy] = useState(false);
   const [shippingError, setShippingError] = useState('');
+  const [payProductsOnly, setPayProductsOnly] = useState(false);
   const shippingKey = JSON.stringify([items.map((i) => [i.id, i.variant, i.quantity]), buyer.postalCode.trim(), buyer.locality.trim()]);
   const shipping = shippingResult?.key === shippingKey && shippingResult.subtotal === total ? shippingResult.estimate : null;
+  const canPayMercadoPago = shipping?.amount != null || (payProductsOnly && shipping?.status === 'quote_required');
 
   const calculateShipping = async () => {
     const destinationError = postalCodeError(buyer.postalCode) || localityFormatError(buyer.locality);
@@ -95,6 +97,19 @@ export default function CheckoutForm() {
       // The form remains usable when Safari/private browsing blocks persistence.
     }
   }, [buyer, mounted]);
+
+  useEffect(() => {
+    setPayProductsOnly(false);
+  }, [shippingKey]);
+
+  useEffect(() => {
+    if (!mounted || items.length === 0) return;
+    if (postalCodeError(buyer.postalCode) || localityFormatError(buyer.locality)) return;
+    const timer = window.setTimeout(() => {
+      void calculateShipping();
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [shippingKey, mounted, items.length]);
 
   if (!mounted) return <p className="py-16 text-center text-steel">Cargando carrito…</p>;
 
@@ -335,7 +350,7 @@ export default function CheckoutForm() {
   const payload = () => ({
     items: items.map((i) => ({ id: i.id, variant: i.variant, quantity: i.quantity })),
     buyer,
-    shippingAmount: shipping?.amount,
+    shippingAmount: shipping?.amount ?? (payProductsOnly ? 0 : undefined),
   });
 
   const focusFirstError = (errors: Partial<Record<BuyerField, string>>) => {
@@ -390,7 +405,10 @@ export default function CheckoutForm() {
   const payWithMercadoPago = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (submitting.current) return;
-    if (shipping?.amount == null) { setError('Calculá o consultá el envío antes de pagar.'); return; }
+    if (!canPayMercadoPago) {
+      setError('Consultá el envío o confirmá que vas a pagar solo los productos.');
+      return;
+    }
     if (!(await ensureValid())) return;
     submitting.current = true;
     track('begin_checkout', { currency: 'ARS', value: total, items: items.map(ecommerceItem) });
@@ -818,6 +836,19 @@ export default function CheckoutForm() {
             <p role="status" className="mt-3 text-sm">{shippingError || shipping?.message || 'El costo depende del destino, el peso y las medidas del paquete. Si necesita cotización, lo coordinamos por WhatsApp antes de pagar.'}</p>
             {shipping?.amount != null && <p className="mt-2 font-semibold">Envío estimado: {formatPrice(shipping.amount)}</p>}
             {shipping?.status === 'quote_required' && shipping.reference && <div className="mt-3 rounded-lg border border-orange-200 bg-orange-50 p-3"><p className="font-semibold">Envío orientativo: {formatPrice(shipping.reference.amount)}</p><p className="mt-1 text-sm">{shipping.reference.message}</p></div>}
+            {shipping?.status === 'quote_required' && (
+              <label className="mt-3 flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border border-stone-200 bg-white p-3 text-sm">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-5 w-5 shrink-0 accent-brand-600"
+                  checked={payProductsOnly}
+                  onChange={(e) => setPayProductsOnly(e.target.checked)}
+                />
+                <span>
+                  Pagar ahora solo los productos ({formatPrice(total)}). El envío se coordina por WhatsApp y no está incluido en este cobro.
+                </span>
+              </label>
+            )}
             {shipping?.status === 'quote_required' && <a className="mt-3 inline-block font-semibold underline" href={buildWhatsAppOrderUrl(items, buyer, shipping)} target="_blank" rel="noopener">Consultar envío por WhatsApp ↗</a>}
           </section>
 
@@ -859,11 +890,18 @@ export default function CheckoutForm() {
 
           <button
             type="submit"
-            disabled={Boolean(loading) || shipping?.amount == null || shippingBusy}
+            disabled={Boolean(loading) || shippingBusy || !canPayMercadoPago}
             className="btn w-full bg-[#009ee3] text-white hover:bg-[#0086c3]"
           >
             {loading === 'mp' ? 'Redirigiendo…' : 'Pagar con Mercado Pago'}
           </button>
+          {!canPayMercadoPago && (
+            <p className="text-xs text-steel">
+              {shipping?.status === 'quote_required'
+                ? 'No hay tarifa automática de envío. Marcá la opción de pagar solo los productos o pedí por WhatsApp.'
+                : 'Consultá el costo de envío para habilitar Mercado Pago.'}
+            </p>
+          )}
           <div className="flex items-center gap-3 text-xs text-stone-400">
             <span className="h-px flex-1 bg-stone-200" /> o <span className="h-px flex-1 bg-stone-200" />
           </div>

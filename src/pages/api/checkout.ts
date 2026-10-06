@@ -32,19 +32,27 @@ export const POST: APIRoute = async ({ request, url }) => {
   try {
     const preference = await preferenceApi(mp).create({
       body: {
-        items: [...order.lines.map((line) => ({
-          id: line.id,
-          title: line.variant ? `${line.name} - ${line.variant}` : line.name,
-          description: line.shortDescription,
-          picture_url: new URL(productImage(line.image, 600), SITE.url).href,
-          category_id: line.category,
-          quantity: line.quantity,
-          currency_id: 'ARS',
-          unit_price: line.unitPrice,
-        })), {
-          id: `shipping-${order.shipping.rateId}`, title: 'Envío del pedido',
-          quantity: 1, currency_id: 'ARS', unit_price: order.shipping.amount!,
-        }],
+        items: [
+          ...order.lines.map((line) => ({
+            id: line.id,
+            title: line.variant ? `${line.name} - ${line.variant}` : line.name,
+            description: line.shortDescription,
+            picture_url: new URL(productImage(line.image, 600), SITE.url).href,
+            category_id: line.category,
+            quantity: line.quantity,
+            currency_id: 'ARS',
+            unit_price: line.unitPrice,
+          })),
+          ...(order.shipping.amount != null
+            ? [{
+                id: `shipping-${order.shipping.rateId ?? 'deferred'}`,
+                title: 'Envío del pedido',
+                quantity: 1,
+                currency_id: 'ARS',
+                unit_price: order.shipping.amount,
+              }]
+            : []),
+        ],
         external_reference: order.orderId,
         payer: {
           name: order.buyer.name,
