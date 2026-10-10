@@ -1,7 +1,8 @@
 ---
 const config = {
   ga: import.meta.env.PUBLIC_GA_ID || '',
-  ads: import.meta.env.PUBLIC_GOOGLE_ADS_ID || '',
+  // Public Google Ads tag verified in the Ferralto account. Existing consent gates its loading.
+  ads: import.meta.env.PUBLIC_GOOGLE_ADS_ID || 'AW-18485689522',
   whatsappLabel: import.meta.env.PUBLIC_ADS_WHATSAPP_LABEL || '',
   checkoutLabel: import.meta.env.PUBLIC_ADS_CHECKOUT_LABEL || '',
   pixel: import.meta.env.PUBLIC_META_PIXEL_ID || '',
