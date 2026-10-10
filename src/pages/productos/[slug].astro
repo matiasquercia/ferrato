@@ -1,6 +1,7 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import DeliveryOffer from '@/components/DeliveryOffer';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import ProductGrid from '@/components/ProductGrid.astro';
 import AddToCartButton from '@/components/AddToCartButton';
@@ -209,6 +210,7 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
           </p>
         )}
 
+        <div class="mt-5"><DeliveryOffer /></div>
         <AddToCartButton
           client:load
           withQuantity
@@ -236,7 +238,7 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
 
         <div class="mt-5 rounded-xl border border-stone-200 bg-white p-4 text-sm">
           <p class="font-semibold">Venta y envíos solo dentro de AMBA · Pago con Mercado Pago</p>
-          <p class="mt-2 text-steel">Consultá el envío en el carrito. El costo se suma al precio del producto y se confirma antes del pago. Para productos voluminosos, cotizamos por WhatsApp.</p>
+          <p class="mt-2 text-steel">El envío se suma al precio de los productos. Completá tu dirección en el carrito para confirmar la tarifa y coordinamos el día de entrega por WhatsApp.</p>
           <a href="/como-comprar#envios" class="mt-2 inline-block underline">Envíos, medios de pago y garantía</a>
         </div>
         <h2 class="section-title mt-10">Descripción</h2>

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { lineKey, $cart, $cartOpen, $cartTotal, removeFromCart, setQuantity } from '@/lib/cart';
 import { formatPrice } from '@/lib/format';
 import { productImage } from '@/lib/images';
+import DeliveryOffer from './DeliveryOffer';
 
 export default function CartDrawer() {
   const open = useStore($cartOpen);
@@ -127,9 +128,10 @@ export default function CartDrawer() {
             </ul>
             <div className="cart-modal-summary shrink-0 space-y-3 border-t border-stone-200 p-5">
               <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
+                <span>Subtotal productos</span>
                 <span>{formatPrice(total)}</span>
               </div>
+              <DeliveryOffer />
               <a href="/carrito" className="btn-primary w-full">
                 Finalizar compra
               </a>

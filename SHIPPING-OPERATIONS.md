@@ -1,6 +1,18 @@
 # Envíos Ferralto
 
-No se activó ninguna tarifa numérica: faltan paquetes embalados, acuerdos de transporte y cargos efectivos de cobro. El usuario confirmó posibles orígenes CP 1419, CP 1609 y Caseros (1678 en el cotizador); falta asignar el origen por pedido. La tienda solicita cotización antes del pago y no promete envío gratis por monto de compra.
+## Tarifas vigentes — 09/10/2026
+
+El negocio confirmó precios de venta fijos por pedido completo: toda CABA/Capital Federal $15.000; domicilios de AMBA fuera de CABA hasta 5 km en línea recta desde Obispo San Alberto 3796, CABA, $15.000; resto de AMBA $35.000. No hay mínimo de compra ni envío gratis. La tarifa se suma al subtotal de productos.
+
+El radio usa las coordenadas de la dirección exacta devueltas por Georef y la distancia geográfica sin redondear: hasta 5 km inclusive. El origen verificado es latitud -34.58961592968724, longitud -58.517791248821474. No equivale a distancia en auto ni a incluir toda una localidad. CABA conserva su tarifa incluso cuando el domicilio está fuera del radio.
+
+La cobertura se valida con la provincia y el partido/departamento de la dirección resuelta por el servidor, según los 40 municipios de AMBA: https://www.argentina.gob.ar/dami/centro/amba. Los destinos fuera de AMBA no se aceptan. Si faltan coordenadas fuera de CABA, no se inventa una tarifa: se pide corregir la dirección o consultar por WhatsApp.
+
+El sitio tiene checkout propio con Mercado Pago, sin derivación a Tiendanube. El servidor recalcula la tarifa al crear el pedido, exige que coincida con la vista por el cliente y la incluye como ítem de envío en Mercado Pago. No se realizó ninguna configuración en Tiendanube. La fecha de entrega se coordina por WhatsApp.
+
+## Referencias históricas de costos — no determinan las tarifas vigentes
+
+Los siguientes cálculos y cotizaciones corresponden al relevamiento del 30/09/2026; no son los precios de venta actuales. Se conservan como referencia operativa.
 
 ## Precio protegido
 

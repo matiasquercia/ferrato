@@ -4,6 +4,8 @@ export interface AddressMatch {
   number: number;
   locality: string;
   province: string;
+  department?: string;
+  coordinates?: { lat: number; lon: number };
 }
 
 export type AddressSuggestionKind = 'street' | 'locality' | 'address';
@@ -412,6 +414,8 @@ function toMatch(row: {
   altura?: { valor?: number | null };
   localidad_censal?: { nombre?: string };
   provincia?: { nombre?: string };
+  departamento?: { nombre?: string };
+  ubicacion?: { lat?: number; lon?: number };
 }): AddressMatch | null {
   const number = row.altura?.valor;
   const street = row.calle?.nombre?.trim();
@@ -419,7 +423,9 @@ function toMatch(row: {
   const province = row.provincia?.nombre?.trim();
   const label = row.nomenclatura?.trim();
   if (!label || !street || !locality || !province || number == null) return null;
-  return { label, street, number, locality, province };
+  const lat = row.ubicacion?.lat, lon = row.ubicacion?.lon;
+  const coordinates = typeof lat === 'number' && Number.isFinite(lat) && typeof lon === 'number' && Number.isFinite(lon) ? { lat, lon } : undefined;
+  return { label, street, number, locality, province, department: row.departamento?.nombre?.trim(), coordinates };
 }
 
 export async function lookupAddress(query: string): Promise<AddressMatch[]> {
@@ -427,7 +433,7 @@ export async function lookupAddress(query: string): Promise<AddressMatch[]> {
   const params = new URLSearchParams({
     direccion,
     max: '6',
-    campos: 'nomenclatura,calle.nombre,altura.valor,localidad_censal.nombre,provincia.nombre',
+    campos: 'nomenclatura,calle.nombre,altura.valor,localidad_censal.nombre,provincia.nombre,departamento.nombre,ubicacion.lat,ubicacion.lon',
   });
   if (lugar) params.set('localidad', lugar);
 
@@ -462,8 +468,21 @@ async function searchLocalities(nombre: string): Promise<AddressSuggestion[]> {
     max: '8',
     campos: 'id,nombre,provincia.nombre',
   });
-  const data = await georefGet<{ localidades_censales?: LocalityRow[] }>('localidades-censales', params);
-  return (data.localidades_censales ?? [])
+  // Neighborhoods such as Villa Martelli are localidades within a census locality.
+  const results = await Promise.allSettled([
+    georefGet<{ localidades?: LocalityRow[] }>('localidades', params).then((data) => data.localidades ?? []),
+    georefGet<{ localidades_censales?: LocalityRow[] }>('localidades-censales', params).then((data) => data.localidades_censales ?? []),
+  ]);
+  const fulfilled = results.filter((result) => result.status === 'fulfilled');
+  if (!fulfilled.length) throw new Error('Georef locality lookup failed');
+  const seen = new Set<string>();
+  return fulfilled.flatMap((result) => result.value)
+    .filter((row) => {
+      const key = normalize(`${row.nombre} ${row.provincia?.nombre}`);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
     .map(localityToSuggestion)
     .filter((row): row is AddressSuggestion => row !== null);
 }

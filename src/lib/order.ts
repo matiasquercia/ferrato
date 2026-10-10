@@ -4,6 +4,7 @@ import { formatPrice } from '@/lib/format';
 import { validateBuyer, type Buyer } from '@/lib/buyer';
 import { shippingForOrder } from '@/lib/shipping.server';
 import { authorizeCheckoutShipping, type ShippingEstimate } from '@/lib/shipping';
+import { deliveryZone } from '@/lib/delivery';
 
 export type OrderChannel = 'mercadopago' | 'whatsapp';
 export type OrderStatus = 'Pendiente' | 'Pagado' | 'Rechazado' | 'WhatsApp';
@@ -119,6 +120,9 @@ export async function buildOrder(input: { items: unknown; buyer: unknown; channe
     };
   }
   const normalizedLocality = prettyLocality(address.match.locality, address.match.province);
+  if (!deliveryZone(address.match)) {
+    return { ok: false as const, error: 'Por ahora hacemos envíos solo dentro de AMBA. Revisá la localidad de entrega.', status: 422, errors: { locality: 'El destino está fuera de nuestra cobertura actual de AMBA.' } };
+  }
   const postal = await verifyPostalCode(
     buyerResult.buyer.postalCode,
     normalizedLocality,
@@ -135,7 +139,7 @@ export async function buildOrder(input: { items: unknown; buyer: unknown; channe
   const linesResult = resolveOrderLines(input.items);
   if (!linesResult.ok) return linesResult;
 
-  const shipping = shippingForOrder(linesResult.lines, buyerResult.buyer.postalCode, normalizedLocality);
+  const shipping = shippingForOrder(linesResult.lines, buyerResult.buyer.postalCode, normalizedLocality, address.match);
   if (input.channel === 'mercadopago') {
     const authorized = authorizeCheckoutShipping(shipping, input.shippingAmount);
     if (!authorized.ok) return authorized;
