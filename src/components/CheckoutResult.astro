@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { whatsappContactUrl } from '@/lib/whatsapp';
+import type { Purchase } from '@/lib/verified-payment.server';
 
 interface Props {
   title: string;
@@ -8,9 +9,10 @@ interface Props {
   tone: 'success' | 'pending' | 'error';
   clearCart?: boolean;
   orderId?: string;
+  purchase?: Purchase;
 }
 
-const { title, message, tone, clearCart = false, orderId = '' } = Astro.props;
+const { title, message, tone, clearCart = false, orderId = '', purchase } = Astro.props;
 const icon = { success: '✓', pending: '⏳', error: '!' }[tone];
 const color = {
   success: 'bg-green-100 text-green-700',
@@ -20,6 +22,7 @@ const color = {
 ---
 
 <BaseLayout title={title} noindex>
+  {purchase && <div id="verified-purchase" data-purchase={JSON.stringify(purchase)} hidden />}
   <div class="container-page max-w-xl py-20 text-center">
     <div class:list={['mx-auto grid h-16 w-16 place-items-center rounded-full text-3xl font-bold', color]}>
       {icon}

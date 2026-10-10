@@ -7,7 +7,7 @@ import ts from 'typescript';
 const source = ts.transpileModule(readFileSync(new URL('../src/lib/analytics.ts', import.meta.url), 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
-function setup({ stored, blockedStorage = false, config: override = {}, list } = {}) {
+function setup({ stored, blockedStorage = false, config: override = {}, list, purchase } = {}) {
   const scripts = [],
     handlers = {},
     storage = new Map();
@@ -17,6 +17,7 @@ function setup({ stored, blockedStorage = false, config: override = {}, list } =
     ads: 'AW-123456',
     whatsappLabel: 'wa_label',
     checkoutLabel: 'checkout_label',
+    purchaseLabel: 'purchase_label',
     pixel: '',
     ...override,
   };
@@ -34,7 +35,8 @@ function setup({ stored, blockedStorage = false, config: override = {}, list } =
     title: 'Ferrato',
     referrer: 'https://example.com/private?email=secret',
     getElementById: (id) =>
-      id === 'measurement-config' ? { dataset: { config: JSON.stringify(config) } } : notice,
+      id === 'measurement-config' ? { dataset: { config: JSON.stringify(config) } } :
+        id === 'verified-purchase' ? (purchase ? { dataset: { purchase: JSON.stringify(purchase) } } : null) : notice,
     querySelector: (selector) => selector === '[data-view-list]' ? { dataset: { viewList: list ? JSON.stringify(list) : undefined } } : ({
       dataset: { viewItem: JSON.stringify({ item_id: 'SAF-2005', item_name: 'Escalera', price: 100 }) },
     }),
@@ -172,5 +174,33 @@ test('category list is measured once after analytics consent', () => {
   h.choose('analytics');
   assert.equal(h.events('view_item_list').length, 1);
   assert.equal(h.events('view_item_list')[0][2].item_list_id, 'tenders');
+  assert.equal(h.events('conversion').length, 0);
+});
+
+test('verified purchases require consent and deduplicate each destination independently', () => {
+  const h = setup({ purchase: { transaction_id: 'MP-12345', value: 48261, currency: 'ARS' } });
+  assert.equal(h.events('conversion').length, 0);
+  h.choose('analytics');
+  assert.equal(h.events('purchase').length, 1);
+  assert.equal(h.events('conversion').length, 0);
+  h.choose('all');
+  h.choose('all');
+  assert.equal(h.events('purchase').length, 1);
+  assert.equal(h.events('conversion').length, 1);
+  assert.equal(h.events('conversion')[0][2].value, 48261);
+  assert.equal(h.events('conversion')[0][2].transaction_id, 'MP-12345');
+  assert.equal(h.events('conversion')[0][2].send_to, 'AW-123456/purchase_label');
+});
+
+test('rejected consent and malformed purchase metadata never emit purchases', () => {
+  for (const purchase of [undefined, { transaction_id: 'MP-123', value: -1, currency: 'ARS' },
+    { transaction_id: 'arbitrary', value: 1, currency: 'ARS' }]) {
+    const h = setup({ purchase });
+    h.choose('all');
+    assert.equal(h.events('conversion').length, 0);
+    assert.equal(h.events('purchase').length, 0);
+  }
+  const h = setup({ purchase: { transaction_id: 'MP-123', value: 1, currency: 'ARS' } });
+  h.choose('none');
   assert.equal(h.events('conversion').length, 0);
 });

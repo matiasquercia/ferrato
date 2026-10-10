@@ -5,13 +5,14 @@ import { getMercadoPagoClient, preferenceApi } from '@/lib/mercadopago.server';
 import { saveOrderToNotion } from '@/lib/notion.server';
 import { buildOrder } from '@/lib/order';
 import { SITE } from '@/lib/site';
+import { receiptKey } from '@/lib/verified-payment.server';
 
 export const prerender = false;
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
 
-export const POST: APIRoute = async ({ request, url }) => {
+export const POST: APIRoute = async ({ request, url, session }) => {
   const mp = getMercadoPagoClient();
   if (!mp) return json({ error: 'El pago online no está disponible en este momento. Coordiná tu pedido por WhatsApp.' }, 503);
 
@@ -81,6 +82,12 @@ export const POST: APIRoute = async ({ request, url }) => {
     });
 
     await saveOrderToNotion(order);
+
+    // Necessary checkout session, without contact details or advertising identifiers.
+    // Measurement remains optional: a receipt only allows verifying the returning buyer's payment.
+    session?.set(receiptKey(order.orderId), {
+      orderId: order.orderId, total: order.total, created: Date.now(),
+    }, { ttl: 30 * 86400 });
 
     return json({
       orderId: order.orderId,

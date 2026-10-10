@@ -1,18 +1,19 @@
 ---
 import CheckoutResult from '@/components/CheckoutResult.astro';
-import { paymentReturnCopy, paymentReturnTone } from '@/lib/mercadopago-return';
+import { verifiedPaymentReturn } from '@/lib/verified-payment.server';
 
 export const prerender = false;
 
-const tone = paymentReturnTone(Astro.url.searchParams, 'success');
-const copy = paymentReturnCopy(tone);
-const orderId = Astro.url.searchParams.get('external_reference') ?? '';
+const result = await verifiedPaymentReturn(Astro, 'pending');
+Astro.response.headers.set('Cache-Control', 'private, no-store');
+Astro.response.headers.set('Referrer-Policy', 'no-referrer');
 ---
 
 <CheckoutResult
-  tone={tone}
-  clearCart={tone !== 'error'}
-  orderId={orderId}
-  title={copy.title}
-  message={copy.message}
+  tone={result.tone}
+  clearCart={result.tone === 'success'}
+  orderId={result.orderId}
+  purchase={result.purchase}
+  title={result.title}
+  message={result.message}
 />

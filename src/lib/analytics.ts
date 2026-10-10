@@ -1,5 +1,5 @@
 type Consent = { analytics: boolean; ads: boolean; updated: number };
-type Config = { ga: string; ads: string; whatsappLabel: string; checkoutLabel: string; pixel: string };
+type Config = { ga: string; ads: string; whatsappLabel: string; checkoutLabel: string; purchaseLabel: string; pixel: string };
 type Params = Record<string, unknown>;
 declare global {
   interface Window {
@@ -83,6 +83,41 @@ function trackPageContent() {
   }
 }
 
+function trackVerifiedPurchase() {
+  const encoded = document.getElementById('verified-purchase')?.dataset?.purchase;
+  if (!encoded) return;
+  try {
+    const purchase = JSON.parse(encoded);
+    if (!/^MP-\d{1,20}$/.test(purchase.transaction_id) || purchase.currency !== 'ARS' ||
+        typeof purchase.value !== 'number' || !Number.isFinite(purchase.value) || purchase.value <= 0) return;
+    const ledgerKey = 'ferrato:measured-purchases:v1';
+    let ledger: Record<string, number> = {};
+    try {
+      const stored = JSON.parse(localStorage.getItem(ledgerKey) || '{}');
+      if (stored && typeof stored === 'object' && !Array.isArray(stored)) {
+        for (const [id, date] of Object.entries(stored)) {
+          if (typeof date === 'number' && Date.now() - date < 30 * 86400000) ledger[id] = date;
+        }
+      }
+    } catch { /* Storage may be unavailable; Google also deduplicates transaction_id. */ }
+    const sendOnce = (channel: string, send: () => void) => {
+      const id = `${channel}:${purchase.transaction_id}`;
+      if (seen.has(id) || ledger[id]) return;
+      send();
+      seen.add(id);
+      ledger[id] = Date.now();
+      try { localStorage.setItem(ledgerKey, JSON.stringify(ledger)); } catch { /* in-page deduplication remains */ }
+    };
+    if (consent.analytics && gaReady) sendOnce('ga', () => track('purchase', purchase));
+    if (consent.ads && adsReady && /^[A-Za-z0-9_-]+$/.test(config.purchaseLabel)) {
+      sendOnce('ads', () => window.gtag?.('event', 'conversion', {
+        send_to: `${config.ads}/${config.purchaseLabel}`,
+        value: purchase.value, currency: purchase.currency, transaction_id: purchase.transaction_id,
+      }));
+    }
+  } catch { /* Malformed optional metadata must not break the checkout result. */ }
+}
+
 function applyConsent(next: Consent) {
   consent = next;
   window.gtag?.('consent', 'update', {
@@ -148,6 +183,7 @@ function applyConsent(next: Consent) {
   }
   if (pixelReady) window.fbq?.('consent', next.ads ? 'grant' : 'revoke');
   trackPageContent();
+  trackVerifiedPurchase();
 }
 
 export function initializeMeasurement() {
