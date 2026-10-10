@@ -25,6 +25,7 @@ export async function verifiedPaymentReturn(context: Pick<APIContext, 'url' | 's
   let tone: PaymentReturnTone = fallback === 'error' ? 'error' : 'pending';
   let orderId = '';
   let purchase: Purchase | undefined;
+  let verifiedPending = false;
   const requestedOrder = context.url.searchParams.get('external_reference') ?? '';
   const paymentId = context.url.searchParams.get('payment_id') ?? context.url.searchParams.get('collection_id') ?? '';
   // A return URL alone must never expose a receipt or manufacture a purchase.
@@ -37,6 +38,7 @@ export async function verifiedPaymentReturn(context: Pick<APIContext, 'url' | 's
         const payment = await paymentApi(mp).get({ id: paymentId });
         if (payment.external_reference === receipt.orderId) {
           purchase = purchaseForPayment(payment, receipt);
+          verifiedPending = ['pending', 'in_process', 'in_mediation', 'authorized'].includes(payment.status ?? '');
           if (purchase) tone = 'success';
           else if (['rejected', 'cancelled', 'refunded', 'charged_back'].includes(payment.status ?? '')) tone = 'error';
         }
@@ -47,5 +49,9 @@ export async function verifiedPaymentReturn(context: Pick<APIContext, 'url' | 's
     }
   }
   const copy = paymentReturnCopy(tone);
+  if (tone === 'pending' && !verifiedPending) {
+    copy.title = 'Verificá el estado de tu pago';
+    copy.message = 'No pudimos confirmar el resultado del pago. Revisalo en Mercado Pago o consultanos antes de volver a pagar. Tu carrito sigue guardado.';
+  }
   return { tone, orderId, purchase, ...copy };
 }
