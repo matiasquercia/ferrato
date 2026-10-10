@@ -791,7 +791,7 @@ export default function CheckoutForm() {
                 </p>
               ) : (
                 <p id="locality-hint" className="mt-1 text-xs text-steel">
-                  {addressBusy && suggestField === 'locality' ? 'Buscando localidades…' : 'Por ejemplo CABA o Rosario.'}
+                  {addressBusy && suggestField === 'locality' ? 'Buscando localidades…' : 'Solo AMBA. Por ejemplo CABA o Quilmes.'}
                 </p>
               )}
             </div>
@@ -829,6 +829,7 @@ export default function CheckoutForm() {
 
           <section aria-labelledby="shipping-title" className="rounded-xl border border-stone-200 bg-stone-50 p-4">
             <h2 id="shipping-title" className="font-semibold">Costo de envío</h2>
+            <p className="mt-2 text-sm font-semibold">Por ahora solo vendemos y entregamos dentro de AMBA. No atendemos pedidos fuera de esta zona.</p>
             <p className="mt-2 text-sm text-steel">Indicá localidad y código postal para consultar el costo de entrega. Si no hay una tarifa disponible para tu pedido, te cotizamos por WhatsApp antes de pagar.</p>
             <button type="button" className="btn-dark mt-3 w-full" disabled={shippingBusy || !buyer.locality.trim() || !buyer.postalCode.trim()} onClick={calculateShipping}>
               {shippingBusy ? 'Consultando…' : 'Consultar costo de envío'}

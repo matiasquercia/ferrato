@@ -57,7 +57,7 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
 
 <BaseLayout
   title={product.name}
-  description={`${product.shortDescription}${metaPrice} Envíos a todo el país.`}
+  description={`${product.shortDescription}${metaPrice} Venta y envíos solo dentro de AMBA.`}
   image={productImage(product.images[0], 1200)}
   jsonLd={productLd}
   ogType="product"
@@ -235,7 +235,7 @@ const metaPrice = product.price !== null ? ` ${formatPrice(product.price)}.` : '
         )}
 
         <div class="mt-5 rounded-xl border border-stone-200 bg-white p-4 text-sm">
-          <p class="font-semibold">Envíos a todo el país · Pago con Mercado Pago</p>
+          <p class="font-semibold">Venta y envíos solo dentro de AMBA · Pago con Mercado Pago</p>
           <p class="mt-2 text-steel">Consultá el envío en el carrito. El costo se suma al precio del producto y se confirma antes del pago. Para productos voluminosos, cotizamos por WhatsApp.</p>
           <a href="/como-comprar#envios" class="mt-2 inline-block underline">Envíos, medios de pago y garantía</a>
         </div>
